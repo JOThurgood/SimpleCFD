@@ -15,7 +15,7 @@
 !  added and called from within code, to make as portable / dependence free as
 !  possible
 
-MODULE shared_data
+module shared_data
 
   implicit none
   integer, parameter  :: num=selected_real_kind(p=15)
@@ -25,36 +25,36 @@ MODULE shared_data
   real (num) :: x_min, x_max, dxb
   real (num), dimension(:), allocatable :: a
   real(num), dimension(:), allocatable :: xb
-  real (num) :: t_end, time = 0.0_num, dt, CFL 
-  LOGICAL :: FTCS,upwind
+  real (num) :: t_end, time = 0.0_num, dt, cfl 
+  logical :: ftcs,upwind
   !anticipating staggered grid in late exercises
   !so 'c' for cell centred points, 'b' for boundary 
 
-  CONTAINS
+  contains
 
-END MODULE shared_data
+end module shared_data
 
-MODULE setup
+module setup
 
-  USE shared_data
+  use shared_data
 
   implicit none
 
-  CONTAINS
+  contains
 
-  SUBROUTINE user_control
+  subroutine user_control
     nx = 64   
     x_min = 0.0_num 
     x_max = 1.0_num
     t_end = 1.00_num
     u = 1.0_num !char speed of linear advection equation
-    CFL = 0.1_num !CFL number
+    cfl = 0.1_num !cfl number
     nsteps = -1
-    FTCS = .FALSE.
-    upwind = .TRUE.
-  END SUBROUTINE user_control 
+    ftcs = .false.
+    upwind = .true.
+  end subroutine user_control 
 
-  SUBROUTINE initial_conditions
+  subroutine initial_conditions
     !step function
     a = 0.0_num
     do ix = -1,nx+1 
@@ -62,72 +62,72 @@ MODULE setup
         a(ix) = 1.0_num
       endif
     end do 
-  ENDSUBROUTINE initial_conditions
+  endsubroutine initial_conditions
 
-  SUBROUTINE setup_1d_fd_grid
+  subroutine setup_1d_fd_grid
     !setup 1d finite difference grid for var a of size nx and has one ghost either side
-    !Here 0 is leftmost, nx is right, -1 and nx+1 are ghosts
-    !And allocate "a" etc
+    !here 0 is leftmost, nx is right, -1 and nx+1 are ghosts
+    !and allocate "a" etc
 
-    ALLOCATE(xb (-1:nx+1) )
-    ALLOCATE(a (-1:nx+1) )
+    allocate(xb (-1:nx+1) )
+    allocate(a (-1:nx+1) )
 
-    dxb = (x_max - x_min) / REAL(nx,num) 
-    DO ix = -1,nx+1 
-      xb(ix) = REAL(ix,num) * dxb
-    END DO 
-  ENDSUBROUTINE setup_1d_fd_grid 
+    dxb = (x_max - x_min) / real(nx,num) 
+    do ix = -1,nx+1 
+      xb(ix) = real(ix,num) * dxb
+    end do 
+  endsubroutine setup_1d_fd_grid 
 
-  SUBROUTINE init
+  subroutine init
     call user_control
     call setup_1d_fd_grid
     call initial_conditions
-  END SUBROUTINE init
+  end subroutine init
 
-END MODULE setup
+end module setup
 
-MODULE solver
-  USE shared_data
+module solver
+  use shared_data
   implicit none
 
-  CONTAINS
+  contains
 
-  SUBROUTINE update
-    dt = CFL * dxb / u
+  subroutine update
+    dt = cfl * dxb / u
     call periodic_bc
 
-    IF (FTCS) THEN
-!    do ix=0,nx  WILL NOT WORK  - need previous state so any direction will break it
-!      a(ix) =  a(ix) - CFL * (a(ix+1) - a(ix-1)) / 2.0_num
+    if (ftcs) then
+!    do ix=0,nx  will not work  - need previous state so any direction will break it
+!      a(ix) =  a(ix) - cfl * (a(ix+1) - a(ix-1)) / 2.0_num
 !    enddo
-      a = a - CFL * ( CSHIFT(a,1) - CSHIFT(a,-1)) / 2.0_num
-    ENDIF 
+      a = a - cfl * ( cshift(a,1) - cshift(a,-1)) / 2.0_num
+    endif 
 
-    IF (upwind) THEN
+    if (upwind) then
     !upwind - must either store old solution separately or fill from right to left
       do ix=nx,0,-1
-        a(ix) =  a(ix) - CFL * (a(ix) - a(ix-1)) 
+        a(ix) =  a(ix) - cfl * (a(ix) - a(ix-1)) 
       enddo
-!      a = a - CFL * (a - CSHIFT(a,-1)) <- havent tested yet
-    ENDIF
+!      a = a - cfl * (a - cshift(a,-1)) <- havent tested yet
+    endif
     time = time + dt    
-  END SUBROUTINE update
+  end subroutine update
 
-  SUBROUTINE periodic_bc
+  subroutine periodic_bc
     a(-1) = a(nx) 
     a(nx+1) = a(0)
-  ENDSUBROUTINE periodic_bc
+  endsubroutine periodic_bc
 
-END MODULE solver
+end module solver
 
-MODULE diagnostics
-  USE pyplot_module, only : pyplot
-  USE shared_data
+module diagnostics
+  use pyplot_module, only : pyplot
+  use shared_data
   implicit none
 
-  CONTAINS
+  contains
 
-  SUBROUTINE do_io
+  subroutine do_io
     integer :: out_unit =10
     open(out_unit, file="xb.dat", access="stream")
     write(out_unit) xb
@@ -135,9 +135,9 @@ MODULE diagnostics
     open(out_unit, file="a.dat", access="stream")
     write(out_unit) a
     close(out_unit)
-  END SUBROUTINE do_io
+  end subroutine do_io
 
-  SUBROUTINE do_a_plot
+  subroutine do_a_plot
     use, intrinsic :: iso_fortran_env, only : wp => real64
     integer :: istat
     type(pyplot) :: plt
@@ -146,29 +146,29 @@ MODULE diagnostics
                         tight_layout=.true.)
     call plt%add_plot(xb,a,label='a',linestyle='b-o',markersize=5,linewidth=2,istat=istat)
     call plt%savefig('output.png', pyfile='plottest.py',istat=istat)!
-  END SUBROUTINE do_a_plot
+  end subroutine do_a_plot
 
-END MODULE diagnostics
+end module diagnostics
 
-PROGRAM fdadvect
+program fdadvect
 
-  USE shared_data
-  USE setup
-  USE solver
-  USE diagnostics
+  use shared_data
+  use setup
+  use solver
+  use diagnostics
   implicit none
 
   call init
 
-  DO 
-    IF ((step >= nsteps .AND. nsteps >= 0) .OR. (time >= t_end)) EXIT
+  do 
+    if ((step >= nsteps .and. nsteps >= 0) .or. (time >= t_end)) exit
     step = step + 1
     call update
 !    print *,'step',step, 'time',time,'dt',dt
-  END DO 
+  end do 
 
 !  call do_io
   call do_a_plot
 
-  print *, 'Done in',step,'steps', 'with CFL',CFL
-END PROGRAM fdadvect
+  print *, 'done in',step,'steps', 'with cfl',cfl
+end program fdadvect

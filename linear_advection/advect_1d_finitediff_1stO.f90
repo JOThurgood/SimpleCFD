@@ -55,7 +55,7 @@ module setup
   end subroutine user_control 
 
   subroutine initial_conditions
-    !step function
+    ! step function
     a = 0.0_num
     do ix = -1,nx+1 
       if ((xb(ix) >= 1.0_num/3.0_num) .and. (xb(ix) <= 2.0_num / 3.0_num))  then
@@ -65,9 +65,10 @@ module setup
   endsubroutine initial_conditions
 
   subroutine setup_1d_fd_grid
-    !setup 1d finite difference grid for var a of size nx and has one ghost either side
-    !here 0 is leftmost, nx is right, -1 and nx+1 are ghosts
-    !and allocate "a" etc
+    ! setup 1d finite difference grid for var a of size nx 
+    ! plus one ghost either side
+    ! here 0 is leftmost, nx is right, -1 and nx+1 are ghosts
+    ! and allocate "a" etc
 
     allocate(xb (-1:nx+1) )
     allocate(a (-1:nx+1) )
@@ -97,18 +98,19 @@ module solver
     call periodic_bc
 
     if (ftcs) then
-!    do ix=0,nx  will not work  - need previous state so any direction will break it
+!    do ix=0,nx 
 !      a(ix) =  a(ix) - cfl * (a(ix+1) - a(ix-1)) / 2.0_num
 !    enddo
+! NB: above will not work - need previous state so any direction will break it
       a = a - cfl * ( cshift(a,1) - cshift(a,-1)) / 2.0_num
     endif 
 
     if (upwind) then
-    !upwind - must either store old solution separately or fill from right to left
+    ! upwind - must either store old solution separately,
+    ! or fill from right to left
       do ix=nx,0,-1
         a(ix) =  a(ix) - cfl * (a(ix) - a(ix-1)) 
       enddo
-!      a = a - cfl * (a - cshift(a,-1)) <- havent tested yet
     endif
     time = time + dt    
   end subroutine update

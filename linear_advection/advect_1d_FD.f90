@@ -11,7 +11,7 @@
 ! 
 !  where C is the CFL number
 ! 
-!  Alogorithm follows  M. Zingale's textbook on astro CFD.
+!  Algorithm follows  M. Zingale's textbook on astro CFD.
 !  (Independently implemented in Fortran.)
 
 module shared_data

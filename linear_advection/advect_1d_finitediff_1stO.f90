@@ -1,19 +1,20 @@
-!  finite-difference implementation of upwind / FTCS for linear advection.
+!  advect_1d_finitediff_1stO.f90
+!
+!  Jonathan Thurgood 2018
+!
+!  First order, finite-difference implementation of upwind / FTCS
+!  scheme (users choice) for linear advection.
 ! 
-!  We are solving a_t + u a_x = 0
+!  We are solving
+!
+!     a_t + u a_x = 0
 ! 
 !  The FTCS discretization is: anew = aold + (C/2) (aold_{i+1} - aold_{i-1})
 ! 
 !  where C is the CFL number
 ! 
-!  J. Thurgood 2018-06-27 
-!
-!  Alogorithm follows  M. Zingale's lecturenotes/textbook
-!  on astro CFD. Independently written in Fortran. 
-!
-!  needs the pyplot stuff removed and own independent python plotting script 
-!  added and called from within code, to make as portable / dependence free as
-!  possible
+!  Alogorithm follows  M. Zingale's textbook on astro CFD.
+!  (Independently implemented in Fortran.)
 
 module shared_data
 
@@ -27,8 +28,8 @@ module shared_data
   real(num), dimension(:), allocatable :: xb
   real (num) :: t_end, time = 0.0_num, dt, cfl 
   logical :: ftcs,upwind, verbose
-  !anticipating staggered grid in late exercises
-  !so 'c' for cell centred points, 'b' for boundary 
+  !anticipating staggered grid in later codes
+  !so 'c' for cell center, 'b' for boundary 
 
   contains
 
@@ -43,12 +44,12 @@ module setup
   contains
 
   subroutine user_control
-    nx = 64   
+    nx = 64  ! currently if you change this, change it in the .py script too 
     x_min = 0.0_num 
     x_max = 1.0_num
-    t_end = 1.00_num
+    t_end = 1.0_num
     u = 1.0_num !char speed of linear advection equation
-    cfl = 0.1_num !cfl number
+    cfl = 0.7_num !cfl number
     nsteps = -1 !<0 to run to t_end 
     ftcs = .false.
     upwind = .true.
@@ -142,12 +143,13 @@ module diagnostics
 
 end module diagnostics
 
-program fdadvect
+program advect_1d_finitediff_1stO
 
   use shared_data
   use setup
   use solver
   use diagnostics
+
   implicit none
 
   call init
@@ -162,4 +164,5 @@ program fdadvect
   call do_io
 
   print *, 'done in',step,'steps', 'with cfl',cfl
-end program fdadvect
+
+end program advect_1d_finitediff_1stO

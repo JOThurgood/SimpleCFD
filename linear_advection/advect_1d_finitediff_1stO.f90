@@ -26,7 +26,7 @@ module shared_data
   real (num), dimension(:), allocatable :: a
   real(num), dimension(:), allocatable :: xb
   real (num) :: t_end, time = 0.0_num, dt, cfl 
-  logical :: ftcs,upwind
+  logical :: ftcs,upwind, verbose
   !anticipating staggered grid in late exercises
   !so 'c' for cell centred points, 'b' for boundary 
 
@@ -49,9 +49,10 @@ module setup
     t_end = 1.00_num
     u = 1.0_num !char speed of linear advection equation
     cfl = 0.1_num !cfl number
-    nsteps = -1
+    nsteps = -1 !<0 to run to t_end 
     ftcs = .false.
     upwind = .true.
+    verbose = .true.
   end subroutine user_control 
 
   subroutine initial_conditions
@@ -123,7 +124,6 @@ module solver
 end module solver
 
 module diagnostics
-  use pyplot_module, only : pyplot
   use shared_data
   implicit none
 
@@ -137,18 +137,8 @@ module diagnostics
     open(out_unit, file="a.dat", access="stream")
     write(out_unit) a
     close(out_unit)
+    call execute_command_line("python plot_advect_1d_finitediff_1stO.py")
   end subroutine do_io
-
-  subroutine do_a_plot
-    use, intrinsic :: iso_fortran_env, only : wp => real64
-    integer :: istat
-    type(pyplot) :: plt
-    call plt%initialize(grid=.true.,xlabel='x',figsize=[20,10],&
-                        title='plot test',legend=.true.,axis_equal=.false.,&
-                        tight_layout=.true.)
-    call plt%add_plot(xb,a,label='a',linestyle='b-o',markersize=5,linewidth=2,istat=istat)
-    call plt%savefig('output.png', pyfile='plottest.py',istat=istat)!
-  end subroutine do_a_plot
 
 end module diagnostics
 
@@ -166,11 +156,10 @@ program fdadvect
     if ((step >= nsteps .and. nsteps >= 0) .or. (time >= t_end)) exit
     step = step + 1
     call update
-!    print *,'step',step, 'time',time,'dt',dt
+    if (verbose) print *,'step',step, 'time',time,'dt',dt
   end do 
 
-!  call do_io
-  call do_a_plot
+  call do_io
 
   print *, 'done in',step,'steps', 'with cfl',cfl
 end program fdadvect

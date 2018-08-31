@@ -1,2 +1,2 @@
 # SimpleCFD
-Simple CFD solvers written in Fortran for (linear advection, burgers, compressible Euler ...)  
+Simple CFD solvers written in Fortran (linear advection, burgers, compressible Euler ...)  

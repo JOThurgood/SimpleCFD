@@ -139,17 +139,6 @@ module diagnostics
     close(out_unit)
   end subroutine do_io
 
-  subroutine do_a_plot
-    use, intrinsic :: iso_fortran_env, only : wp => real64
-    integer :: istat
-    type(pyplot) :: plt
-    call plt%initialize(grid=.true.,xlabel='x',figsize=[20,10],&
-                        title='plot test',legend=.true.,axis_equal=.false.,&
-                        tight_layout=.true.)
-    call plt%add_plot(xb,a,label='a',linestyle='b-o',markersize=5,linewidth=2,istat=istat)
-    call plt%savefig('output.png', pyfile='plottest.py',istat=istat)!
-  end subroutine do_a_plot
-
 end module diagnostics
 
 program fdadvect
@@ -169,8 +158,8 @@ program fdadvect
 !    print *,'step',step, 'time',time,'dt',dt
   end do 
 
-!  call do_io
-  call do_a_plot
+  call do_io
+!  call do_a_plot
 
   print *, 'done in',step,'steps', 'with cfl',cfl
 end program fdadvect

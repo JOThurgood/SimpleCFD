@@ -45,4 +45,4 @@ clean:
 	rm -f *.o *.mod *.MOD $(PROGRAMS)
 
 cleanall:
-	rm -f *.o *.mod *.MOD $(PROGRAMS) *.dat
+	rm -f *.o *.mod *.MOD $(PROGRAMS) *.dat *.png

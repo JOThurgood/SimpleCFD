@@ -26,7 +26,7 @@ module shared_data
   real (num), dimension(:), allocatable :: a
   real(num), dimension(:), allocatable :: xb
   real (num) :: t_end, time = 0.0_num, dt, cfl 
-  logical :: ftcs,upwind
+  logical :: ftcs,upwind, verbose
   !anticipating staggered grid in late exercises
   !so 'c' for cell centred points, 'b' for boundary 
 
@@ -49,9 +49,10 @@ module setup
     t_end = 1.00_num
     u = 1.0_num !char speed of linear advection equation
     cfl = 0.1_num !cfl number
-    nsteps = -1
+    nsteps = -1 !<0 to run to t_end 
     ftcs = .false.
     upwind = .true.
+    verbose = .true.
   end subroutine user_control 
 
   subroutine initial_conditions
@@ -136,6 +137,7 @@ module diagnostics
     open(out_unit, file="a.dat", access="stream")
     write(out_unit) a
     close(out_unit)
+    call execute_command_line("python plot_advect_1d_finitediff_1stO.py")
   end subroutine do_io
 
 end module diagnostics
@@ -154,11 +156,10 @@ program fdadvect
     if ((step >= nsteps .and. nsteps >= 0) .or. (time >= t_end)) exit
     step = step + 1
     call update
-!    print *,'step',step, 'time',time,'dt',dt
+    if (verbose) print *,'step',step, 'time',time,'dt',dt
   end do 
 
   call do_io
-!  call do_a_plot
 
   print *, 'done in',step,'steps', 'with cfl',cfl
 end program fdadvect

@@ -19,6 +19,7 @@
 module shared_data
 
   implicit none
+
   integer, parameter  :: num=selected_real_kind(p=15)
   integer (num)  :: nx, ix
   integer (num) :: step = 0,nsteps
@@ -90,7 +91,9 @@ module setup
 end module setup
 
 module solver
+
   use shared_data
+
   implicit none
 
   contains
@@ -125,7 +128,9 @@ module solver
 end module solver
 
 module diagnostics
+
   use shared_data
+
   implicit none
 
   contains

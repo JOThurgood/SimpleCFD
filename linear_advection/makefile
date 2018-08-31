@@ -14,7 +14,7 @@ FCFLAGS += -I/usr/include
 #LDFLAGS = -li_need_this_lib
 
 # List of executables to be built within the package
-PROGRAMS = advect_1d_finitediff_1stO
+PROGRAMS = advect_1d_FD
 
 # "make" builds all
 all: $(PROGRAMS)

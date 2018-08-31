@@ -1,12 +1,10 @@
-!  advect_1d_finitediff_1stO.f90
+!  advect_1d_FD.f90
 !
 !  Jonathan Thurgood 2018
 !
 !  First order, finite-difference implementation of upwind / FTCS
-!  scheme (users choice) for linear advection.
+!  scheme (users choice) for 1D linear advection equation:
 ! 
-!  We are solving
-!
 !     a_t + u a_x = 0
 ! 
 !  The FTCS discretization is: anew = aold + (C/2) (aold_{i+1} - aold_{i-1})
@@ -143,12 +141,12 @@ module diagnostics
     open(out_unit, file="a.dat", access="stream")
     write(out_unit) a
     close(out_unit)
-    call execute_command_line("python plot_advect_1d_finitediff_1stO.py")
+    call execute_command_line("python plot_advect_1d_FD.py")
   end subroutine do_io
 
 end module diagnostics
 
-program advect_1d_finitediff_1stO
+program advect_1d_FD
 
   use shared_data
   use setup
@@ -170,4 +168,4 @@ program advect_1d_finitediff_1stO
 
   print *, 'done in',step,'steps', 'with cfl',cfl
 
-end program advect_1d_finitediff_1stO
+end program advect_1d_FD

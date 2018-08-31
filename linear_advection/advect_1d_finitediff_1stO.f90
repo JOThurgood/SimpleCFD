@@ -123,7 +123,6 @@ module solver
 end module solver
 
 module diagnostics
-  use pyplot_module, only : pyplot
   use shared_data
   implicit none
 

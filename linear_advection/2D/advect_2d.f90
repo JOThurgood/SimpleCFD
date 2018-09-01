@@ -321,7 +321,6 @@ end module split_solver
 
 module diagnostics
 
-  use pyplot_module, only : pyplot
   use shared_data
 
   implicit none 

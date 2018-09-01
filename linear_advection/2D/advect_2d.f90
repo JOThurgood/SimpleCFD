@@ -63,7 +63,7 @@ module setup
     u = 1.0_num
     v = 1.0_num
     nx = 64 
-    ny = nx 
+    ny = 64  
     x_min = 0.0_num
     x_max = 1.0_num
     y_min = x_min
@@ -326,6 +326,9 @@ module diagnostics
   subroutine do_io
 
     integer :: out_unit =10
+
+    call execute_command_line("rm -rf xc.dat yc.dat a.dat") 
+      !dont want to stream to existing files
 
     open(out_unit, file="xc.dat", access="stream")
     write(out_unit) xc

@@ -94,7 +94,8 @@ module setup
   subroutine x_top_hat
     a = 0.0_num
     do ix = 0,nx+1
-      if ((xc(ix) .ge. 1.0_num/3.0_num) .and. (xc(ix) .le. 2.0_num/3.0_num)) a(ix,:) = 1.0_num
+      if ((xc(ix) .ge. 1.0_num/3.0_num) .and. (xc(ix) .le. 2.0_num/3.0_num)) &
+        & a(ix,:) = 1.0_num
     enddo
   end subroutine x_top_hat
 

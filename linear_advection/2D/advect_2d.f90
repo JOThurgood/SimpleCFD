@@ -1,4 +1,3 @@
-
 ! solve the 2d linear advection equation, in conservative form:
 !
 !   a_t + [f(a)]_x + [g(a)]_y=0 
@@ -13,18 +12,8 @@
 !   - unsplit with "Corner Transport Upwind" (CTU) method (coming soon)
 !  with a choice of gradient limiters
 !
-! The code is broken into more subroutines and modules than neccesary 
-! for such a simple problem. The logic of the subroutines mimics a 
-! more sophistic hydrodynamics code whihc would warrant such an approach 
-! e.g., set_dt is relatively trivial here but would be more involved a
-! in a variable speed problem
+! https://github.com/JOThurgood/SimpleCFD/wiki/advect_2d.f90
 !
-! The plot uses pyplot to simplify IO significantly.
-! Requires pyplot_module.f90 to be linked. 
-! Easiest to place both in "src", then automagicaly build with FoBis.py  
-!
-! Jonathan Thurgood , 2019-06-29 
-! 
 
 module shared_data
 

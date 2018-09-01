@@ -343,7 +343,7 @@ module diagnostics
     write(out_unit) a
     close(out_unit)
  
-!    call execute_command_line("advect2d.py")
+    call execute_command_line("python plot_advect_2d.py")
 
 
   end subroutine do_io

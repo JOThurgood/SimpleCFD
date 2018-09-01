@@ -27,7 +27,9 @@
 ! 
 
 module shared_data
+
   implicit none
+
   integer, parameter :: num=selected_real_kind(p=15)
   integer :: nx, ny !number of cells
   integer :: ix,iy
@@ -42,12 +44,15 @@ module shared_data
   real(num), dimension(:,:), allocatable :: a,a1x,a1y, a1Lx, a1Rx, a1Ly,a1Ry
     !solution and states at half time step indicated by 1
   real(num) :: CFL !cfl modifier
+
   !keyword codes
   integer :: limiter
   integer, parameter :: lim_unlimited = 1, lim_minmod = 2
   integer :: method
   integer, parameter :: method_split = 1, method_unsplit = 2
+
   contains
+
 end module shared_data
 
 module setup
@@ -87,7 +92,7 @@ module setup
     a = 0.0_num
 !   call x_top_hat
 !    call y_top_hat
-   call square 
+    call square 
 !    call gaussian
   end subroutine initial_conditions
 
@@ -117,21 +122,22 @@ module setup
   subroutine y_top_hat
     a = 0.0_num
     do iy = 0,ny+1
-      if ((yc(iy) .ge. 1.0_num/3.0_num) .and. (yc(iy) .le. 2.0_num/3.0_num)) a(:,iy) = 1.0_num
+      if ((yc(iy) .ge. 1.0_num/3.0_num) .and. (yc(iy) .le. 2.0_num/3.0_num)) &
+        & a(:,iy) = 1.0_num
     enddo
   end subroutine y_top_hat
 
   subroutine gaussian
-
+    print *, 'gaussian currently a stub'
   end subroutine gaussian
 
-  subroutine setup_2dfvgrid
-    !setup the grid and also allocate other quantities 
+  subroutine setup_2dfvgrid !setup the grid and allocate other arrays 
 
-    allocate(xc(-1:nx+2))  !cell center (cc) - counts from 1 to nx, with 2 guards
-    allocate(xb(-2:nx+2))  !cell boundary (cb) - counts from 0 to nx, with 2 guards
-    allocate(yc(-1:ny+2))  !cell center (cc) - counts from 1 to ny, with 2 guards
-    allocate(yb(-2:ny+2))  !cell boundary (cb) - counts from 0 to ny, with 2 guards
+    allocate(xc(-1:nx+2))  !cell center (cc) - counts from 1 to nx
+    allocate(xb(-2:nx+2))  !cell boundary (cb) - counts from 0 to nx
+    allocate(yc(-1:ny+2))  !cell center (cc) - counts from 1 to ny
+    allocate(yb(-2:ny+2))  !cell boundary (cb) - counts from 0 to ny
+                           !all above have two guards  either side
 
     allocate(a(-1:nx+2,-1:ny+2))   !cc + 2 guards
     allocate(a1x(0:nx,1:ny))  !cb,cc - no guards needed 
@@ -195,9 +201,9 @@ module split_solver
 
     time = time + dt
 
-    !if plotting ghosts, may want to call both bc here (no effect on sln apart from
-    !extra operations)
-
+    !if plotting ghost cells may want to call bcs before plot
+    !to update (order here will have them one time before?)
+    !no effect on sln / correct for what you intend
   end subroutine solve_split
 
   subroutine set_dt
@@ -307,7 +313,7 @@ module split_solver
     enddo
   endsubroutine y_update
 
-  real(num) function minmod(a,b)  ! refactor - "a" is an unforunate choice of var name
+  real(num) function minmod(a,b)  ! refactor - "a" is an unfortunate choice
     real(num), intent(in) :: a, b 
     if ( (abs(a) < abs(b)) .and. (a*b > 0) ) then
       minmod = a
@@ -348,47 +354,6 @@ module diagnostics
 
 
   end subroutine do_io
-
-!!!  subroutine contour_plot
-!!!!    use, intrinsic :: iso_fortran_env, only : wp => real64
-!!!    integer :: istat
-!!!    type(pyplot) :: plt
-!!!!    real(num),dimension(:),allocatable :: level 
-!!!! not done yet- can pass a real vector containing levels for the contour
-!!!
-!!!
-!!!    call plt%initialize(grid=.true.,xlabel='x',&
-!!!                        ylabel='y',figsize=[10,10],&
-!!!                        title='[Contour] a(x,y,t=t_end)', real_fmt='*',&
-!!!                        axisbelow=.false.)
-!!!!    call plt%add_contour(xc, yc, a, label='contour', linestyle='-', &
-!!!    call plt%add_contour(xc(1:nx), yc(1:ny), a(1:nx,1:ny), label='contour', linestyle='-', &
-!!!                         linewidth=2, filled=.true., cmap='bone', colorbar=.true.,&
-!!!!                         levels = levels, &
-!!!                         istat=istat)
-!!!    call plt%savefig('contour.png',pyfile='contour.py',istat=istat)
-!!!
-!!!  end subroutine contour_plot
-!!!
-!!!  subroutine img_plot 
-!!!    use, intrinsic :: iso_fortran_env, only : wp => real64
-!!!    real(num), dimension(1:nx,1:ny) :: img
-!!!    integer :: istat
-!!!    type(pyplot) :: plt
-!!!
-!!!    img = a(1:nx,1:ny) / MAXVAL(ABS(a(1:nx,1:ny)))
-!!!
-!!!    call plt%initialize(grid=.false.,xlabel='ix-1',ylabel='iy-1',figsize=[10,10],&
-!!!                        title='[Img] a(ix-1,iy-1,t=t_end)',&
-!!!                        real_fmt='*')
-!!!!                        real_fmt='(F9.3)')
-!!!    call plt%add_imshow(img,xlim =[0.0_num, REAL(nx,num)],ylim=[0.0_num,real(ny,num)], istat=istat)
-!!!!    call plt%add_imshow(img,xlim=[x_min,x_max ],ylim=[y_min,y_max],istat=istat)
-!!!    call plt%savefig('img.png', pyfile='img.py',istat=istat)
-!!!
-!!!  end subroutine img_plot
-
-
 
 end module diagnostics
 

@@ -212,34 +212,23 @@ end module solver
 
 module diagnostics
 
-  use pyplot_module, only : pyplot
   use shared_data
 
   implicit none 
 
   contains
 
-  subroutine plot1d 
-    use, intrinsic :: iso_fortran_env, only : wp => real64
-    integer :: istat
-    type(pyplot) :: plt
-    real(num),dimension(:),allocatable :: a_cleaned
 
-    !dirty fix for a pyplot bug, see note (1) at bottom
-    if (.not.allocated(a_cleaned)) allocate(a_cleaned(-1:nx+2))
-    a_cleaned = a 
-    do ix=-1,nx+2 
-      if (abs(a_cleaned(ix)) < 1e-6) a_cleaned(ix) = 0.0_num
-    enddo
-    !
-
-    call plt%initialize(grid=.true.,xlabel='x',figsize=[20,10],&
-                        title='plot test',legend=.true.,axis_equal=.false.,&
-                        tight_layout=.true.)
-    !call plt%add_plot(xc,a,label='a',linestyle='b-o',markersize=5,linewidth=2,istat=istat)
-    call plt%add_plot(xc,a_cleaned,label='a',linestyle='b-o',markersize=5,linewidth=2,istat=istat)
-    call plt%savefig('output.png', pyfile='plottest.py',istat=istat)!
-  endsubroutine plot1d
+  subroutine do_io
+    integer :: out_unit =10
+    open(out_unit, file="xc.dat", access="stream")
+    write(out_unit) xc
+    close(out_unit)
+    open(out_unit, file="a.dat", access="stream")
+    write(out_unit) a
+    close(out_unit)
+    call execute_command_line("python plot_advect_1d_FV.py")
+  end subroutine do_io
 
 end module diagnostics
 
@@ -260,24 +249,9 @@ program advection2 !main driver
     call update    
   enddo
 
-  call plot1d
+  call do_io
 
   print *, 'Done in',step,'steps', 'with CFL',CFL
 
 end program advection2
 
-! notes + bugs
-!
-! (1) Apparent instability at high nx, with negative a(x) spikes on plot
-!
-! on inspection, not actually present in sln (pyplot bug?)
-!
-! pyplot makes it look like there is gross instability at high nx
-! if you run for long enough / with enough points, some zero locations 
-! in the array a(x) will actually become tiny floats - e.g. 
-! -6.5128182765688284E-166
-!
-! I didn't feel inclined to worry about it / possible issue with pyplot
-! itself, so instead plot a cleaned version of a(x)
-!
-!

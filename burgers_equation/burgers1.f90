@@ -3,30 +3,12 @@
 !   u_t + [0.5 * u**2 ]_x=0 
 !   u=u(x,t) (user defined at t=0)
 !
-! using a second order finite volume predictor-corrector scheme and optional gradient limiters
-! Boundaries are (minimally-tested) zero gradient.
+! using a second order finite volume predictor-corrector scheme and optional
+! gradient limiters. Boundaries are (minimally-tested) zero gradient.
 !
 ! user controled parameters in subroutines "control" and "initial_conditions"
 !
-! Visually seems to capture correct shock formation (e.g. use IC sinusoid1) and rarefaction
-! (e.g. IC jump with uright>uleft). Not done a more quantatative comparison to analytics etc 
-! 
-! I was a bit surprised in jump (shock) problems with no gradient limiter that any 
-! overshoot / gibbs phenomena downstream is pretty minimal - inherent advantage of
-! involving a R-solve in the solution scheme?
-!
-! outputs a .png of u(x) excluding ghosts at t_end
-!
-! The code is broken into more subroutines and modules than neccesary 
-! for such a simple problem. The logic of the subroutines mimics a 
-! more sophistic hydrodynamics code whihc would warrent such an approach 
-!
-! The plot uses pyplot to simplify IO significantly.
-! Requires pyplot_module.f90 to be linked. 
-! Easiest to place both in "src", then automagicaly build with FoBiS.py  
-!
-! Jonathan Thurgood , 2019-07-04 
-! 
+! https://github.com/JOThurgood/SimpleCFD/wiki/burgers1.f90
 
 module shared_data
   implicit none
@@ -105,18 +87,22 @@ module setup
     u = 1.0_num
     do ix = -1,nx+2
       if ( (xc(ix) .ge. lo) .and. (xc(ix) .le. hi) ) then
-        u(ix) = u(ix) + 0.5_num * SIN( (2.0_num * pi * (xc(ix) - 1.0_num/3.0_num)) / &
+        u(ix) = u(ix) + 0.5_num * &
+          & SIN( (2.0_num * pi * (xc(ix) - 1.0_num/3.0_num)) / &
           & (1.0_num/3.0_num))
       endif
     enddo 
   end subroutine sinusoid1
 
-  subroutine setup_1dfvgrid
-  !setup the grid and also allocate other quantities 
-    allocate(xc(-1:nx+2))  !cell center (cc) - counts from 1 to nx, with 2 guards
-    allocate(xb(-2:nx+2))  !cell boundary (cb) - counts from 0 to nx, with 2 guards
+  subroutine setup_1dfvgrid !set up grid and other alloctes
+
+    !with 2 guards below
+    allocate(xc(-1:nx+2))  !cell center (cc) - coutns from 1 to nx
+    allocate(xb(-2:nx+2))  !cell boundary (cb) - counts from 0 to nx
     allocate(u(-1:nx+2))   !cc + 2 guards
-    allocate(u1(0:nx))  !cb - then used to calc a cc var in corrector step -  no guards needed 
+
+    !no guards needed below
+    allocate(u1(0:nx))  !cb - then used to calc a cc var in corrector step  
     allocate(u1L(0:nx)) !cb 
     allocate(u1R(0:nx)) !cb
   
@@ -129,16 +115,12 @@ module setup
   end subroutine setup_1dfvgrid  
 
   subroutine warnings
-! might want to stop on some condition e.g.
-!    if (condition) then
-!      print *,'ic have set <bad condition> - incompatible with assumptions - STOP'
-!      STOP
-!    endif
+    !stub
   end subroutine warnings
 
   end module setup
 
-  module solver 
+module solver 
 
   use shared_data
 
@@ -148,7 +130,7 @@ module setup
 
   public :: update
 
-  contains !number of subroutines obviously a bit of over-kill for this problem
+  contains 
 
   subroutine update
     call boundary
@@ -188,8 +170,7 @@ module setup
 
   subroutine interface_states
     real(num) :: slope
-    !be careful with cc vs cb here
-    do ix = 0, nx ! states on cb
+    do ix = 0, nx ! states on cb !careful with cc vs cb
       !left state
       if (limiter == lim_minmod) then
         slope = minmod( ( u(ix)-u(ix-1) )/dx, ( u(ix+1)-u(ix) )/dx )
@@ -197,7 +178,6 @@ module setup
         slope = ( u(ix+1) - u(ix-1) ) / 2.0_num / dx
       endif
       u1L(ix) = u(ix) + 0.5_num * dx * (1.0_num - dt * u(ix) / dx) *  slope
-
       !right state
       if (limiter == lim_minmod) then
         slope = minmod( ( u(ix+1)-u(ix) )/dx, ( u(ix+2)-u(ix+1) )/dx )
@@ -205,9 +185,7 @@ module setup
         slope = ( u(ix+2) - u(ix) ) / 2.0_num / dx
       endif
       u1r(ix) = u(ix+1) - 0.5_num * dx * (1.0_num + dt * u(ix) / dx) *  slope
-
     enddo
-
   end subroutine interface_states
 
   subroutine riemann 
@@ -241,9 +219,8 @@ module setup
 
   end subroutine riemann 
 
-  real(num) function minmod(a,b)  ! "a" is an unforunate choice of var name
-    real(num), intent(in) :: a, b !left and right difference so maybe change to l and r
-!    real(num), intent(out) :: minmod
+  real(num) function minmod(a,b)  ! "a" is an unforunate choice of var name 
+    real(num), intent(in) :: a, b !change to l and r?
     if ( (abs(a) < abs(b)) .and. (a*b > 0) )then
       minmod = a
     else if ( (abs(a) > abs(b)) .and. (a*b > 0) ) then
@@ -264,15 +241,11 @@ module diagnostics
   contains
 
   subroutine do_io
-
     integer :: out_unit =10
-
     call execute_command_line("rm -rf xc.dat u.dat") !dont stream to existing
-
     open(out_unit, file="xc.dat", access="stream")
     write(out_unit) xc(1:nx)
     close(out_unit)
-
     open(out_unit, file="u.dat", access="stream")
     write(out_unit) u(1:nx)
     close(out_unit)

@@ -67,23 +67,20 @@ module setup
     call initial_conditions
   end subroutine initial_setup
 
-  subroutine control
-    !user control variables
+  subroutine control !user control variables
     u = 1.0_num
     nx = 64 
     x_min = 0.0_num
     x_max = 1.0_num
-    t_end = 5.0_num
+    t_end = 1.0_num
     CFL = 0.7_num
     nsteps = -1   !set to -1 to run till t_end
-    limiter = lim_unlimited
-      !lim_unlimited, lim_minmod
+    limiter = lim_unlimited !lim_unlimited, lim_minmod
   end subroutine control
 
-  subroutine initial_conditions
-    !user set initial profile on a
+  subroutine initial_conditions !choose by commenting or add your own
     call top_hat
-!    call gaussian
+    !call gaussian
   end subroutine initial_conditions
 
   subroutine top_hat
@@ -105,16 +102,13 @@ module setup
     enddo
   end subroutine gaussian
 
-  subroutine setup_1dfvgrid
-    !setup the grid and also allocate other quantities 
-
-    allocate(xc(-1:nx+2))  !cell center (cc) - counts from 1 to nx, with 2 guards
-    allocate(xb(-2:nx+2))  !cell boundary (cb) - counts from 0 to nx, with 2 guards
+  subroutine setup_1dfvgrid !setup grid  + allocate other vars
+    allocate(xc(-1:nx+2))  !cell center (cc) - counts from 1 to nx, with 2 guard
+    allocate(xb(-2:nx+2))  !cell boundary (cb) - counts from 0 to nx, with 2 gds
     allocate(a(-1:nx+2))   !cc + 2 guards
-    allocate(a1(0:nx))  !cb - then used to calc a cc var in corrector step -  no guards needed 
-    allocate(a1L(0:nx)) !cb 
+    allocate(a1(0:nx))  !cb - then used to calc a cc var in corrector step 
+    allocate(a1L(0:nx)) !cb   (no guards needed)
     allocate(a1R(0:nx)) !cb
-
     dxb = (x_max - x_min) / REAL(nx,num)
     dxc = dxb !redundant for uniform grids dxb=dxc=dx=constant
     do ix = -2, nx+2
@@ -131,7 +125,7 @@ module solver
 
   implicit none
 
-  contains !number of subroutines obviously a bit of over-kill for this problem
+  contains
 
   subroutine update
     call boundary
@@ -141,8 +135,7 @@ module solver
     time = time + dt
   end subroutine update
 
-  subroutine boundary
-    !periodic
+  subroutine boundary !periodic
     a(-1) = a(nx-1)
     a(0) = a(nx)
     a(nx+1) = a(1)
@@ -168,6 +161,7 @@ module solver
     !be careful with cc vs cb here
     real(num) dadx
     do ix = 0, nx ! states on boundary defined at xb 
+
       !left state
       if (limiter == lim_minmod) then
         dadx = minmod( ( a(ix)-a(ix-1) )/dxb, ( a(ix+1)-a(ix) )/dxb )
@@ -196,9 +190,8 @@ module solver
     endif 
   end subroutine reimann 
 
-  real(num) function minmod(a,b)  ! "a" is an unforunate choice of var name
-    real(num), intent(in) :: a, b !left and right difference so maybe change to l and r
-!    real(num), intent(out) :: minmod
+  real(num) function minmod(a,b)  ! "a" is an unforunate choice of var name!
+    real(num), intent(in) :: a, b !left and right difference so change to l+r?
     if ( (abs(a) < abs(b)) .and. (a*b > 0) )then
       minmod = a
     else if ( (abs(a) > abs(b)) .and. (a*b > 0) ) then
@@ -217,7 +210,6 @@ module diagnostics
   implicit none 
 
   contains
-
 
   subroutine do_io
     integer :: out_unit =10

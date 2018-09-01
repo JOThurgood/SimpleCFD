@@ -1,37 +1,14 @@
-! solve the linear advection equation, in conservative form:
+! advect_1d_FV.f90
 !
+! solve the linear advection equation, in conservative form:
 !   a_t + [f(a)]_x=0 
 !   f(a) = u*a 
 !   a=a(x,t) (user defined) 
 !   u=constant (user defined)
+! using a second order finite volume predictor-corrector scheme and optional 
+! gradient limiters. Boundaries are periodic.
 !
-! using a second order finite volume predictor-corrector scheme and optional gradient limiters
-! Boundaries are periodic.
-!
-! user controled parameters in subroutines "control" and "initial_conditions"
-!
-! When CFL<1, if limiters off shows spurious oscillations in addition to numerical diffusion
-! (as opposed to just diffusion in first order method w/ appropriate upwinding?)
-! This highlights issues 
-! relating to Godunov's theorem and that in order to have a second-order 
-! accurate solution that is monotonic (doesn't introduce new minima and maxima)
-! that the method itself must be nonlinear. Easiest to see for tophat initial condition.
-! 
-! Outputs "output.png" of the solution at t_end. Best to set u and x_min and x_max
-! (e.g. u=1, x_min=0,x_max=1)
-! so that t = 1 corresponds to one crossing time (recycled through periodic boundary)
-!
-! The code is broken into more subroutines and modules than neccesary 
-! for such a simple problem. The logic of the subroutines mimics a 
-! more sophistic hydrodynamics code whihc would warrent such an approach 
-! e.g., set_dt is trivial herem but would be more involved a variable speed problem
-!
-! The plot uses pyplot to simplify IO significantly.
-! Requires pyplot_module.f90 to be linked. 
-! Easiest to place both in "src", then automagicaly build with FoBis.py  
-!
-! Jonathan Thurgood , 2019-06-28 
-! 
+!  https://github.com/JOThurgood/SimpleCFD/wiki!
 
 module shared_data
   implicit none

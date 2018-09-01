@@ -1,16 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-n = 64+2 #ncells + 1 for at boundary + 2 for ghosts
-
-data = np.fromfile('xc.dat', dtype=np.float64, count=n)
-xc = data.reshape(n)
-
-data = np.fromfile('a.dat', dtype=np.float64, count=n)
-a = data.reshape(n)
+xc = np.fromfile('xc.dat', dtype=np.float64)
+a = np.fromfile('a.dat', dtype=np.float64)
 
 plt.plot(xc, a)
-if n < 129 :
+if xc.size < 129 :
   plt.plot(xc,a,'bx')
 plt.xlabel('x')
 plt.ylabel('a(x)')

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 xc = np.fromfile('xc.dat', dtype = np.float64)
 yc  = np.fromfile('yc.dat', dtype = np.float64)
 a = np.fromfile('a.dat', dtype = np.float64)
-a = a.reshape(xc.size, yc.size, order = 'F')
+a = a.reshape(yc.size, xc.size)
 
 
 plt.clf()

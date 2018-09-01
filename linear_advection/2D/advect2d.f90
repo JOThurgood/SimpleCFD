@@ -328,44 +328,65 @@ module diagnostics
 
   contains
 
-  subroutine contour_plot
-!    use, intrinsic :: iso_fortran_env, only : wp => real64
-    integer :: istat
-    type(pyplot) :: plt
-!    real(num),dimension(:),allocatable :: level 
-! not done yet- can pass a real vector containing levels for the contour
+  subroutine do_io
+
+    integer :: out_unit =10
+
+    open(out_unit, file="xc.dat", access="stream")
+    write(out_unit) xc
+    close(out_unit)
+
+    open(out_unit, file="yc.dat", access="stream")
+    write(out_unit) yc
+    close(out_unit)
+
+    open(out_unit, file="a.dat", access="stream")
+    write(out_unit) a
+    close(out_unit)
+ 
+    call execute_command_line("advect2d.py")
 
 
-    call plt%initialize(grid=.true.,xlabel='x',&
-                        ylabel='y',figsize=[10,10],&
-                        title='[Contour] a(x,y,t=t_end)', real_fmt='*',&
-                        axisbelow=.false.)
-!    call plt%add_contour(xc, yc, a, label='contour', linestyle='-', &
-    call plt%add_contour(xc(1:nx), yc(1:ny), a(1:nx,1:ny), label='contour', linestyle='-', &
-                         linewidth=2, filled=.true., cmap='bone', colorbar=.true.,&
-!                         levels = levels, &
-                         istat=istat)
-    call plt%savefig('contour.png',pyfile='contour.py',istat=istat)
+  end subroutine do_io
 
-  end subroutine contour_plot
-
-  subroutine img_plot 
-    use, intrinsic :: iso_fortran_env, only : wp => real64
-    real(num), dimension(1:nx,1:ny) :: img
-    integer :: istat
-    type(pyplot) :: plt
-
-    img = a(1:nx,1:ny) / MAXVAL(ABS(a(1:nx,1:ny)))
-
-    call plt%initialize(grid=.false.,xlabel='ix-1',ylabel='iy-1',figsize=[10,10],&
-                        title='[Img] a(ix-1,iy-1,t=t_end)',&
-                        real_fmt='*')
-!                        real_fmt='(F9.3)')
-    call plt%add_imshow(img,xlim =[0.0_num, REAL(nx,num)],ylim=[0.0_num,real(ny,num)], istat=istat)
-!    call plt%add_imshow(img,xlim=[x_min,x_max ],ylim=[y_min,y_max],istat=istat)
-    call plt%savefig('img.png', pyfile='img.py',istat=istat)
-
-  end subroutine img_plot
+!!!  subroutine contour_plot
+!!!!    use, intrinsic :: iso_fortran_env, only : wp => real64
+!!!    integer :: istat
+!!!    type(pyplot) :: plt
+!!!!    real(num),dimension(:),allocatable :: level 
+!!!! not done yet- can pass a real vector containing levels for the contour
+!!!
+!!!
+!!!    call plt%initialize(grid=.true.,xlabel='x',&
+!!!                        ylabel='y',figsize=[10,10],&
+!!!                        title='[Contour] a(x,y,t=t_end)', real_fmt='*',&
+!!!                        axisbelow=.false.)
+!!!!    call plt%add_contour(xc, yc, a, label='contour', linestyle='-', &
+!!!    call plt%add_contour(xc(1:nx), yc(1:ny), a(1:nx,1:ny), label='contour', linestyle='-', &
+!!!                         linewidth=2, filled=.true., cmap='bone', colorbar=.true.,&
+!!!!                         levels = levels, &
+!!!                         istat=istat)
+!!!    call plt%savefig('contour.png',pyfile='contour.py',istat=istat)
+!!!
+!!!  end subroutine contour_plot
+!!!
+!!!  subroutine img_plot 
+!!!    use, intrinsic :: iso_fortran_env, only : wp => real64
+!!!    real(num), dimension(1:nx,1:ny) :: img
+!!!    integer :: istat
+!!!    type(pyplot) :: plt
+!!!
+!!!    img = a(1:nx,1:ny) / MAXVAL(ABS(a(1:nx,1:ny)))
+!!!
+!!!    call plt%initialize(grid=.false.,xlabel='ix-1',ylabel='iy-1',figsize=[10,10],&
+!!!                        title='[Img] a(ix-1,iy-1,t=t_end)',&
+!!!                        real_fmt='*')
+!!!!                        real_fmt='(F9.3)')
+!!!    call plt%add_imshow(img,xlim =[0.0_num, REAL(nx,num)],ylim=[0.0_num,real(ny,num)], istat=istat)
+!!!!    call plt%add_imshow(img,xlim=[x_min,x_max ],ylim=[y_min,y_max],istat=istat)
+!!!    call plt%savefig('img.png', pyfile='img.py',istat=istat)
+!!!
+!!!  end subroutine img_plot
 
 
 
@@ -388,8 +409,7 @@ program advection2d !main driver
     if (method == method_split) call solve_split
   enddo
 
-!  call contour_plot
-  call img_plot 
+  call do_io
 
   print *, 'Done in',step,'steps', 'with CFL',CFL
 

@@ -48,7 +48,7 @@ module setup
     x_max = 1.0_num
     t_end = 1.0_num
     u = 1.0_num !char speed of linear advection equation
-    cfl = 0.7_num !cfl number
+    cfl = 1.0_num !cfl number
     nsteps = -1 !<0 to run to t_end 
     ftcs = .false.
     upwind = .true.

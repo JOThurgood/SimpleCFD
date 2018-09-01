@@ -68,7 +68,7 @@ module setup
 
   subroutine control
     !user control variables
-    nx = 256
+    nx = 128
     x_min = 0.0_num
     x_max = 1.0_num
     t_end = 1.00_num
@@ -257,25 +257,27 @@ end module solver
 
 module diagnostics
 
-  use pyplot_module, only : pyplot
   use shared_data
 
   implicit none 
 
   contains
 
-  subroutine plot1d 
-    use, intrinsic :: iso_fortran_env, only : wp => real64
-    integer :: istat
-    type(pyplot) :: plt
+  subroutine do_io
 
-    call plt%initialize(grid=.true.,xlabel='x',figsize=[20,10],&
-                        title='plot test',legend=.true.,axis_equal=.false.,&
-                        tight_layout=.true.)
-    call plt%add_plot(xc(1:nx),u(1:nx),label='u(x)',linestyle='b-o',markersize=5,linewidth=2,istat=istat)
-!    call plt%add_plot(xc,u,label='u(x)',linestyle='b-o',markersize=5,linewidth=2,istat=istat)
-    call plt%savefig('output.png', pyfile='plottest.py',istat=istat)!
-  endsubroutine plot1d
+    integer :: out_unit =10
+
+    call execute_command_line("rm -rf xc.dat u.dat") !dont stream to existing
+
+    open(out_unit, file="xc.dat", access="stream")
+    write(out_unit) xc(1:nx)
+    close(out_unit)
+
+    open(out_unit, file="u.dat", access="stream")
+    write(out_unit) u(1:nx)
+    close(out_unit)
+    call execute_command_line("python plot_burgers1.py")
+  end subroutine do_io
 
 end module diagnostics
 
@@ -296,7 +298,7 @@ program burgers1 !main driver
     call update    
   enddo
 
-  call plot1d
+  call do_io
 
   print *, 'Done in',step,'steps', 'with CFL',CFL
 

@@ -224,7 +224,7 @@ module diagnostics
 
 end module diagnostics
 
-program advection2 !main driver
+program advect_1d_FV !main driver
 
   use shared_data
   use setup
@@ -245,5 +245,5 @@ program advection2 !main driver
 
   print *, 'Done in',step,'steps', 'with CFL',CFL
 
-end program advection2
+end program advect_1d_FV
 

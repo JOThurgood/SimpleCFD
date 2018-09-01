@@ -34,7 +34,7 @@ module setup
   contains
 
   subroutine user_control
-    nx = 64  ! currently if you change this, change it in the .py script too 
+    nx = 64 
     x_min = 0.0_num 
     x_max = 1.0_num
     t_end = 1.0_num

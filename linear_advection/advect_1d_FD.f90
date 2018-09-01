@@ -1,18 +1,9 @@
 !  advect_1d_FD.f90
 !
-!  Jonathan Thurgood 2018
+!  Solve a_t + u a_x = 0 with finite-difference
+!  with either FTCS or upwinding. 
 !
-!  First order, finite-difference implementation of upwind / FTCS
-!  scheme (users choice) for 1D linear advection equation:
-! 
-!     a_t + u a_x = 0
-! 
-!  The FTCS discretization is: anew = aold + (C/2) (aold_{i+1} - aold_{i-1})
-! 
-!  where C is the CFL number
-! 
-!  Algorithm follows  M. Zingale's textbook on astro CFD.
-!  (Independently implemented in Fortran.)
+!  https://github.com/JOThurgood/SimpleCFD/wiki
 
 module shared_data
 
@@ -48,7 +39,7 @@ module setup
     x_max = 1.0_num
     t_end = 1.0_num
     u = 1.0_num !char speed of linear advection equation
-    cfl = 0.7_num !cfl number
+    cfl = 1.0_num !cfl number
     nsteps = -1 !<0 to run to t_end 
     ftcs = .false.
     upwind = .true.

@@ -13,6 +13,7 @@ module shared_data ! a common block essentially
 
   real(num) :: rhol, ul, pl, rhor, ur, pr !W_l and W_r
   real(num) :: gamma, gm, gp, g1, g2, g3, g4, g5, g6, g7 !gamma + const
+  real(num) :: al,ar, bl, br !more constants
   real(num) :: cl, cr !sound speeds
   real(num) :: ps !star region vars
 
@@ -31,6 +32,11 @@ module shared_data ! a common block essentially
     g5 = 2.0_num / gp
     g6 = gm / gp
     g7 = gm / 2.0_num
+    !data dependant constants for finding the root of the "f" function
+    al = g5 / rhol
+    ar = g5 / rhor
+    bl = g6 * pl
+    br = g6 * pr
     !sound speeds
     cl = sqrt(gamma * pl /rhol)
     cr = sqrt(gamma * pr / rhor)
@@ -107,7 +113,7 @@ module riemann !subroutines related to calculating star states
 
   subroutine pstar
     call guess_ps 
-
+    call newton_raphson
     print *, ps
   end subroutine pstar
 
@@ -119,6 +125,32 @@ module riemann !subroutines related to calculating star states
     ps = 0.5_num * (pl + pr) ! For now just always use arithmetic mean
   end subroutine guess_ps
  
+  subroutine newton_raphson
+
+  end subroutine newton_raphson
+
+  real(num) function f(p) 
+    real(num), intent(in) :: p
+    real(num) :: fl, fr, du
+
+    du = ur - ul
+
+    if (p > pl) then !left shock
+      fl = (p-pl) * sqrt(al / (p + bl))
+    else ! left rarefaction 
+      fl = g4 * al * ((p/pl)**g1 - 1.0_num)
+    endif 
+
+    if (p > pr) then !right shock
+      fr = (p-pr) * sqrt(ar / (p + br))
+    else ! right rarefaction 
+      fr = g4 * ar * ((p/pr)**g1 - 1.0_num)
+    endif 
+
+    f = fl + fr + du
+    return
+  end function
+
 end module riemann
 
 program ers_euler_ideal_1d

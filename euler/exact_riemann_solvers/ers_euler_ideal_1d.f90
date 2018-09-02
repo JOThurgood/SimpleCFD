@@ -16,6 +16,7 @@ module shared_data ! a common block essentially
   real(num) :: al,ar, bl, br !more constants
   real(num) :: cl, cr !sound speeds
   real(num) :: ps !star region vars
+
   public 
 
   contains 
@@ -112,7 +113,10 @@ module riemann !subroutines related to calculating star states
 
   subroutine pstar
     call guess_ps 
-    call newton_raphson
+
+    print *,'fps', f(ps)
+    print *,'fprime', fprime(ps)
+!    call newton_raphson
     print *, ps
   end subroutine pstar
 
@@ -139,6 +143,39 @@ module riemann !subroutines related to calculating star states
     enddo 
     print *, 'Newton-Raphson converged in',i,'iterations'
   end subroutine newton_raphson
+
+!  real(num) function f(p) !root function
+!    real(num), intent(in) :: p
+!    real(num) :: ak,bk, pk, prat
+!    integer :: i 
+!    f = 0.0_num
+!
+!    do i = 0,1 
+!
+!      if (i == 0) then 
+!        ak = al
+!        bk = bl
+!        pk = p / pl
+!        prat = p / pk
+!      else 
+!        ak = ar
+!        bk = br
+!        pk = p / pr
+!        prat = p / pk
+!      endif 
+!
+!      if (p > pk) then
+!        f = f + (p - pk) * sqrt(ak / (p + bk))   
+!      else 
+!        f = f + g4 * ak * (prat**g1 - 1.0_num)
+!      endif
+!
+!    enddo 
+!
+!    f = f + (ur-ul)
+!
+!    return
+!  end function
 
   real(num) function f(p) !root function
     real(num), intent(in) :: p

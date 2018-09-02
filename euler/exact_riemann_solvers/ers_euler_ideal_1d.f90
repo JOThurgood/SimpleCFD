@@ -84,7 +84,7 @@ module user
 
 end module user 
 
-module riemann
+module riemann !subroutines related to calculating star states
 
   use shared_data
 
@@ -92,15 +92,20 @@ module riemann
 
   private 
 
-  public :: check_positivity, pstar
+  public :: check_positivity, pstar 
+
+  !if when all is said and done there are any vars only used at 
+  ! this stage it would be sensible to move here from shared_data
 
   contains 
+
 
   subroutine check_positivity
     !stub
   end subroutine check_positivity
 
   subroutine pstar
+    !stub 
   end subroutine pstar
  
 end module riemann

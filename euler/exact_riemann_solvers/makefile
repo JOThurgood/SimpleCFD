@@ -6,7 +6,7 @@
 FC = gfortran
 # flags for debugging or for maximum performance, comment as necessary
 FCFLAGS = -g -fbounds-check
-FCFLAGS = -O2
+#FCFLAGS = -O2
 # flags forall (e.g. look for system .mod files, required in gfortran)
 FCFLAGS += -I/usr/include
 
@@ -45,4 +45,4 @@ clean:
 	rm -f *.o *.mod *.MOD $(PROGRAMS)
 
 cleanall:
-	rm -f *.o *.mod *.MOD $(PROGRAMS) *.dat *.png
+	rm -rf *.o *.mod *.MOD $(PROGRAMS) *.dat *.png *.dSYM

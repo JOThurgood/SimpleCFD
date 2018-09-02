@@ -16,7 +16,6 @@ module shared_data ! a common block essentially
   real(num) :: al,ar, bl, br !more constants
   real(num) :: cl, cr !sound speeds
   real(num) :: ps !star region vars
-
   public 
 
   contains 
@@ -126,10 +125,22 @@ module riemann !subroutines related to calculating star states
   end subroutine guess_ps
  
   subroutine newton_raphson
-
+    integer :: i = 0
+    real(num) :: pold
+    real(num) :: tol = 1e-6_num
+    real(num) :: rpc = 1e15_num ! init as huge for exit logix
+    do
+      if (rpc < tol) exit !condition on tolerance
+      pold = ps 
+      ps = ps - f(ps)/fprime(ps)
+      rpc = 2.0_num * abs(ps - pold) / abs(ps + pold)
+      i = i + 1
+      print *,'i',0,'pold',pold,'psnew',ps, 'rpc',rpc
+    enddo 
+    print *, 'Newton-Raphson converged in',i,'iterations'
   end subroutine newton_raphson
 
-  real(num) function f(p) 
+  real(num) function f(p) !root function
     real(num), intent(in) :: p
     real(num) :: fl, fr, du
 
@@ -151,6 +162,27 @@ module riemann !subroutines related to calculating star states
     return
   end function
 
+  real(num) function fprime(p) !first derivative of root function
+    real(num), intent(in) :: p
+
+    fprime = 0.0_num 
+
+    if (p > pl) then !left shock
+      fprime = fprime +  sqrt(al / (bl + p)) * &
+        & ( 1.0_num - 0.5_num * (p-pl) /  (bl + p))
+    else ! left rarefaction 
+      fprime = fprime + (p/pl)**(-g2) / (rhol * al)
+    endif 
+
+    if (p > pr) then !right shock
+      fprime = fprime +  sqrt(ar / (br + p)) * &
+        & ( 1.0_num - 0.5_num * (p-pr) /  (br + p))
+    else ! right rarefaction 
+      fprime = fprime + (p/pr)**(-g2) / (rhor * ar)
+    endif 
+ 
+    return
+  end function
 end module riemann
 
 program ers_euler_ideal_1d

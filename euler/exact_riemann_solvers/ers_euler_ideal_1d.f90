@@ -14,6 +14,7 @@ module shared_data ! a common block essentially
   real(num) :: rhol, ul, pl, rhor, ur, pr !W_l and W_r
   real(num) :: gamma, gm, gp, g1, g2, g3, g4, g5, g6, g7 !gamma + const
   real(num) :: cl, cr !sound speeds
+  real(num) :: ps !star region vars
 
   public 
 
@@ -70,7 +71,7 @@ module user
     gamma = 1.4_num
 
     ! call one of these to overwrite with one of the test cases
-    ! call test_1 ! sods problem
+     call test_1 ! sods problem
     ! call test_2 ! 1,2,3 problem 
     ! call test_3 ! left-half of Woodward + Colella ()'s blast-wave 
     ! call test_4 ! right-half of ^ 
@@ -105,8 +106,18 @@ module riemann !subroutines related to calculating star states
   end subroutine check_positivity
 
   subroutine pstar
-    !stub 
+    call guess_ps 
+
+    print *, ps
   end subroutine pstar
+
+  subroutine guess_ps !initial guess on pstar 
+    ! in the interests of speed you, can base your guess on the value of
+    ! pstar as the  given by an appropriate choice of approximate
+    ! R solver. This should mean that the Newton-Raphson iterates in as
+    ! few steps as possible. 
+    ps = 0.5_num * (pl + pr) ! For now just always use arithmetic mean
+  end subroutine guess_ps
  
 end module riemann
 

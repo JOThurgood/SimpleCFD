@@ -9,7 +9,7 @@ module shared_data ! a common block essentially
 
   implicit none
 
-  integer, parameter :: num=selected_real_kind(6,37) !p=6 or 15
+  integer, parameter :: num=selected_real_kind(p=6) !p=6 or 15
 
   real(num) :: rhol, ul, pl, rhor, ur, pr !W_l and W_r
   real(num) :: gamma, gm, gp, g1, g2, g3, g4, g5, g6, g7 !gamma + const
@@ -33,7 +33,7 @@ module shared_data ! a common block essentially
     g6 = gm / gp
     g7 = gm / 2.0_num
     !data dependant constants for finding the root of the "f" function
-    al = g5 / rhol
+    al = g5 / rhol !only used in pressure function - move out of shared?
     ar = g5 / rhor
     bl = g6 * pl
     br = g6 * pr
@@ -48,7 +48,7 @@ module shared_data ! a common block essentially
     rhol = 1.0_num
     ul = 0.0_num
     pl = 1.0_num
-    rhor = 0.125_num !1.0_num / 8.0_num 
+    rhor = 0.125_num  
     ur = 0.0_num
     pr = 0.10_num 
     gamma = 1.4_num
@@ -68,7 +68,7 @@ module shared_data ! a common block essentially
     rhol = 1.0_num
     ul = -2.0_num
     pl = 0.4_num
-    rhor = 1.0_num !1.0_num / 8.0_num 
+    rhor = 1.0_num
     ur = 2.0_num
     pr = 0.4_num 
     gamma = 1.4_num
@@ -87,10 +87,11 @@ module shared_data ! a common block essentially
   subroutine test_4
     rhol = 1.0_num
     ul = 0.0_num
-    pl = 0.1_num
+    pl = 0.01_num
     rhor = 1.0_num
     ur = 0.0_num
     pr = 100.0_num
+    gamma = 1.4_num
   end subroutine test_4
 
 end module shared_data
@@ -116,11 +117,11 @@ module user
     pr = 1.0_num
     gamma = 1.4_num
 
-    ! call one of these to overwrite with one of the test cases
+    ! OR, overwrite with a pre-defined test case
      call test_1 ! sods problem
-    ! call test_2 ! 1,2,3 problem 
+!     call test_2 ! 1,2,3 problem 
     ! call test_3 ! left-half of Woodward + Colella ()'s blast-wave 
-    ! call test_4 ! right-half of ^ 
+!     call test_4 ! right-half of ^ 
     ! call test_5 ! full blast(?) 
 
   end subroutine initial_conditions
@@ -151,14 +152,13 @@ module riemann !subroutines related to calculating star states
     !stub
   end subroutine check_positivity
 
-  subroutine pstar
+ subroutine pstar
     call guess_ps
-    ps = 46.0950_num 
     print *,'rhol,ul,pl',rhol,ul,pl
     print *,'rhor,ur,pr',rhor,ur,pr
     print *,'p0',ps
-    print *,'f(p0)', f(ps)
-    print *,'fprime(p0)', fprime(ps)
+!    print *,'f(p0)', f(ps)
+!    print *,'fprime(p0)', fprime(ps)
     call newton_raphson
     print *, ps
   end subroutine pstar
@@ -176,20 +176,21 @@ module riemann !subroutines related to calculating star states
   subroutine newton_raphson
 
     integer :: i = 0
-    real(num) :: pold
-    real(num) :: tol = 1e-6_num
+    real(num) :: pold, delta
+    real(num) :: tol = 1.0e-6_num
     real(num) :: rpc = 1e15_num ! init as huge 
 
     do
       if (rpc <= tol) exit !condition on tolerance
       pold = ps 
-      ps = pold - f(pold)/fprime(pold)
+      delta = f(pold)/fprime(pold)
+      ps = pold - delta !f(pold)/fprime(pold)
       rpc = 2.0_num * abs((ps - pold) / (ps + pold)) 
       i = i + 1
       if (ps < 0.0_num) ps = tol !to correct -ve p guesses 
-      print *,'i',i,'pold',pold,'psnew',ps, 'rpc',rpc
+      print *,'i',i,'pold',pold,'psnew',ps, 'rpc',rpc,'delta', delta
 !      if (i > 100) exit
-      enddo 
+    enddo 
     print *, 'Newton-Raphson converged in',i,'iterations'
   end subroutine newton_raphson
 
@@ -241,7 +242,7 @@ module riemann !subroutines related to calculating star states
         ak = al
         bk = bl
         ck = cl
-        pk =pl
+        pk = pl
         rhok = rhol
         prat = p / pk
       else 

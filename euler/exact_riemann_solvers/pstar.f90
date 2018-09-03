@@ -50,7 +50,7 @@ program pstar
   tol = 1e-6_num 
 
   i = 0  
-  change = 1e15
+  change = 1e15_num
   do
     if (change <= tol) exit !condition on tolerance
 

@@ -9,7 +9,7 @@ module shared_data ! a common block essentially
 
   implicit none
 
-  integer, parameter :: num=selected_real_kind(p=15) !p=6 or 15
+  integer, parameter :: num=selected_real_kind(6,37) !p=6 or 15
 
   real(num) :: rhol, ul, pl, rhor, ur, pr !W_l and W_r
   real(num) :: gamma, gm, gp, g1, g2, g3, g4, g5, g6, g7 !gamma + const
@@ -117,10 +117,10 @@ module user
     gamma = 1.4_num
 
     ! call one of these to overwrite with one of the test cases
-    ! call test_1 ! sods problem
+     call test_1 ! sods problem
     ! call test_2 ! 1,2,3 problem 
     ! call test_3 ! left-half of Woodward + Colella ()'s blast-wave 
-     call test_4 ! right-half of ^ 
+    ! call test_4 ! right-half of ^ 
     ! call test_5 ! full blast(?) 
 
   end subroutine initial_conditions

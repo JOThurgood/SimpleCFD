@@ -42,7 +42,7 @@ all: $(PROGRAMS)
 .PHONY: clean cleanall
 
 clean:
-	rm -f *.o *.mod *.MOD $(PROGRAMS) *.dSYM
+	rm -rf *.o *.mod *.MOD $(PROGRAMS) *.dSYM
 
 cleanall:
 	rm -rf *.o *.mod *.MOD $(PROGRAMS) *.dat *.png *.dSYM

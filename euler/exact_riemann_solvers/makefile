@@ -39,7 +39,7 @@ all: $(PROGRAMS)
 	$(FC) $(FCFLAGS) -c $<
 
 # Utility targets
-.PHONY: clean veryclean
+.PHONY: clean cleanall
 
 clean:
 	rm -f *.o *.mod *.MOD $(PROGRAMS) *.dSYM

@@ -84,6 +84,15 @@ module shared_data ! a common block essentially
     gamma = 1.4_num
   end subroutine test_3
 
+  subroutine test_4
+    rhol = 1.0_num
+    ul = 0.0_num
+    pl = 0.1_num
+    rhor = 1.0_num
+    ur = 0.0_num
+    pr = 100.0_num
+  end subroutine test_4
+
 end module shared_data
 
 module user
@@ -110,8 +119,8 @@ module user
     ! call one of these to overwrite with one of the test cases
     ! call test_1 ! sods problem
     ! call test_2 ! 1,2,3 problem 
-     call test_3 ! left-half of Woodward + Colella ()'s blast-wave 
-    ! call test_4 ! right-half of ^ 
+    ! call test_3 ! left-half of Woodward + Colella ()'s blast-wave 
+     call test_4 ! right-half of ^ 
     ! call test_5 ! full blast(?) 
 
   end subroutine initial_conditions
@@ -143,8 +152,8 @@ module riemann !subroutines related to calculating star states
   end subroutine check_positivity
 
   subroutine pstar
-    call guess_ps 
-
+    call guess_ps
+    ps = 46.0950_num 
     print *,'rhol,ul,pl',rhol,ul,pl
     print *,'rhor,ur,pr',rhor,ur,pr
     print *,'p0',ps
@@ -159,23 +168,27 @@ module riemann !subroutines related to calculating star states
     ! pstar as the  given by an appropriate choice of approximate
     ! R solver. This should mean that the Newton-Raphson iterates in as
     ! few steps as possible. 
+
     ps = 0.5_num * (pl + pr) ! For now just always use arithmetic mean
+          !and see if you get same convergence as in Table 4.2 of Toro
   end subroutine guess_ps
  
   subroutine newton_raphson
+
     integer :: i = 0
     real(num) :: pold
-    real(num) :: tol = 1e-11_num
-    real(num) :: rpc = 1e15_num ! init as huge for exit logix
+    real(num) :: tol = 1e-6_num
+    real(num) :: rpc = 1e15_num ! init as huge 
+
     do
-      if (rpc < tol) exit !condition on tolerance
+      if (rpc <= tol) exit !condition on tolerance
       pold = ps 
-      ps = ps - f(ps)/fprime(ps)
+      ps = pold - f(pold)/fprime(pold)
       rpc = 2.0_num * abs((ps - pold) / (ps + pold)) 
-!      rpc = 2.0_num * abs(ps - pold) / abs(ps + pold)
       i = i + 1
+      if (ps < 0.0_num) ps = tol !to correct -ve p guesses 
       print *,'i',i,'pold',pold,'psnew',ps, 'rpc',rpc
-!      if (i > 100) exit !just for debug
+!      if (i > 100) exit
       enddo 
     print *, 'Newton-Raphson converged in',i,'iterations'
   end subroutine newton_raphson
@@ -187,6 +200,7 @@ module riemann !subroutines related to calculating star states
 
     f = 0.0_num
     do i = 0,1 
+
       if (i == 0) then 
         ak = al
         bk = bl
@@ -209,7 +223,7 @@ module riemann !subroutines related to calculating star states
 
     enddo 
 
-    f = f + (ur-ul)
+    f = f + (ur - ul)
 
     return
   end function

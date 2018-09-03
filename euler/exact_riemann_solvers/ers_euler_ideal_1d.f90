@@ -74,6 +74,15 @@ module shared_data ! a common block essentially
     gamma = 1.4_num
   end subroutine test_2 
 
+  subroutine test_3 !left half blast
+    rhol = 1.0_num
+    ul = 0.0_num
+    pl = 1000.0_num
+    rhor = 1.0_num
+    ur = 0.0_num
+    pr = 0.01_num
+    gamma = 1.4_num
+  end subroutine test_3
 
 end module shared_data
 
@@ -99,9 +108,9 @@ module user
     gamma = 1.4_num
 
     ! call one of these to overwrite with one of the test cases
-     call test_1 ! sods problem
+    ! call test_1 ! sods problem
     ! call test_2 ! 1,2,3 problem 
-    ! call test_3 ! left-half of Woodward + Colella ()'s blast-wave 
+     call test_3 ! left-half of Woodward + Colella ()'s blast-wave 
     ! call test_4 ! right-half of ^ 
     ! call test_5 ! full blast(?) 
 
@@ -166,7 +175,7 @@ module riemann !subroutines related to calculating star states
 !      rpc = 2.0_num * abs(ps - pold) / abs(ps + pold)
       i = i + 1
       print *,'i',i,'pold',pold,'psnew',ps, 'rpc',rpc
-      if (i > 100) exit !just for debug
+!      if (i > 100) exit !just for debug
       enddo 
     print *, 'Newton-Raphson converged in',i,'iterations'
   end subroutine newton_raphson

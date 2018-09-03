@@ -139,7 +139,7 @@ module riemann !subroutines related to calculating star states
       ps = ps - f(ps)/fprime(ps)
       rpc = 2.0_num * abs(ps - pold) / abs(ps + pold)
       i = i + 1
-      print *,'i',0,'pold',pold,'psnew',ps, 'rpc',rpc
+      print *,'i',i,'pold',pold,'psnew',ps, 'rpc',rpc
     enddo 
     print *, 'Newton-Raphson converged in',i,'iterations'
   end subroutine newton_raphson
@@ -173,6 +173,41 @@ module riemann !subroutines related to calculating star states
 !    enddo 
 !
 !    f = f + (ur-ul)
+!
+!    return
+!  end function
+!
+!  real(num) function fprime(p) ! 1st derivative
+!    real(num), intent(in) :: p
+!    real(num) :: ak,bk, pk, rhok, prat
+!    integer :: i 
+!
+!    fprime = 0.0_num
+!
+!    do i = 0,1 
+!
+!      if (i == 0) then 
+!        ak = al
+!        bk = bl
+!        pk = p / pl
+!        rhok = rhol
+!        prat = p / pk
+!      else 
+!        ak = ar
+!        bk = br
+!        pk = p / pr
+!        rhok = rhor
+!        prat = p / pk
+!      endif 
+!
+!      if (p > pk) then
+!        fprime = fprime + &
+!          & sqrt(ak / bk + p) * (1.0_num - 0.5 * (p-pk)/(bk+p)) 
+!      else 
+!        fprime = fprime + prat**(-g2) / (rhok * ak)
+!      endif
+!
+!    enddo 
 !
 !    return
 !  end function
@@ -220,6 +255,7 @@ module riemann !subroutines related to calculating star states
  
     return
   end function
+
 end module riemann
 
 program ers_euler_ideal_1d

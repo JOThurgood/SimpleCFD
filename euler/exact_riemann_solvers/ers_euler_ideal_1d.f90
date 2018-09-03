@@ -9,7 +9,7 @@ module shared_data ! a common block essentially
 
   implicit none
 
-  integer, parameter :: num=selected_real_kind(p=15) !p=6 for single
+  integer, parameter :: num=selected_real_kind(p=15) !p=6 or 15
 
   real(num) :: rhol, ul, pl, rhor, ur, pr !W_l and W_r
   real(num) :: gamma, gm, gp, g1, g2, g3, g4, g5, g6, g7 !gamma + const
@@ -165,7 +165,7 @@ module riemann !subroutines related to calculating star states
   subroutine newton_raphson
     integer :: i = 0
     real(num) :: pold
-    real(num) :: tol = 1e-6_num
+    real(num) :: tol = 1e-11_num
     real(num) :: rpc = 1e15_num ! init as huge for exit logix
     do
       if (rpc < tol) exit !condition on tolerance

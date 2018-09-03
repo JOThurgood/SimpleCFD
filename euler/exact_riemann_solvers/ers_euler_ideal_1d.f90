@@ -154,9 +154,9 @@ module riemann !subroutines related to calculating star states
 
  subroutine pstar
     call guess_ps
-    print *,'rhol,ul,pl',rhol,ul,pl
-    print *,'rhor,ur,pr',rhor,ur,pr
-    print *,'p0',ps
+!    print *,'rhol,ul,pl',rhol,ul,pl
+!    print *,'rhor,ur,pr',rhor,ur,pr
+!    print *,'p0',ps
 !    print *,'f(p0)', f(ps)
 !    print *,'fprime(p0)', fprime(ps)
     call newton_raphson
@@ -256,7 +256,7 @@ module riemann !subroutines related to calculating star states
 
       if (p > pk) then
         fprime = fprime + &
-          & sqrt(ak / bk + p) * (1.0_num - 0.5_num * (p-pk)/(bk+p)) 
+          & sqrt(ak / (bk + p)) * (1.0_num - 0.5_num * (p-pk)/(bk+p)) 
       else 
         fprime = fprime + prat**(-g2) / (rhok * ck)
       endif

@@ -9,7 +9,7 @@ program pstar
 
   integer, parameter :: num=selected_real_kind(p=6)
 
-  integer :: i, k
+  integer :: i, imax, k
 
   real(num) :: rhol, rhor, rhok
   real(num) :: ul, ur
@@ -49,7 +49,8 @@ program pstar
   !iterate NR for converged pstar according to tolerances
   tol = 1e-6_num 
 
-  i = 0  
+  i = 0 
+  imax = 20 !debuggin 
   change = 1e15_num
   do
     if (change <= tol) exit !condition on tolerance
@@ -85,7 +86,7 @@ program pstar
         fprime = fprime + (ps/pk)**(-(gamma+1.0_num)/2.0_num/gamma) / &
           & (rhok * ck)
       endif 
-
+      print *,'i',i,'f',f,'fprime',fprime
     enddo
     
     !advance the newton raphson and calculate a change to compare to tol
@@ -98,7 +99,7 @@ program pstar
 
     print *,'i',i,'pold',pold,'psnew',ps, 'change',change,'delta', delta
 
-    !if (i > ) exit
+    if (i > imax ) exit
   enddo 
   
 print *, 'Newton-Raphson converged in',i,'iterations'

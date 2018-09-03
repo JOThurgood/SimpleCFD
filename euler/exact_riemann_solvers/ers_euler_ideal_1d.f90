@@ -221,50 +221,6 @@ module riemann !subroutines related to calculating star states
     return
   end function
 
-!  real(num) function f(p) !root function
-!    real(num), intent(in) :: p
-!    real(num) :: fl, fr, du
-!
-!    du = ur - ul
-!
-!    if (p > pl) then !left shock
-!      fl = (p-pl) * sqrt(al / (p + bl))
-!    else ! left rarefaction 
-!      fl = g4 * al * ((p/pl)**g1 - 1.0_num)
-!    endif 
-!
-!    if (p > pr) then !right shock
-!      fr = (p-pr) * sqrt(ar / (p + br))
-!    else ! right rarefaction 
-!      fr = g4 * ar * ((p/pr)**g1 - 1.0_num)
-!    endif 
-!
-!    f = fl + fr + du
-!    return
-!  end function
-!
-!  real(num) function fprime(p) !first derivative of root function
-!    real(num), intent(in) :: p
-!
-!    fprime = 0.0_num 
-!
-!    if (p > pl) then !left shock
-!      fprime = fprime +  sqrt(al / (bl + p)) * &
-!        & ( 1.0_num - 0.5_num * (p-pl) /  (bl + p))
-!    else ! left rarefaction 
-!      fprime = fprime + (p/pl)**(-g2) / (rhol * al)
-!    endif 
-!
-!    if (p > pr) then !right shock
-!      fprime = fprime +  sqrt(ar / (br + p)) * &
-!        & ( 1.0_num - 0.5_num * (p-pr) /  (br + p))
-!    else ! right rarefaction 
-!      fprime = fprime + (p/pr)**(-g2) / (rhor * ar)
-!    endif 
-! 
-!    return
-!  end function
-
 end module riemann
 
 program ers_euler_ideal_1d

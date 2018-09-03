@@ -47,10 +47,10 @@ module shared_data ! a common block essentially
 
   subroutine test_1 !Sod's test
     rhol = 1.0_num
-    rhor = 0.125_num !1.0_num / 8.0_num 
     ul = 0.0_num
-    ur = 0.0_num
     pl = 1.0_num
+    rhor = 0.125_num !1.0_num / 8.0_num 
+    ur = 0.0_num
     pr = 0.10_num 
     gamma = 1.4_num
   end subroutine test_1 
@@ -71,10 +71,10 @@ module user
 
     ! set these for your problem
     rhol = 1.0_num
-    rhor = 1.0_num
     ul = 0.0_num
-    ur = 0.0_num
     pl = 1.0_num
+    rhor = 1.0_num
+    ur = 0.0_num
     pr = 1.0_num
     gamma = 1.4_num
 

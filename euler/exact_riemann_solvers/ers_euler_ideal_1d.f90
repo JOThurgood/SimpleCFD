@@ -9,8 +9,7 @@ module shared_data ! a common block essentially
 
   implicit none
 
-  integer, parameter :: num=selected_real_kind(p=6) 
-!  integer, parameter :: num=selected_real_kind(p=15) 
+  integer, parameter :: num=selected_real_kind(p=15) !p=6 for single
 
   real(num) :: rhol, ul, pl, rhor, ur, pr !W_l and W_r
   real(num) :: gamma, gm, gp, g1, g2, g3, g4, g5, g6, g7 !gamma + const
@@ -54,6 +53,27 @@ module shared_data ! a common block essentially
     pr = 0.10_num 
     gamma = 1.4_num
   end subroutine test_1 
+
+  subroutine test_1_r !Reverse Sod's test for symmetry test in p*
+    rhor = 1.0_num
+    ur = 0.0_num
+    pr = 1.0_num
+    rhol = 0.125_num !1.0_num / 8.0_num 
+    ul = 0.0_num
+    pl = 0.10_num 
+    gamma = 1.4_num
+  end subroutine test_1_r
+
+  subroutine test_2 !1,2,3 problem
+    rhol = 1.0_num
+    ul = -2.0_num
+    pl = 0.4_num
+    rhor = 1.0_num !1.0_num / 8.0_num 
+    ur = 2.0_num
+    pr = 0.4_num 
+    gamma = 1.4_num
+  end subroutine test_2 
+
 
 end module shared_data
 
@@ -146,7 +166,8 @@ module riemann !subroutines related to calculating star states
 !      rpc = 2.0_num * abs(ps - pold) / abs(ps + pold)
       i = i + 1
       print *,'i',i,'pold',pold,'psnew',ps, 'rpc',rpc
-    enddo 
+      if (i > 100) exit !just for debug
+      enddo 
     print *, 'Newton-Raphson converged in',i,'iterations'
   end subroutine newton_raphson
 
@@ -211,7 +232,7 @@ module riemann !subroutines related to calculating star states
 
       if (p > pk) then
         fprime = fprime + &
-          & sqrt(ak / bk + p) * (1.0_num - 0.5 * (p-pk)/(bk+p)) 
+          & sqrt(ak / bk + p) * (1.0_num - 0.5_num * (p-pk)/(bk+p)) 
       else 
         fprime = fprime + prat**(-g2) / (rhok * ck)
       endif

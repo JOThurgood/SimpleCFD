@@ -16,7 +16,7 @@ module shared_data ! a common block essentially
   real(num) :: gamma, gm, gp, g1, g2, g3, g4, g5, g6, g7 !gamma + const
   real(num) :: al,ar, bl, br !more constants
   real(num) :: cl, cr !sound speeds
-  real(num) :: ps !star region vars
+  real(num) :: ps, us !star region vars
 
   
   public 
@@ -96,11 +96,17 @@ module riemann !subroutines related to calculating star states
     !stub
   end subroutine check_positivity
 
- subroutine pstar
+  subroutine pstar
     call guess_ps
     call newton_raphson
-    print *, ps
   end subroutine pstar
+
+  subroutine ustar
+! shit - this is why it makes sense to break f up
+!    us = 0.5_num * (ul + ur) + &
+!      & 0.5_num * (fr(ps) + fl(ps))
+  end subroutine ustar
+  
 
   subroutine guess_ps !initial guess on pstar 
     ! in the interests of speed you, can base your guess on the value of
@@ -119,8 +125,8 @@ module riemann !subroutines related to calculating star states
     real(num) :: tol = 1.0e-6_num
     real(num) :: rpc  
 
-    i = 0 !define these here instead of header so can call subroutine
-    rpc = 1e15_num !repeatedly during testing
+    i = 0 !need to define these instead of header
+    rpc = 1e15_num ! for sake of test module
 
     do
       if (rpc <= tol) exit !condition on tolerance
@@ -130,13 +136,11 @@ module riemann !subroutines related to calculating star states
       rpc = 2.0_num * abs((ps - pold) / (ps + pold)) 
       i = i + 1
       if (ps < 0.0_num) ps = tol !to correct -ve p guesses 
-!      print *,'i',i,'pold',pold,'psnew',ps, 'rpc',rpc,'delta', delta
-      if (i > 20) print *,'nonconvergence'
+      if (i > 20) print *,'nonconvergence of pstar iteration'
       if (i > 20) exit
     enddo 
 
-!    print *, 'Newton-Raphson converged in',i,'iterations'
-    niter = i !so test module can keep track
+    niter = i !for test module
   end subroutine newton_raphson
 
   real(num) function f(p) !root function
@@ -401,6 +405,6 @@ program ers_euler_ideal_1d
 ! call check_positivity
 
   call pstar
-
+  call ustar
 
 end program ers_euler_ideal_1d

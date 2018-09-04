@@ -98,11 +98,6 @@ module riemann !subroutines related to calculating star states
 
  subroutine pstar
     call guess_ps
-!    print *,'rhol,ul,pl',rhol,ul,pl
-!    print *,'rhor,ur,pr',rhor,ur,pr
-!    print *,'p0',ps
-!    print *,'f(p0)', f(ps)
-!    print *,'fprime(p0)', fprime(ps)
     call newton_raphson
     print *, ps
   end subroutine pstar
@@ -229,6 +224,8 @@ module tests !subroutines for automatic testing
   contains
 
   subroutine test_pstar !check pstar and iteration info
+    logical :: test1 = .true.
+    logical :: verbose = .false.
     real(num) :: tol = 1e-6_num 
     real(num), dimension(5) :: p_toro
     real(num), dimension(4,5) :: p0_toro
@@ -246,7 +243,7 @@ module tests !subroutines for automatic testing
                       4, 5, 4, 6/), shape(i_toro))!, order = (/2,1/) )
  
     p0_toro = reshape((/0.30677_num, 0.55_num, 0.31527_num, 0.55_num, &
-      & 0.00189_num, tol, tol, 0.4_num, &
+      & 0.00189387344_num, tol, tol, 0.4_num, &
       & 912.449_num, 500.005_num, 464.108_num, 500.005_num, &  
       & 82.9831_num, 50.005_num, 46.4162_num, 50.005_num, &
       & 2322.65_num, 781.353_num, 1241.21_num, 253.494_num/), &
@@ -261,15 +258,20 @@ module tests !subroutines for automatic testing
     do i = 1, 4 
       ps = p0_toro(i,1)
       call newton_raphson 
-      print *, 'test 1: ','p0', p0_toro(i,1), 'ps',ps,'niter',niter
-      if (niter .ne. i_toro(i,1)) print *,'fail'
+      if (verbose) & 
+        & print *, 'test 1: ','p0', p0_toro(i,1), 'ps',ps,'niter',niter
+      if (niter .ne. i_toro(i,1)) then
+        print *,'fail'
+        test1 = .false.
+      endif
     enddo     
 
     call test_2
     do i = 1, 4 
       ps = p0_toro(i,2)
       call newton_raphson 
-      print *, 'test 2: ','p0', p0_toro(i,2), 'ps',ps,'niter',niter
+      if (verbose) & 
+        & print *, 'test 2: ','p0', p0_toro(i,2), 'ps',ps,'niter',niter
       if (niter .ne. i_toro(i,2)) print *,'fail'
     enddo     
 
@@ -277,7 +279,8 @@ module tests !subroutines for automatic testing
     do i = 1, 4 
       ps = p0_toro(i,3)
       call newton_raphson 
-      print *, 'test 3: ','p0', p0_toro(i,3), 'ps',ps,'niter',niter
+      if (verbose) & 
+        & print *, 'test 3: ','p0', p0_toro(i,3), 'ps',ps,'niter',niter
       if (niter .ne. i_toro(i,3)) print *,'fail'
     enddo     
 
@@ -285,7 +288,8 @@ module tests !subroutines for automatic testing
     do i = 1, 4 
       ps = p0_toro(i,4)
       call newton_raphson 
-      print *, 'test 4: ','p0', p0_toro(i,4), 'ps',ps,'niter',niter
+      if (verbose) & 
+        & print *, 'test 4: ','p0', p0_toro(i,4), 'ps',ps,'niter',niter
       if (niter .ne. i_toro(i,4)) print *,'fail'
     enddo     
 
@@ -293,9 +297,16 @@ module tests !subroutines for automatic testing
     do i = 1, 4 
       ps = p0_toro(i,5)
       call newton_raphson 
-      print *, 'test 5: ','p0', p0_toro(i,5), 'ps',ps,'niter',niter
+      if (verbose) & 
+        & print *, 'test 5: ','p0', p0_toro(i,5), 'ps',ps,'niter',niter
       if (niter .ne. i_toro(i,5)) print *,'fail'
     enddo     
+
+    if (test1) then 
+      print *,'passed pstar test'
+    else 
+      print *,'failed pstar test'
+    endif
 
   end subroutine test_pstar
 
@@ -380,14 +391,16 @@ program ers_euler_ideal_1d
   use tests
   implicit none   
 
-!  call initial_conditions
-!!  call control 
-!  call constants 
-!! call check_positivity
-!
-!  call pstar
+  !check passes numerical tests
+  call test_pstar 
 
-  call test_pstar
+  !do calculations for users setup 
+  call initial_conditions
+!  call control 
+  call constants 
+! call check_positivity
+
+  call pstar
+
 
 end program ers_euler_ideal_1d
-

@@ -104,13 +104,13 @@ module riemann !subroutines related to calculating star states
 
   subroutine ustar
     !testing optional f
-    print *,'leftonly', f(ps,leftonly=1)
-    print *,'rightonly', f(ps,rightonly=1)
-    print *,'sum', f(ps,leftonly=1) + f(ps,rightonly=1)
-    print *,'break logic', f(ps,leftonly=1,rightonly=1)
-! shit - this is why it makes sense to break f up
-!    us = 0.5_num * (ul + ur) + &
-!      & 0.5_num * (fr(ps) + fl(ps))
+!    print *,'leftonly', f(ps,leftonly=1)
+!    print *,'rightonly', f(ps,rightonly=1)
+!    print *,'sum', f(ps,leftonly=1) + f(ps,rightonly=1)
+!    print *,'break logic', f(ps,leftonly=1,rightonly=1)
+    us = 0.5_num * (ul + ur) + &
+      & 0.5_num * (f(ps,rightonly=1) - f(ps,leftonly=1))
+    print *,'us',us
   end subroutine ustar
   
 

@@ -335,6 +335,7 @@ module tests !subroutines for automatic testing
     call ustar 
     utoro = 0.92745_num 
     diff = 2.0_num * (us - utoro) / (us + utoro)
+    if (verbose) print *, 'ustar-test1 and diff',us,diff
     if (abs(diff) > 5e-6) then
       if (verbose) print *,  'ustar fail on test1',diff
       test2 = .false. 
@@ -345,6 +346,7 @@ module tests !subroutines for automatic testing
     call ustar 
     utoro =  0.00000_num
     diff = 2.0_num * (us - utoro) / (us + utoro)
+    if (verbose) print *, 'ustar-test2 and diff',us,diff
     if (abs(diff) > 5e-6) then
       if (verbose) print *, 'ustar fail on test2',diff
       test2 = .false. 
@@ -355,6 +357,7 @@ module tests !subroutines for automatic testing
     call ustar 
     utoro = 19.5975_num
     diff = 2.0_num * (us - utoro) / (us + utoro)
+    if (verbose) print *, 'ustar-test3 and diff',us,diff
     if (abs(diff) > 5e-6) then
       if (verbose) print *, 'ustar fail on test3',diff
       test2 = .false. 
@@ -365,6 +368,7 @@ module tests !subroutines for automatic testing
     call ustar 
     utoro = -6.19633_num
     diff = 2.0_num * (us - utoro) / (us + utoro)
+    if (verbose) print *, 'ustar-test4 and diff',us,diff
     if (abs(diff) > 5e-6) then
       if (verbose) print *, 'ustar fail on test4',diff
       test2 = .false. 
@@ -375,6 +379,7 @@ module tests !subroutines for automatic testing
     call ustar 
     utoro = 8.68975_num
     diff = 2.0_num * (us - utoro) / (us + utoro)
+    if (verbose) print *, 'ustar-test5 and diff',us,diff
     if (abs(diff) > 5e-6) then
       if (verbose) print *, 'ustar fail on test4',diff
       test2 = .false. 

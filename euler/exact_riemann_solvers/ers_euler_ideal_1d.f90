@@ -9,7 +9,7 @@ module shared_data ! a common block essentially
 
   implicit none
 
-  integer, parameter :: num=selected_real_kind(p=6) !p=6 or 15
+  integer, parameter :: num=selected_real_kind(p=15) !p=6 or 15
   integer :: niter !debug
 
   real(num) :: rhol, ul, pl, rhor, ur, pr !W_l and W_r
@@ -18,7 +18,11 @@ module shared_data ! a common block essentially
   real(num) :: cl, cr !sound speeds
   real(num) :: ps, us, rhosl, rhosr !star region vars
 
-  
+  integer :: nx !sampling stuff
+  real(num) :: x_min, x_max
+  real(num) :: t, x0
+  real(num), allocatable, dimension(:) :: x, rho_x, u_x, p_x
+
   public 
 
   contains 
@@ -68,9 +72,23 @@ module user
     pr = 0.10_num 
     gamma = 1.4_num
 
+!    rhor = 1.0_num
+!    ur = 0.0_num
+!    pr = 1.0_num
+!    rhol = 0.125_num  
+!    ul = 0.0_num
+!    pl = 0.10_num 
+!    gamma = 1.4_num
+
   end subroutine initial_conditions
   
   subroutine control
+    t = 0.25_num 
+    x_min = 0.0_num
+    x_max = 1.0_num
+    x0 = 0.5_num 
+    nx = 100
+     
     !stub for setting sampling and output options
   end subroutine 
 
@@ -84,7 +102,7 @@ module riemann !subroutines related to calculating star states
 
   private 
 
-  public :: check_positivity, pstar, ustar, rhostar, &
+  public :: check_positivity, pstar, ustar, rhostar, sample, &
     newton_raphson 
 
   !if when all is said and done there are any vars only used at 
@@ -259,6 +277,106 @@ module riemann !subroutines related to calculating star states
 
     return
   end function
+
+ 
+  subroutine sample 
+
+    real(num) :: S
+    real(num) :: Sk,Shk, Stk
+    real(num) :: Sl,Shl, Stl 
+    real(num) :: Sr,Shr, Str 
+    real(num) :: ck, pk, rhok, rhosk, uk 
+    integer :: ix
+    real(num) :: dx
+
+    allocate(x(1:nx))
+    allocate(rho_x(1:nx))
+    allocate(p_x(1:nx))
+    allocate(u_x(1:nx))
+
+    dx = (x_max - x_min) / REAL(nx,num)
+    do ix = 1, nx
+     x(ix) = x_min + REAL(ix,num) * dx
+    enddo
+ 
+
+    !sampling constants
+    Sl = ul - cl * sqrt(g2*ps/pl + g1)
+    Sr = ur + cr * sqrt(g2*ps/pr + g1)
+    Shl = ul - cl
+    Shr = ur- cr
+    Stl = us - cl * (ps/pl)**(g1)
+    Str = us + cr * (ps/pr)**(g1)
+
+    print *, 'cr',cl,'Sr',Sl
+    print *, 'cr',cr,'Sr',Sr
+
+    do ix = 1, nx
+      S = (x(ix)-x0) / t !local speed
+      print *,'ix',ix,'S', S
+
+      if (S < us) then !left of contact
+!        print *, x(ix),'left of contact'
+        Sk = Sl !set stuff like S_k to s_l 
+        Shk = Shl
+        Stk = Stl
+        pk = pl  
+        rhok = rhol
+        rhosk = rhosl
+        ck = cl
+        uk = ul
+      else !right of contact
+!        print *,x(ix), 'right of contact'
+        Sk = Sr
+        Shk = Shr
+        Stk = Str
+        pk = pr  
+        rhok = rhor
+        rhosk = rhosr
+        ck = cr
+        uk = ur
+      endif
+
+      if (ps > pk) then !shock in k drn
+!        print *, x(ix), 'shock'
+
+        if (S > Sk) then !W=Wk
+!        if (S < Sk) then !W=Wk
+          print *, x(ix), 'region undisturbed (shock moving into it)'
+          rho_x(ix) = rhok
+          p_x(ix) = pk
+        else !W=W*k
+          print *, x(ix), 'region shocked'
+          rho_x(ix) = rhosk 
+          p_x(ix) = ps
+        endif
+
+      else  !rarefaction
+!        print *, x(ix), 'rarefaction'
+        if (S < Shk) then !W=Wk
+          print *, x(ix), 'region undisturbed (rarefaction moving into it)'
+          rho_x(ix) = rhok 
+          p_x(ix) = pk
+        else
+          if (S>Stk) then !W = W*k
+          print *, x(ix), 'region between rarefaction tail and CD'
+            rho_x(ix) = rhosk
+            p_x(ix) = ps
+          else  !W = Wfan
+          print *, x(ix), 'rarefaction fan'
+            rho_x(ix) = rhok * ( g5 + g6 / ck * (uk-S))**g4  
+            p_x(ix) = pk *  ( g5  + g6 / ck * (uk-S))**g3
+          endif
+        endif 
+      endif
+
+    end do !ix 
+
+    !flow chart logic
+
+    !local char speed S = x / t
+ 
+  end subroutine sample 
 
 end module riemann
 
@@ -639,24 +757,54 @@ module tests !subroutines for automatic testing
 
 end module tests
 
+module diagnostics
+
+  use shared_data
+
+  implicit none 
+
+  contains
+
+  subroutine do_io
+    integer :: out_unit =10
+    call execute_command_line("rm -rf x.dat rho.dat p.dat")
+       !^ dont stream to existing
+    open(out_unit, file="x.dat", access="stream")
+    write(out_unit) x
+    close(out_unit)
+    open(out_unit, file="rho.dat", access="stream")
+    write(out_unit) rho_x
+    close(out_unit)
+    open(out_unit, file="p.dat", access="stream")
+    write(out_unit) p_x
+    close(out_unit)
+    call execute_command_line("python plot1.py")
+  end subroutine do_io
+
+end module diagnostics
+
 program ers_euler_ideal_1d
 
   use shared_data
   use riemann 
   use user 
   use tests
+  use diagnostics
 
   implicit none   
 
   call test_starvals !check passes all numerical tests
 
 !!!  !do calculations for users setup 
-!!!  call initial_conditions
-!!!!  call control 
-!!!  call constants 
-!!!! call check_positivity
-!!!
-!!!  call pstar
-!!!  call ustar
-!!!  call rhostar
+  call initial_conditions
+  call constants
+  call control 
+! call check_positivity
+  call pstar
+  call ustar
+  call rhostar
+
+  call sample 
+  call do_io
+
 end program ers_euler_ideal_1d

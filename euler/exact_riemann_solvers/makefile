@@ -5,8 +5,13 @@
 # The compiler
 FC = gfortran
 # flags for debugging or for maximum performance, comment as necessary
-FCFLAGS = -g -fbounds-check
+FCFLAGS = -g -fbounds-check -Wpedantic
+FCFLAGS = -g -Wall -Wextra -pedantic -fimplicit-none -fcheck=all -fbacktrace
+FCFLAGS = -O2 -fimplicit-none  -Wall  -Wline-truncation  -Wcharacter-truncation  -Wsurprising  -Waliasing  -Wimplicit-interface  -Wunused-parameter  -fwhole-file  -fcheck=all  -std=f2008  -pedantic  -fbacktrace
+
+
 #FCFLAGS = -O2
+
 # flags forall (e.g. look for system .mod files, required in gfortran)
 FCFLAGS += -I/usr/include
 

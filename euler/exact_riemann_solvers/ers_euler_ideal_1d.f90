@@ -312,7 +312,7 @@ module riemann !subroutines related to calculating star states
       S = (x(ix)-x0) / t 
 
       if (S < us) then !left of contact
-        print *, x(ix),'left of contact'
+!        print *, x(ix),'left of contact'
         Sk = Sl !set stuff like S_k to s_l 
         Shk = Shl
         Stk = Stl
@@ -323,37 +323,39 @@ module riemann !subroutines related to calculating star states
         uk = ul
         if (ps > pk) then !left shock 
           if (S < Sk) then !W=Wk
-            print *, x(ix), 'region undisturbed (shock moving into it)'
+!            print *, x(ix), 'region undisturbed (shock moving into it)'
             rho_x(ix) = rhok
             p_x(ix) = pk
             u_x(ix) = uk
           else !W=W*k
-            print *, x(ix), 'region shocked'
+!            print *, x(ix), 'region shocked'
             rho_x(ix) = rhosk 
             p_x(ix) = ps
             u_x(ix) = us
           endif
         else  !left rarefaction
           if (S < Shk) then !W=Wk
-            print *, x(ix), 'region undisturbed (rarefaction moving into it)'
+ !           print *, x(ix), 'region undisturbed (rarefaction moving into it)'
             rho_x(ix) = rhok 
             p_x(ix) = pk
-            u_x(ix) = us
+            u_x(ix) = uk
           else
             if (S>Stk) then !W = W*k
-            print *, x(ix), 'region between rarefaction tail and CD'
+!            print *, x(ix), 'region between rarefaction tail and CD'
               rho_x(ix) = rhosk
               p_x(ix) = ps
+              u_x(ix) = us
             else  !W = Wfan
-            print *, x(ix), 'rarefaction fan'
+!            print *, x(ix), 'rarefaction fan'
               rho_x(ix) = rhok * ( g5 + g6 / ck * (uk-S))**g4  
               p_x(ix) = pk *  ( g5  + g6 / ck * (uk-S))**g3
+              u_x(ix) = g5 * (ck + g5*uk + S)
             endif
           endif 
         endif
 
       else !right of contact
-        print *,x(ix), 'right of contact'
+!        print *,x(ix), 'right of contact'
         Sk = Sr
         Shk = Shr
         Stk = Str
@@ -365,28 +367,33 @@ module riemann !subroutines related to calculating star states
 
         if (ps > pk) then !right shock 
           if (S > Sk) then !W=Wk
-            print *, x(ix), 'region undisturbed (shock moving into it)'
+ !           print *, x(ix), 'region undisturbed (shock moving into it)'
             rho_x(ix) = rhok
             p_x(ix) = pk
+            u_x(ix) = uk
           else !W=W*k
-            print *, x(ix), 'region shocked'
+ !           print *, x(ix), 'region shocked'
             rho_x(ix) = rhosk 
             p_x(ix) = ps
+            u_x(ix) = us
           endif
         else  !right rarefaction
           if (S > Shk) then !W=Wk
-            print *, x(ix), 'region undisturbed (rarefaction moving into it)'
+ !           print *, x(ix), 'region undisturbed (rarefaction moving into it)'
             rho_x(ix) = rhok 
             p_x(ix) = pk
+            u_x(ix) = uk
           else
             if (S<Stk) then !W = W*k
-            print *, x(ix), 'region between rarefaction tail and CD'
+  !          print *, x(ix), 'region between rarefaction tail and CD'
               rho_x(ix) = rhosk
               p_x(ix) = ps
+              u_x(ix) = us
             else  !W = Wfan
-            print *, x(ix), 'rarefaction fan'
+  !          print *, x(ix), 'rarefaction fan'
               rho_x(ix) = rhok * ( g5 - g6 / ck * (uk-S))**g4  
               p_x(ix) = pk *  ( g5 - g6 / ck * (uk-S))**g3
+              u_x(ix) = g5 * (-ck + g5 * uk + S) 
             endif
           endif 
         endif
@@ -851,7 +858,7 @@ module diagnostics
 
   subroutine do_io
     integer :: out_unit =10
-    call execute_command_line("rm -rf x.dat rho.dat p.dat")
+    call execute_command_line("rm -rf x.dat rho.dat p.dat u.dat")
        !^ dont stream to existing
     open(out_unit, file="x.dat", access="stream")
     write(out_unit) x
@@ -861,6 +868,9 @@ module diagnostics
     close(out_unit)
     open(out_unit, file="p.dat", access="stream")
     write(out_unit) p_x
+    close(out_unit)
+    open(out_unit, file="u.dat", access="stream")
+    write(out_unit) u_x
     close(out_unit)
     call execute_command_line("python plot1.py")
   end subroutine do_io

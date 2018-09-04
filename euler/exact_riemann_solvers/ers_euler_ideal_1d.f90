@@ -10,6 +10,7 @@ module shared_data ! a common block essentially
   implicit none
 
   integer, parameter :: num=selected_real_kind(p=6) !p=6 or 15
+  integer :: niter !debug
 
   real(num) :: rhol, ul, pl, rhor, ur, pr !W_l and W_r
   real(num) :: gamma, gm, gp, g1, g2, g3, g4, g5, g6, g7 !gamma + const
@@ -17,6 +18,7 @@ module shared_data ! a common block essentially
   real(num) :: cl, cr !sound speeds
   real(num) :: ps !star region vars
 
+  
   public 
 
   contains 
@@ -42,57 +44,6 @@ module shared_data ! a common block essentially
     cr = sqrt(gamma * pr / rhor)
   end subroutine constants
 
-  !predefined initial conditions also kept here 
-
-  subroutine test_1 !Sod's test
-    rhol = 1.0_num
-    ul = 0.0_num
-    pl = 1.0_num
-    rhor = 0.125_num  
-    ur = 0.0_num
-    pr = 0.10_num 
-    gamma = 1.4_num
-  end subroutine test_1 
-
-  subroutine test_1_r !Reverse Sod's test for symmetry test in p*
-    rhor = 1.0_num
-    ur = 0.0_num
-    pr = 1.0_num
-    rhol = 0.125_num !1.0_num / 8.0_num 
-    ul = 0.0_num
-    pl = 0.10_num 
-    gamma = 1.4_num
-  end subroutine test_1_r
-
-  subroutine test_2 !1,2,3 problem
-    rhol = 1.0_num
-    ul = -2.0_num
-    pl = 0.4_num
-    rhor = 1.0_num
-    ur = 2.0_num
-    pr = 0.4_num 
-    gamma = 1.4_num
-  end subroutine test_2 
-
-  subroutine test_3 !left half blast
-    rhol = 1.0_num
-    ul = 0.0_num
-    pl = 1000.0_num
-    rhor = 1.0_num
-    ur = 0.0_num
-    pr = 0.01_num
-    gamma = 1.4_num
-  end subroutine test_3
-
-  subroutine test_4
-    rhol = 1.0_num
-    ul = 0.0_num
-    pl = 0.01_num
-    rhor = 1.0_num
-    ur = 0.0_num
-    pr = 100.0_num
-    gamma = 1.4_num
-  end subroutine test_4
 
 end module shared_data
 
@@ -108,21 +59,14 @@ module user
 
   subroutine initial_conditions
 
-    ! set these for your problem
+    ! set these for your problem - default is Sod
     rhol = 1.0_num
     ul = 0.0_num
     pl = 1.0_num
-    rhor = 1.0_num
+    rhor = 0.125_num  
     ur = 0.0_num
-    pr = 1.0_num
+    pr = 0.10_num 
     gamma = 1.4_num
-
-    ! OR, overwrite with a pre-defined test case
-     call test_1 ! sods problem
-!     call test_2 ! 1,2,3 problem 
-    ! call test_3 ! left-half of Woodward + Colella ()'s blast-wave 
-!     call test_4 ! right-half of ^ 
-    ! call test_5 ! full blast(?) 
 
   end subroutine initial_conditions
   
@@ -140,7 +84,7 @@ module riemann !subroutines related to calculating star states
 
   private 
 
-  public :: check_positivity, pstar 
+  public :: check_positivity, pstar, newton_raphson 
 
   !if when all is said and done there are any vars only used at 
   ! this stage it would be sensible to move here from shared_data
@@ -175,10 +119,13 @@ module riemann !subroutines related to calculating star states
  
   subroutine newton_raphson
 
-    integer :: i = 0
+    integer :: i 
     real(num) :: pold, delta
     real(num) :: tol = 1.0e-6_num
-    real(num) :: rpc = 1e15_num ! init as huge 
+    real(num) :: rpc  
+
+    i = 0 !define these here instead of header so can call subroutine
+    rpc = 1e15_num !repeatedly during testing
 
     do
       if (rpc <= tol) exit !condition on tolerance
@@ -188,10 +135,13 @@ module riemann !subroutines related to calculating star states
       rpc = 2.0_num * abs((ps - pold) / (ps + pold)) 
       i = i + 1
       if (ps < 0.0_num) ps = tol !to correct -ve p guesses 
-      print *,'i',i,'pold',pold,'psnew',ps, 'rpc',rpc,'delta', delta
-!      if (i > 100) exit
+!      print *,'i',i,'pold',pold,'psnew',ps, 'rpc',rpc,'delta', delta
+      if (i > 20) print *,'nonconvergence'
+      if (i > 20) exit
     enddo 
-    print *, 'Newton-Raphson converged in',i,'iterations'
+
+!    print *, 'Newton-Raphson converged in',i,'iterations'
+    niter = i !so test module can keep track
   end subroutine newton_raphson
 
   real(num) function f(p) !root function
@@ -268,19 +218,176 @@ module riemann !subroutines related to calculating star states
 
 end module riemann
 
+module tests !subroutines for automatic testing
+
+  use shared_data
+  use riemann 
+
+  implicit none
+
+
+  contains
+
+  subroutine test_pstar !check pstar and iteration info
+    real(num) :: tol = 1e-6_num 
+    real(num), dimension(5) :: p_toro
+    real(num), dimension(4,5) :: p0_toro
+    integer, dimension(4,5) :: i_toro
+    integer :: i
+
+    !toro
+    p_toro = (/0.30313_num, 0.00189_num, 460.894_num, 46.0950_num, &
+      & 1691.64_num /)
+
+    i_toro = reshape( (/3,5,3,5, &
+                      1, 8, 8 ,9, &
+                      5, 4, 3, 4, &
+                      5, 4, 3, 4, &
+                      4, 5, 4, 6/), shape(i_toro))!, order = (/2,1/) )
+ 
+    p0_toro = reshape((/0.30677_num, 0.55_num, 0.31527_num, 0.55_num, &
+      & 0.00189_num, tol, tol, 0.4_num, &
+      & 912.449_num, 500.005_num, 464.108_num, 500.005_num, &  
+      & 82.9831_num, 50.005_num, 46.4162_num, 50.005_num, &
+      & 2322.65_num, 781.353_num, 1241.21_num, 253.494_num/), &
+      & shape(p0_toro) )
+
+!    do i=1,5 
+!      print *,'i_toro',i_toro(:,i) 
+!      print *,'p0_toro',p0_toro(:,i) 
+!    enddo
+
+    call test_1 ! initialise  Sods' test
+    do i = 1, 4 
+      ps = p0_toro(i,1)
+      call newton_raphson 
+      print *, 'test 1: ','p0', p0_toro(i,1), 'ps',ps,'niter',niter
+      if (niter .ne. i_toro(i,1)) print *,'fail'
+    enddo     
+
+    call test_2
+    do i = 1, 4 
+      ps = p0_toro(i,2)
+      call newton_raphson 
+      print *, 'test 2: ','p0', p0_toro(i,2), 'ps',ps,'niter',niter
+      if (niter .ne. i_toro(i,2)) print *,'fail'
+    enddo     
+
+    call test_3
+    do i = 1, 4 
+      ps = p0_toro(i,3)
+      call newton_raphson 
+      print *, 'test 3: ','p0', p0_toro(i,3), 'ps',ps,'niter',niter
+      if (niter .ne. i_toro(i,3)) print *,'fail'
+    enddo     
+
+    call test_4
+    do i = 1, 4 
+      ps = p0_toro(i,4)
+      call newton_raphson 
+      print *, 'test 4: ','p0', p0_toro(i,4), 'ps',ps,'niter',niter
+      if (niter .ne. i_toro(i,4)) print *,'fail'
+    enddo     
+
+    call test_5
+    do i = 1, 4 
+      ps = p0_toro(i,5)
+      call newton_raphson 
+      print *, 'test 5: ','p0', p0_toro(i,5), 'ps',ps,'niter',niter
+      if (niter .ne. i_toro(i,5)) print *,'fail'
+    enddo     
+
+  end subroutine test_pstar
+
+
+  ! predefined initial conditions
+
+  subroutine test_1 !Sod's test
+    rhol = 1.0_num
+    ul = 0.0_num
+    pl = 1.0_num
+    rhor = 0.125_num  
+    ur = 0.0_num
+    pr = 0.10_num 
+    gamma = 1.4_num
+    call constants !reset constants
+  end subroutine test_1 
+
+  subroutine test_1_r !Reverse Sod's test for symmetry test in p*
+    rhor = 1.0_num
+    ur = 0.0_num
+    pr = 1.0_num
+    rhol = 0.125_num !1.0_num / 8.0_num 
+    ul = 0.0_num
+    pl = 0.10_num 
+    gamma = 1.4_num
+    call constants !reset constants
+  end subroutine test_1_r
+
+  subroutine test_2 !1,2,3 problem
+    rhol = 1.0_num
+    ul = -2.0_num
+    pl = 0.4_num
+    rhor = 1.0_num
+    ur = 2.0_num
+    pr = 0.4_num 
+    gamma = 1.4_num
+    call constants !reset constants
+  end subroutine test_2 
+
+  subroutine test_3 !left half blast
+    rhol = 1.0_num
+    ul = 0.0_num
+    pl = 1000.0_num
+    rhor = 1.0_num
+    ur = 0.0_num
+    pr = 0.01_num
+    gamma = 1.4_num
+    call constants !reset constants
+  end subroutine test_3
+
+  subroutine test_4 !right half
+    rhol = 1.0_num
+    ul = 0.0_num
+    pl = 0.01_num
+    rhor = 1.0_num
+    ur = 0.0_num
+    pr = 100.0_num
+    gamma = 1.4_num
+    call constants !reset constants
+  end subroutine test_4
+
+  subroutine test_5 !both halfs of the W+C blast 
+    rhol = 5.99924_num
+    ul = 19.5975_num
+    pl = 460.894_num
+    rhor= 5.99242_num
+    ur = -6.19633_num
+    pr = 46.0950_num
+    gamma = 1.4_num
+    call constants !reset constants
+  end subroutine 
+
+end module tests
+
+
+
 program ers_euler_ideal_1d
 
   use shared_data
-  use user 
   use riemann 
+  use user 
+  use tests
   implicit none   
 
-  call initial_conditions
-!  call control 
-  call constants 
-! call check_positivity
+!  call initial_conditions
+!!  call control 
+!  call constants 
+!! call check_positivity
+!
+!  call pstar
 
-  call pstar
+  call test_pstar
 
 end program ers_euler_ideal_1d
 

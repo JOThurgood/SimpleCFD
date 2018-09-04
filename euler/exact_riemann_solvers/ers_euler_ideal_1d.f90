@@ -283,7 +283,7 @@ module tests !subroutines for automatic testing
     else
       print *, 'failed a star test - run with verbose to debug'
     endif 
- end subroutine test_starvals
+  end subroutine test_starvals
   subroutine test_pstar !check pstar and iteration info
     logical :: test1 = .true.
     real(num) :: tol = 1e-6_num 
@@ -639,18 +639,16 @@ module tests !subroutines for automatic testing
 
 end module tests
 
-
-
 program ers_euler_ideal_1d
 
   use shared_data
   use riemann 
   use user 
   use tests
+
   implicit none   
 
-  !check passes numerical tests
-  call test_starvals
+  call test_starvals !check passes all numerical tests
 
 !!!  !do calculations for users setup 
 !!!  call initial_conditions

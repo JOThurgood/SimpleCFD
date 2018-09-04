@@ -21,7 +21,7 @@ module shared_data ! a common block essentially
   integer :: nx !sampling stuff
   real(num) :: x_min, x_max
   real(num) :: t, x0
-  real(num), allocatable, dimension(:) :: x, rho_x, u_x, p_x
+  real(num), allocatable, dimension(:) :: x, rho_x, u_x, p_x, en_x
 
   public 
 
@@ -72,14 +72,6 @@ module user
     pr = 0.10_num 
     gamma = 1.4_num
 
-    rhor = 1.0_num
-    ur = 0.0_num
-    pr = 1.0_num
-    rhol = 0.125_num  
-    ul = 0.0_num
-    pl = 0.10_num 
-    gamma = 1.4_num
-
   end subroutine initial_conditions
   
   subroutine control
@@ -87,8 +79,7 @@ module user
     x_min = 0.0_num
     x_max = 1.0_num
     x0 = 0.5_num 
-    nx = 100
-     
+    nx = 1000
     !stub for setting sampling and output options
   end subroutine 
 
@@ -293,6 +284,7 @@ module riemann !subroutines related to calculating star states
     allocate(rho_x(1:nx))
     allocate(p_x(1:nx))
     allocate(u_x(1:nx))
+    allocate(en_x(1:nx))
 
     dx = (x_max - x_min) / REAL(nx,num)
     do ix = 1, nx
@@ -402,6 +394,8 @@ module riemann !subroutines related to calculating star states
       endif !left or right
     end do !ix
 
+    en_x = p_x / gm / rho_x
+
 !!!!!    do ix = 1, nx
 !!!!!      S = (x(ix)-x0) / t !local speed
 !!!!!      print *,'ix',ix,'S', S
@@ -477,6 +471,11 @@ module tests !subroutines for automatic testing
   use riemann 
 
   implicit none
+
+  private 
+
+  public :: test_starvals, test_1,test_2,test_3,test_4,test_5
+
 
   logical :: test_star = .true.
   logical :: verbose = .false.
@@ -800,6 +799,7 @@ module tests !subroutines for automatic testing
     pl = 0.10_num 
     gamma = 1.4_num
     call constants !reset constants
+    t = 0.25_num
   end subroutine test_1_r
 
   subroutine test_2 !1,2,3 problem
@@ -811,6 +811,7 @@ module tests !subroutines for automatic testing
     pr = 0.4_num 
     gamma = 1.4_num
     call constants !reset constants
+    t = 0.15_num
   end subroutine test_2 
 
   subroutine test_3 !left half blast
@@ -858,7 +859,7 @@ module diagnostics
 
   subroutine do_io
     integer :: out_unit =10
-    call execute_command_line("rm -rf x.dat rho.dat p.dat u.dat")
+    call execute_command_line("rm -rf x.dat rho.dat p.dat u.dat en.dat")
        !^ dont stream to existing
     open(out_unit, file="x.dat", access="stream")
     write(out_unit) x
@@ -871,6 +872,9 @@ module diagnostics
     close(out_unit)
     open(out_unit, file="u.dat", access="stream")
     write(out_unit) u_x
+    close(out_unit)
+    open(out_unit, file="en.dat", access="stream")
+    write(out_unit) en_x
     close(out_unit)
     call execute_command_line("python plot1.py")
   end subroutine do_io
@@ -893,6 +897,8 @@ program ers_euler_ideal_1d
   call initial_conditions
   call constants
   call control 
+  print *, 'warning: overwriting user initial conditions with predefined case'
+  call test_2
 ! call check_positivity
   call pstar
   call ustar

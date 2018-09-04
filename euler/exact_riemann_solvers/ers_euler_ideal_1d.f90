@@ -72,13 +72,13 @@ module user
     pr = 0.10_num 
     gamma = 1.4_num
 
-!    rhor = 1.0_num
-!    ur = 0.0_num
-!    pr = 1.0_num
-!    rhol = 0.125_num  
-!    ul = 0.0_num
-!    pl = 0.10_num 
-!    gamma = 1.4_num
+    rhor = 1.0_num
+    ur = 0.0_num
+    pr = 1.0_num
+    rhol = 0.125_num  
+    ul = 0.0_num
+    pl = 0.10_num 
+    gamma = 1.4_num
 
   end subroutine initial_conditions
   
@@ -308,15 +308,11 @@ module riemann !subroutines related to calculating star states
     Stl = us - cl * (ps/pl)**(g1)
     Str = us + cr * (ps/pr)**(g1)
 
-    print *, 'cr',cl,'Sr',Sl
-    print *, 'cr',cr,'Sr',Sr
-
     do ix = 1, nx
-      S = (x(ix)-x0) / t !local speed
-      print *,'ix',ix,'S', S
+      S = (x(ix)-x0) / t 
 
       if (S < us) then !left of contact
-!        print *, x(ix),'left of contact'
+        print *, x(ix),'left of contact'
         Sk = Sl !set stuff like S_k to s_l 
         Shk = Shl
         Stk = Stl
@@ -325,8 +321,39 @@ module riemann !subroutines related to calculating star states
         rhosk = rhosl
         ck = cl
         uk = ul
+        if (ps > pk) then !left shock 
+          if (S < Sk) then !W=Wk
+            print *, x(ix), 'region undisturbed (shock moving into it)'
+            rho_x(ix) = rhok
+            p_x(ix) = pk
+            u_x(ix) = uk
+          else !W=W*k
+            print *, x(ix), 'region shocked'
+            rho_x(ix) = rhosk 
+            p_x(ix) = ps
+            u_x(ix) = us
+          endif
+        else  !left rarefaction
+          if (S < Shk) then !W=Wk
+            print *, x(ix), 'region undisturbed (rarefaction moving into it)'
+            rho_x(ix) = rhok 
+            p_x(ix) = pk
+            u_x(ix) = us
+          else
+            if (S>Stk) then !W = W*k
+            print *, x(ix), 'region between rarefaction tail and CD'
+              rho_x(ix) = rhosk
+              p_x(ix) = ps
+            else  !W = Wfan
+            print *, x(ix), 'rarefaction fan'
+              rho_x(ix) = rhok * ( g5 + g6 / ck * (uk-S))**g4  
+              p_x(ix) = pk *  ( g5  + g6 / ck * (uk-S))**g3
+            endif
+          endif 
+        endif
+
       else !right of contact
-!        print *,x(ix), 'right of contact'
+        print *,x(ix), 'right of contact'
         Sk = Sr
         Shk = Shr
         Stk = Str
@@ -335,42 +362,99 @@ module riemann !subroutines related to calculating star states
         rhosk = rhosr
         ck = cr
         uk = ur
-      endif
 
-      if (ps > pk) then !shock in k drn
-!        print *, x(ix), 'shock'
-
-        if (S > Sk) then !W=Wk
-!        if (S < Sk) then !W=Wk
-          print *, x(ix), 'region undisturbed (shock moving into it)'
-          rho_x(ix) = rhok
-          p_x(ix) = pk
-        else !W=W*k
-          print *, x(ix), 'region shocked'
-          rho_x(ix) = rhosk 
-          p_x(ix) = ps
+        if (ps > pk) then !right shock 
+          if (S > Sk) then !W=Wk
+            print *, x(ix), 'region undisturbed (shock moving into it)'
+            rho_x(ix) = rhok
+            p_x(ix) = pk
+          else !W=W*k
+            print *, x(ix), 'region shocked'
+            rho_x(ix) = rhosk 
+            p_x(ix) = ps
+          endif
+        else  !right rarefaction
+          if (S > Shk) then !W=Wk
+            print *, x(ix), 'region undisturbed (rarefaction moving into it)'
+            rho_x(ix) = rhok 
+            p_x(ix) = pk
+          else
+            if (S<Stk) then !W = W*k
+            print *, x(ix), 'region between rarefaction tail and CD'
+              rho_x(ix) = rhosk
+              p_x(ix) = ps
+            else  !W = Wfan
+            print *, x(ix), 'rarefaction fan'
+              rho_x(ix) = rhok * ( g5 - g6 / ck * (uk-S))**g4  
+              p_x(ix) = pk *  ( g5 - g6 / ck * (uk-S))**g3
+            endif
+          endif 
         endif
 
-      else  !rarefaction
-!        print *, x(ix), 'rarefaction'
-        if (S < Shk) then !W=Wk
-          print *, x(ix), 'region undisturbed (rarefaction moving into it)'
-          rho_x(ix) = rhok 
-          p_x(ix) = pk
-        else
-          if (S>Stk) then !W = W*k
-          print *, x(ix), 'region between rarefaction tail and CD'
-            rho_x(ix) = rhosk
-            p_x(ix) = ps
-          else  !W = Wfan
-          print *, x(ix), 'rarefaction fan'
-            rho_x(ix) = rhok * ( g5 + g6 / ck * (uk-S))**g4  
-            p_x(ix) = pk *  ( g5  + g6 / ck * (uk-S))**g3
-          endif
-        endif 
-      endif
 
-    end do !ix 
+      endif !left or right
+    end do !ix
+
+!!!!!    do ix = 1, nx
+!!!!!      S = (x(ix)-x0) / t !local speed
+!!!!!      print *,'ix',ix,'S', S
+!!!!!
+!!!!!      if (S < us) then !left of contact
+!!!!!!        print *, x(ix),'left of contact'
+!!!!!        Sk = Sl !set stuff like S_k to s_l 
+!!!!!        Shk = Shl
+!!!!!        Stk = Stl
+!!!!!        pk = pl  
+!!!!!        rhok = rhol
+!!!!!        rhosk = rhosl
+!!!!!        ck = cl
+!!!!!        uk = ul
+!!!!!      else !right of contact
+!!!!!!        print *,x(ix), 'right of contact'
+!!!!!        Sk = Sr
+!!!!!        Shk = Shr
+!!!!!        Stk = Str
+!!!!!        pk = pr  
+!!!!!        rhok = rhor
+!!!!!        rhosk = rhosr
+!!!!!        ck = cr
+!!!!!        uk = ur
+!!!!!      endif
+!!!!!
+!!!!!      if (ps > pk) then !shock in k drn
+!!!!!!        print *, x(ix), 'shock'
+!!!!!
+!!!!!!        if (S > Sk) then !W=Wk
+!!!!!        if (S < Sk) then !W=Wk
+!!!!!          print *, x(ix), 'region undisturbed (shock moving into it)'
+!!!!!          rho_x(ix) = rhok
+!!!!!          p_x(ix) = pk
+!!!!!        else !W=W*k
+!!!!!          print *, x(ix), 'region shocked'
+!!!!!          rho_x(ix) = rhosk 
+!!!!!          p_x(ix) = ps
+!!!!!        endif
+!!!!!
+!!!!!      else  !rarefaction
+!!!!!!        print *, x(ix), 'rarefaction'
+!!!!!        if (S < Shk) then !W=Wk
+!!!!!          print *, x(ix), 'region undisturbed (rarefaction moving into it)'
+!!!!!          rho_x(ix) = rhok 
+!!!!!          p_x(ix) = pk
+!!!!!        else
+!!!!!          if (S>Stk) then !W = W*k
+!!!!!          print *, x(ix), 'region between rarefaction tail and CD'
+!!!!!            rho_x(ix) = rhosk
+!!!!!            p_x(ix) = ps
+!!!!!          else  !W = Wfan
+!!!!!          print *, x(ix), 'rarefaction fan'
+!!!!!            rho_x(ix) = rhok * ( g5 + g6 / ck * (uk-S))**g4  
+!!!!!            p_x(ix) = pk *  ( g5  + g6 / ck * (uk-S))**g3
+!!!!!          endif
+!!!!!        endif 
+!!!!!      endif
+!!!!!
+!!!!!    end do !ix 
 
     !flow chart logic
 

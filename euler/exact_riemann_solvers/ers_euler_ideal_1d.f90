@@ -499,7 +499,7 @@ module tests !subroutines for automatic testing
     utoro = 0.92745_num 
     diff = 2.0_num * (us - utoro) / (us + utoro)
     if (verbose) print *, 'ustar-test1 and diff',us,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'ustar fail on test1',diff
       test2 = .false. 
     endif
@@ -510,7 +510,7 @@ module tests !subroutines for automatic testing
     utoro =  0.00000_num
     diff = 2.0_num * (us - utoro) / (us + utoro)
     if (verbose) print *, 'ustar-test2 and diff',us,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *, 'ustar fail on test2',diff
       test2 = .false. 
     endif
@@ -521,7 +521,7 @@ module tests !subroutines for automatic testing
     utoro = 19.5975_num
     diff = 2.0_num * (us - utoro) / (us + utoro)
     if (verbose) print *, 'ustar-test3 and diff',us,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *, 'ustar fail on test3',diff
       test2 = .false. 
     endif
@@ -532,7 +532,7 @@ module tests !subroutines for automatic testing
     utoro = -6.19633_num
     diff = 2.0_num * (us - utoro) / (us + utoro)
     if (verbose) print *, 'ustar-test4 and diff',us,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *, 'ustar fail on test4',diff
       test2 = .false. 
     endif
@@ -543,7 +543,7 @@ module tests !subroutines for automatic testing
     utoro = 8.68975_num
     diff = 2.0_num * (us - utoro) / (us + utoro)
     if (verbose) print *, 'ustar-test5 and diff',us,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *, 'ustar fail on test4',diff
       test2 = .false. 
     endif
@@ -571,7 +571,7 @@ module tests !subroutines for automatic testing
     diff = rhosl-ltoro
 !    diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
     if (verbose) print *, 'rhostar left-test1 and diff',rhosl,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test1 left'
       test3 = .false. 
     endif
@@ -580,7 +580,7 @@ module tests !subroutines for automatic testing
     diff = rhosr-rtoro
 !   diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
     if (verbose) print *, 'rhostar right -test1 and diff',rhosr,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test1 right'
       test3 = .false. 
     endif
@@ -595,7 +595,7 @@ module tests !subroutines for automatic testing
     diff = rhosl-ltoro
     !diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
     if (verbose) print *, 'rhostar left-test2 and diff',rhosl,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test2 left'
       test3 = .false. 
     endif
@@ -604,7 +604,7 @@ module tests !subroutines for automatic testing
     diff = rhosr-rtoro
 !    diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
     if (verbose) print *, 'rhostar right -test2 and diff',rhosr,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test2 right'
       test3 = .false. 
     endif
@@ -618,7 +618,7 @@ module tests !subroutines for automatic testing
     diff = rhosl-ltoro
     !diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
     if (verbose) print *, 'rhostar left-test3 and diff',rhosl,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test3 left'
       test3 = .false. 
     endif
@@ -627,7 +627,7 @@ module tests !subroutines for automatic testing
     diff = rhosr-rtoro
 !    diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
     if (verbose) print *, 'rhostar right -test3 and diff',rhosr,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test3 right'
       test3 = .false. 
     endif
@@ -641,7 +641,7 @@ module tests !subroutines for automatic testing
     diff = rhosl-ltoro
     !diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
     if (verbose) print *, 'rhostar left-test4 and diff',rhosl,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test4 left'
       test3 = .false. 
     endif
@@ -650,7 +650,7 @@ module tests !subroutines for automatic testing
     diff = rhosr-rtoro
 !    diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
     if (verbose) print *, 'rhostar right -test4 and diff',rhosr,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test4 rightt'
       test3 = .false. 
     endif
@@ -664,7 +664,7 @@ module tests !subroutines for automatic testing
     diff = rhosl-ltoro
     !diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
     if (verbose) print *, 'rhostar left-test5 and diff',rhosl,diff
-    if (abs(diff) > 5e-5) then
+    if (abs(diff) > 5e-5_num) then
       if (verbose) print *,  'rhostar fail on test5 left'
       test3 = .false. 
     endif
@@ -673,7 +673,7 @@ module tests !subroutines for automatic testing
     diff = rhosr-rtoro
 !    diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
     if (verbose) print *, 'rhostar right -test5 and diff',rhosr,diff
-    if (abs(diff) > 5e-5) then !bit higher tol 
+    if (abs(diff) > 5e-5_num) then !bit higher tol 
       !Toro gives only to certain sf's - by inspection this is 
       !acceptable within roundoff
       if (verbose) print *,  'rhostar fail on test5 right'

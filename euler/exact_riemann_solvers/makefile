@@ -5,9 +5,9 @@
 # The compiler
 FC = gfortran
 # flags for debugging or for maximum performance, comment as necessary
-FCFLAGS = -g -fbounds-check -Wpedantic
+FCFLAGS = -g -fbounds-check -Wall -Wextra
 FCFLAGS = -g -Wall -Wextra -pedantic -fimplicit-none -fcheck=all -fbacktrace
-FCFLAGS = -O2 -fimplicit-none  -Wall  -Wline-truncation  -Wcharacter-truncation  -Wsurprising  -Waliasing  -Wimplicit-interface  -Wunused-parameter  -fwhole-file  -fcheck=all  -std=f2008  -pedantic  -fbacktrace
+FCFLAGS = -O2 -fimplicit-none  -Wall  -Wline-truncation  -Wcharacter-truncation  -Wsurprising  -Waliasing  -Wimplicit-interface  -Wunused-parameter  -fwhole-file  -fcheck=all  -std=f2008  -pedantic  -fbacktrace -Wextra -Wconversion -Wconversion-extra
 
 
 #FCFLAGS = -O2

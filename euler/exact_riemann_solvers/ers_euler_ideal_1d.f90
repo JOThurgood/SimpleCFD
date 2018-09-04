@@ -84,7 +84,8 @@ module riemann !subroutines related to calculating star states
 
   private 
 
-  public :: check_positivity, pstar, newton_raphson 
+  public :: check_positivity, pstar, ustar, &
+    newton_raphson 
 
   !if when all is said and done there are any vars only used at 
   ! this stage it would be sensible to move here from shared_data
@@ -102,6 +103,11 @@ module riemann !subroutines related to calculating star states
   end subroutine pstar
 
   subroutine ustar
+    !testing optional f
+    print *,'leftonly', f(ps,leftonly=1)
+    print *,'rightonly', f(ps,rightonly=1)
+    print *,'sum', f(ps,leftonly=1) + f(ps,rightonly=1)
+    print *,'break logic', f(ps,leftonly=1,rightonly=1)
 ! shit - this is why it makes sense to break f up
 !    us = 0.5_num * (ul + ur) + &
 !      & 0.5_num * (fr(ps) + fl(ps))
@@ -143,13 +149,24 @@ module riemann !subroutines related to calculating star states
     niter = i !for test module
   end subroutine newton_raphson
 
-  real(num) function f(p) !root function
+  real(num) function f(p,leftonly,rightonly) !root function
     real(num), intent(in) :: p
+    integer, intent(in), optional :: leftonly, rightonly
     real(num) :: ak,bk, pk, prat, ck
-    integer :: i 
+    integer :: i, i0, i1
 
     f = 0.0_num
-    do i = 0,1 
+    i0 = 0 
+    i1 = 1
+
+    if (present(leftonly)) i1 = 0
+    if (present(rightonly)) i0 = 1
+    if (present(leftonly) .and. present(rightonly)) then
+      PRINT *, 'what are you doing!?'
+      STOP
+    endif
+
+    do i = i0,i1
 
       if (i == 0) then 
         ak = al

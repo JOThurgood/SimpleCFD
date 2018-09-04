@@ -304,7 +304,7 @@ module riemann !subroutines related to calculating star states
     Sl = ul - cl * sqrt(g2*ps/pl + g1)
     Sr = ur + cr * sqrt(g2*ps/pr + g1)
     Shl = ul - cl
-    Shr = ur- cr
+    Shr = ur + cr
     Stl = us - cl * (ps/pl)**(g1)
     Str = us + cr * (ps/pr)**(g1)
 

@@ -16,7 +16,7 @@ module shared_data ! a common block essentially
   real(num) :: gamma, gm, gp, g1, g2, g3, g4, g5, g6, g7 !gamma + const
   real(num) :: al,ar, bl, br !more constants
   real(num) :: cl, cr !sound speeds
-  real(num) :: ps, us !star region vars
+  real(num) :: ps, us, rhosl, rhosr !star region vars
 
   
   public 
@@ -84,7 +84,7 @@ module riemann !subroutines related to calculating star states
 
   private 
 
-  public :: check_positivity, pstar, ustar, &
+  public :: check_positivity, pstar, ustar, rhostar, &
     newton_raphson 
 
   !if when all is said and done there are any vars only used at 
@@ -106,7 +106,41 @@ module riemann !subroutines related to calculating star states
     us = 0.5_num * (ul + ur) + &
       & 0.5_num * (f(ps,rightonly=1) - f(ps,leftonly=1))
   end subroutine ustar
-  
+ 
+  subroutine rhostar
+    integer :: i
+    real(num) :: ck, pk, prat, rhok
+    real(num) :: rhos !temp => rhosl or rhosr
+
+    rhosl = 1e15_num !make errors obvious
+    rhosr = 1e15_num
+    do i = 0,1
+      rhos = 1e15_num
+      if (i == 0) then 
+        ck = cl
+        pk =  pl
+        rhok = rhol
+        prat = ps / pk
+      else 
+        ck = cr
+        pk = pr
+        rhok = rhor
+        prat = ps / pk
+      endif 
+      if (ps > pk) then
+        rhos = rhok * ( (prat + g6) / (g6 * prat + 1.0_num) )
+      else
+        rhos = rhok * prat**(1.0_num/gamma) 
+      endif
+      if (i == 0) then
+        rhosl = rhos
+      else
+        rhosr = rhos
+      endif
+    enddo
+
+  end subroutine rhostar
+ 
 
   subroutine guess_ps !initial guess on pstar 
     ! in the interests of speed you, can base your guess on the value of
@@ -235,12 +269,23 @@ module tests !subroutines for automatic testing
 
   implicit none
 
+  logical :: test_star = .true.
+  logical :: verbose = .false.
 
   contains
 
+  subroutine test_starvals
+    call test_pstar 
+    call test_ustar
+    call test_rhostar
+    if (test_star) then
+      print *, 'passed all comparison tests for star vals'
+    else
+      print *, 'failed a star test - run with verbose to debug'
+    endif 
+ end subroutine test_starvals
   subroutine test_pstar !check pstar and iteration info
     logical :: test1 = .true.
-    logical :: verbose = .false.
     real(num) :: tol = 1e-6_num 
     real(num), dimension(5) :: p_toro
     real(num), dimension(4,5) :: p0_toro
@@ -321,6 +366,7 @@ module tests !subroutines for automatic testing
       print *,'passed pstar test'
     else 
       print *,'failed pstar test'
+      test_star = .false.
     endif
 
   end subroutine test_pstar
@@ -328,7 +374,6 @@ module tests !subroutines for automatic testing
   subroutine test_ustar
     real (num) :: diff, utoro
     logical :: test2 = .true.
-    logical :: verbose = .false.
 
     call test_1
     call pstar
@@ -390,9 +435,139 @@ module tests !subroutines for automatic testing
       print *,'passed ustar test'
     else 
       print *,'failed ustar test'
+      test_star = .false.
     endif
   end subroutine test_ustar
 
+  subroutine test_rhostar
+
+    real (num) :: diff, ltoro, rtoro
+    logical :: test3 = .true.
+
+    call test_1
+    call pstar
+    call ustar
+    call rhostar
+
+    ltoro = 0.42632_num
+    diff = rhosl-ltoro
+!    diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
+    if (verbose) print *, 'rhostar left-test1 and diff',rhosl,diff
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *,  'rhostar fail on test1 left'
+      test3 = .false. 
+    endif
+
+    rtoro = 0.26557_num
+    diff = rhosr-rtoro
+!   diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
+    if (verbose) print *, 'rhostar right -test1 and diff',rhosr,diff
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *,  'rhostar fail on test1 right'
+      test3 = .false. 
+    endif
+
+
+    call test_2
+    call pstar
+    call ustar
+    call rhostar
+
+    ltoro = 0.02185_num
+    diff = rhosl-ltoro
+    !diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
+    if (verbose) print *, 'rhostar left-test2 and diff',rhosl,diff
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *,  'rhostar fail on test2 left'
+      test3 = .false. 
+    endif
+
+    rtoro = ltoro
+    diff = rhosr-rtoro
+!    diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
+    if (verbose) print *, 'rhostar right -test2 and diff',rhosr,diff
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *,  'rhostar fail on test2 right'
+      test3 = .false. 
+    endif
+
+    call test_3
+    call pstar
+    call ustar
+    call rhostar
+
+    ltoro = 0.57506_num 
+    diff = rhosl-ltoro
+    !diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
+    if (verbose) print *, 'rhostar left-test3 and diff',rhosl,diff
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *,  'rhostar fail on test3 left'
+      test3 = .false. 
+    endif
+
+    rtoro = 5.99924_num
+    diff = rhosr-rtoro
+!    diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
+    if (verbose) print *, 'rhostar right -test3 and diff',rhosr,diff
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *,  'rhostar fail on test3 right'
+      test3 = .false. 
+    endif
+
+    call test_4
+    call pstar
+    call ustar
+    call rhostar
+
+    ltoro = 5.99242_num 
+    diff = rhosl-ltoro
+    !diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
+    if (verbose) print *, 'rhostar left-test4 and diff',rhosl,diff
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *,  'rhostar fail on test4 left'
+      test3 = .false. 
+    endif
+
+    rtoro = 0.57511_num
+    diff = rhosr-rtoro
+!    diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
+    if (verbose) print *, 'rhostar right -test4 and diff',rhosr,diff
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *,  'rhostar fail on test4 rightt'
+      test3 = .false. 
+    endif
+
+    call test_5
+    call pstar
+    call ustar
+    call rhostar
+
+    ltoro = 14.2823_num 
+    diff = rhosl-ltoro
+    !diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
+    if (verbose) print *, 'rhostar left-test5 and diff',rhosl,diff
+    if (abs(diff) > 5e-5) then
+      if (verbose) print *,  'rhostar fail on test5 left'
+      test3 = .false. 
+    endif
+
+    rtoro = 31.0426_num
+    diff = rhosr-rtoro
+!    diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
+    if (verbose) print *, 'rhostar right -test5 and diff',rhosr,diff
+    if (abs(diff) > 5e-5) then !bit higher tol 
+      !Toro gives only to certain sf's - by inspection this is 
+      !acceptable within roundoff
+      if (verbose) print *,  'rhostar fail on test5 right'
+      test3 = .false. 
+    endif
+    if (test3) then 
+      print *,'passed rhostar test'
+    else 
+      print *,'failed rhostar test'
+      test_star = .false.
+    endif
+  endsubroutine test_rhostar
 
   ! predefined initial conditions
 
@@ -475,8 +650,8 @@ program ers_euler_ideal_1d
   implicit none   
 
   !check passes numerical tests
-  call test_pstar 
-  call test_ustar
+  call test_starvals
+
 !!!  !do calculations for users setup 
 !!!  call initial_conditions
 !!!!  call control 
@@ -485,5 +660,5 @@ program ers_euler_ideal_1d
 !!!
 !!!  call pstar
 !!!  call ustar
-
+!!!  call rhostar
 end program ers_euler_ideal_1d

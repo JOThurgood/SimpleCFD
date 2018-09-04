@@ -103,14 +103,8 @@ module riemann !subroutines related to calculating star states
   end subroutine pstar
 
   subroutine ustar
-    !testing optional f
-!    print *,'leftonly', f(ps,leftonly=1)
-!    print *,'rightonly', f(ps,rightonly=1)
-!    print *,'sum', f(ps,leftonly=1) + f(ps,rightonly=1)
-!    print *,'break logic', f(ps,leftonly=1,rightonly=1)
     us = 0.5_num * (ul + ur) + &
       & 0.5_num * (f(ps,rightonly=1) - f(ps,leftonly=1))
-    print *,'us',us
   end subroutine ustar
   
 
@@ -331,6 +325,69 @@ module tests !subroutines for automatic testing
 
   end subroutine test_pstar
 
+  subroutine test_ustar
+    real (num) :: diff, utoro
+    logical :: test2 = .true.
+    logical :: verbose = .false.
+
+    call test_1
+    call pstar
+    call ustar 
+    utoro = 0.92745_num 
+    diff = 2.0_num * (us - utoro) / (us + utoro)
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *,  'ustar fail on test1',diff
+      test2 = .false. 
+    endif
+
+    call test_2
+    call pstar
+    call ustar 
+    utoro =  0.00000_num
+    diff = 2.0_num * (us - utoro) / (us + utoro)
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *, 'ustar fail on test2',diff
+      test2 = .false. 
+    endif
+
+    call test_3
+    call pstar
+    call ustar 
+    utoro = 19.5975_num
+    diff = 2.0_num * (us - utoro) / (us + utoro)
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *, 'ustar fail on test3',diff
+      test2 = .false. 
+    endif
+
+    call test_4
+    call pstar
+    call ustar 
+    utoro = -6.19633_num
+    diff = 2.0_num * (us - utoro) / (us + utoro)
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *, 'ustar fail on test4',diff
+      test2 = .false. 
+    endif
+
+    call test_5
+    call pstar
+    call ustar 
+    utoro = 8.68975_num
+    diff = 2.0_num * (us - utoro) / (us + utoro)
+    if (abs(diff) > 5e-6) then
+      if (verbose) print *, 'ustar fail on test4',diff
+      test2 = .false. 
+    endif
+    
+
+    if (test2) then 
+      print *,'passed ustar test'
+    else 
+      print *,'failed ustar test'
+    endif
+  end subroutine test_ustar
+
 
   ! predefined initial conditions
 
@@ -414,14 +471,14 @@ program ers_euler_ideal_1d
 
   !check passes numerical tests
   call test_pstar 
-
-  !do calculations for users setup 
-  call initial_conditions
-!  call control 
-  call constants 
-! call check_positivity
-
-  call pstar
-  call ustar
+  call test_ustar
+!!!  !do calculations for users setup 
+!!!  call initial_conditions
+!!!!  call control 
+!!!  call constants 
+!!!! call check_positivity
+!!!
+!!!  call pstar
+!!!  call ustar
 
 end program ers_euler_ideal_1d

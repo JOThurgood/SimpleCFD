@@ -167,7 +167,6 @@ module riemann !subroutines related to calculating star states
     ! few steps as possible. 
 
     ps = 0.5_num * (pl + pr) ! For now just always use arithmetic mean
-          !and see if you get same convergence as in Table 4.2 of Toro
   end subroutine guess_ps
  
   subroutine newton_raphson

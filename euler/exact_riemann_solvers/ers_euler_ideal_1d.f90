@@ -9,7 +9,7 @@ module shared_data ! a common block essentially
 
   implicit none
 
-  integer, parameter :: num=selected_real_kind(p=6) !p=6 or 15
+  integer, parameter :: num=selected_real_kind(p=15) !p=6 or 15
   integer :: niter !debug
 
   real(num) :: rhol, ul, pl, rhor, ur, pr !W_l and W_r
@@ -18,7 +18,11 @@ module shared_data ! a common block essentially
   real(num) :: cl, cr !sound speeds
   real(num) :: ps, us, rhosl, rhosr !star region vars
 
-  
+  integer :: nx !sampling stuff
+  real(num) :: x_min, x_max
+  real(num) :: t, x0
+  real(num), allocatable, dimension(:) :: x, rho_x, u_x, p_x, en_x
+
   public 
 
   contains 
@@ -70,8 +74,12 @@ module user
 
   end subroutine initial_conditions
   
-  subroutine control
-    !stub for setting sampling and output options
+  subroutine control !sampling and output options
+    t = 0.25_num 
+    x_min = 0.0_num
+    x_max = 1.0_num
+    x0 = 0.5_num 
+    nx = 1000
   end subroutine 
 
 end module user 
@@ -84,7 +92,7 @@ module riemann !subroutines related to calculating star states
 
   private 
 
-  public :: check_positivity, pstar, ustar, rhostar, &
+  public :: check_positivity, pstar, ustar, rhostar, sample, &
     newton_raphson 
 
   !if when all is said and done there are any vars only used at 
@@ -94,7 +102,17 @@ module riemann !subroutines related to calculating star states
 
 
   subroutine check_positivity
-    !stub
+    real(num) :: du, du_crit
+    du = ul - ur
+    du_crit = cl * g4 + cr * g4
+    if (du_crit < du) then 
+      print *, 'warning - pressure positivity condition violated'
+      print *, 'your ICs will create vacuum'
+      print *, 'STOP'
+      STOP
+    else
+      print *, 'initial conditions pass p. positivity test OK'
+    endif
   end subroutine check_positivity
 
   subroutine pstar
@@ -260,6 +278,135 @@ module riemann !subroutines related to calculating star states
     return
   end function
 
+ 
+  subroutine sample 
+
+    real(num) :: S
+    real(num) :: Sk,Shk, Stk
+    real(num) :: Sl,Shl, Stl 
+    real(num) :: Sr,Shr, Str 
+    real(num) :: ck, pk, rhok, rhosk, uk 
+    integer :: ix
+    real(num) :: dx
+
+    allocate(x(1:nx))
+    allocate(rho_x(1:nx))
+    allocate(p_x(1:nx))
+    allocate(u_x(1:nx))
+    allocate(en_x(1:nx))
+
+    dx = (x_max - x_min) / REAL(nx,num)
+    do ix = 1, nx
+     x(ix) = x_min + REAL(ix,num) * dx
+    enddo
+ 
+
+    !sampling constants
+    Sl = ul - cl * sqrt(g2*ps/pl + g1)
+    Sr = ur + cr * sqrt(g2*ps/pr + g1)
+    Shl = ul - cl
+    Shr = ur + cr
+    Stl = us - cl * (ps/pl)**(g1)
+    Str = us + cr * (ps/pr)**(g1)
+
+    do ix = 1, nx
+      S = (x(ix)-x0) / t 
+
+      if (S < us) then !left of contact
+!        print *, x(ix),'left of contact'
+        Sk = Sl !set stuff like S_k to s_l 
+        Shk = Shl
+        Stk = Stl
+        pk = pl  
+        rhok = rhol
+        rhosk = rhosl
+        ck = cl
+        uk = ul
+        if (ps > pk) then !left shock 
+          if (S < Sk) then !W=Wk
+!            print *, x(ix), 'region undisturbed (shock moving into it)'
+            rho_x(ix) = rhok
+            p_x(ix) = pk
+            u_x(ix) = uk
+          else !W=W*k
+!            print *, x(ix), 'region shocked'
+            rho_x(ix) = rhosk 
+            p_x(ix) = ps
+            u_x(ix) = us
+          endif
+        else  !left rarefaction
+          if (S < Shk) then !W=Wk
+ !           print *, x(ix), 'region undisturbed (rarefaction moving into it)'
+            rho_x(ix) = rhok 
+            p_x(ix) = pk
+            u_x(ix) = uk
+          else
+            if (S>Stk) then !W = W*k
+!            print *, x(ix), 'region between rarefaction tail and CD'
+              rho_x(ix) = rhosk
+              p_x(ix) = ps
+              u_x(ix) = us
+            else  !W = Wfan
+!            print *, x(ix), 'rarefaction fan'
+              rho_x(ix) = rhok * ( g5 + g6 / ck * (uk-S))**g4  
+              p_x(ix) = pk *  ( g5  + g6 / ck * (uk-S))**g3
+              u_x(ix) = g5 * (ck + g7*uk + S)
+            endif
+          endif 
+        endif
+
+      else !right of contact
+!        print *,x(ix), 'right of contact'
+        Sk = Sr
+        Shk = Shr
+        Stk = Str
+        pk = pr  
+        rhok = rhor
+        rhosk = rhosr
+        ck = cr
+        uk = ur
+
+        if (ps > pk) then !right shock 
+          if (S > Sk) then !W=Wk
+ !           print *, x(ix), 'region undisturbed (shock moving into it)'
+            rho_x(ix) = rhok
+            p_x(ix) = pk
+            u_x(ix) = uk
+          else !W=W*k
+ !           print *, x(ix), 'region shocked'
+            rho_x(ix) = rhosk 
+            p_x(ix) = ps
+            u_x(ix) = us
+          endif
+        else  !right rarefaction
+          if (S > Shk) then !W=Wk
+ !           print *, x(ix), 'region undisturbed (rarefaction moving into it)'
+            rho_x(ix) = rhok 
+            p_x(ix) = pk
+            u_x(ix) = uk
+          else
+            if (S<Stk) then !W = W*k
+  !          print *, x(ix), 'region between rarefaction tail and CD'
+              rho_x(ix) = rhosk
+              p_x(ix) = ps
+              u_x(ix) = us
+            else  !W = Wfan
+  !          print *, x(ix), 'rarefaction fan'
+              rho_x(ix) = rhok * ( g5 - g6 / ck * (uk-S))**g4  
+              p_x(ix) = pk *  ( g5 - g6 / ck * (uk-S))**g3
+              u_x(ix) = g5 * (-ck + g7 * uk + S) 
+            endif
+          endif 
+        endif
+
+
+      endif !left or right
+    end do !ix
+
+    en_x = p_x / gm / rho_x
+
+  end subroutine sample 
+
 end module riemann
 
 module tests !subroutines for automatic testing
@@ -268,6 +415,11 @@ module tests !subroutines for automatic testing
   use riemann 
 
   implicit none
+
+  private 
+
+  public :: test_starvals, test_1,test_2,test_3,test_4,test_5
+
 
   logical :: test_star = .true.
   logical :: verbose = .false.
@@ -381,7 +533,7 @@ module tests !subroutines for automatic testing
     utoro = 0.92745_num 
     diff = 2.0_num * (us - utoro) / (us + utoro)
     if (verbose) print *, 'ustar-test1 and diff',us,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'ustar fail on test1',diff
       test2 = .false. 
     endif
@@ -392,7 +544,7 @@ module tests !subroutines for automatic testing
     utoro =  0.00000_num
     diff = 2.0_num * (us - utoro) / (us + utoro)
     if (verbose) print *, 'ustar-test2 and diff',us,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *, 'ustar fail on test2',diff
       test2 = .false. 
     endif
@@ -403,7 +555,7 @@ module tests !subroutines for automatic testing
     utoro = 19.5975_num
     diff = 2.0_num * (us - utoro) / (us + utoro)
     if (verbose) print *, 'ustar-test3 and diff',us,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *, 'ustar fail on test3',diff
       test2 = .false. 
     endif
@@ -414,7 +566,7 @@ module tests !subroutines for automatic testing
     utoro = -6.19633_num
     diff = 2.0_num * (us - utoro) / (us + utoro)
     if (verbose) print *, 'ustar-test4 and diff',us,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *, 'ustar fail on test4',diff
       test2 = .false. 
     endif
@@ -425,7 +577,7 @@ module tests !subroutines for automatic testing
     utoro = 8.68975_num
     diff = 2.0_num * (us - utoro) / (us + utoro)
     if (verbose) print *, 'ustar-test5 and diff',us,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *, 'ustar fail on test4',diff
       test2 = .false. 
     endif
@@ -453,7 +605,7 @@ module tests !subroutines for automatic testing
     diff = rhosl-ltoro
 !    diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
     if (verbose) print *, 'rhostar left-test1 and diff',rhosl,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test1 left'
       test3 = .false. 
     endif
@@ -462,7 +614,7 @@ module tests !subroutines for automatic testing
     diff = rhosr-rtoro
 !   diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
     if (verbose) print *, 'rhostar right -test1 and diff',rhosr,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test1 right'
       test3 = .false. 
     endif
@@ -477,7 +629,7 @@ module tests !subroutines for automatic testing
     diff = rhosl-ltoro
     !diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
     if (verbose) print *, 'rhostar left-test2 and diff',rhosl,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test2 left'
       test3 = .false. 
     endif
@@ -486,7 +638,7 @@ module tests !subroutines for automatic testing
     diff = rhosr-rtoro
 !    diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
     if (verbose) print *, 'rhostar right -test2 and diff',rhosr,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test2 right'
       test3 = .false. 
     endif
@@ -500,7 +652,7 @@ module tests !subroutines for automatic testing
     diff = rhosl-ltoro
     !diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
     if (verbose) print *, 'rhostar left-test3 and diff',rhosl,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test3 left'
       test3 = .false. 
     endif
@@ -509,7 +661,7 @@ module tests !subroutines for automatic testing
     diff = rhosr-rtoro
 !    diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
     if (verbose) print *, 'rhostar right -test3 and diff',rhosr,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test3 right'
       test3 = .false. 
     endif
@@ -523,7 +675,7 @@ module tests !subroutines for automatic testing
     diff = rhosl-ltoro
     !diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
     if (verbose) print *, 'rhostar left-test4 and diff',rhosl,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test4 left'
       test3 = .false. 
     endif
@@ -532,7 +684,7 @@ module tests !subroutines for automatic testing
     diff = rhosr-rtoro
 !    diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
     if (verbose) print *, 'rhostar right -test4 and diff',rhosr,diff
-    if (abs(diff) > 5e-6) then
+    if (abs(diff) > 5e-6_num) then
       if (verbose) print *,  'rhostar fail on test4 rightt'
       test3 = .false. 
     endif
@@ -546,7 +698,7 @@ module tests !subroutines for automatic testing
     diff = rhosl-ltoro
     !diff = 2.0_num * (rhosl - ltoro) / (rhosl + ltoro)
     if (verbose) print *, 'rhostar left-test5 and diff',rhosl,diff
-    if (abs(diff) > 5e-5) then
+    if (abs(diff) > 5e-5_num) then
       if (verbose) print *,  'rhostar fail on test5 left'
       test3 = .false. 
     endif
@@ -555,7 +707,7 @@ module tests !subroutines for automatic testing
     diff = rhosr-rtoro
 !    diff = 2.0_num * (rhosr - rtoro) / (rhosr + rtoro)
     if (verbose) print *, 'rhostar right -test5 and diff',rhosr,diff
-    if (abs(diff) > 5e-5) then !bit higher tol 
+    if (abs(diff) > 5e-5_num) then !bit higher tol 
       !Toro gives only to certain sf's - by inspection this is 
       !acceptable within roundoff
       if (verbose) print *,  'rhostar fail on test5 right'
@@ -591,6 +743,7 @@ module tests !subroutines for automatic testing
     pl = 0.10_num 
     gamma = 1.4_num
     call constants !reset constants
+    t = 0.25_num
   end subroutine test_1_r
 
   subroutine test_2 !1,2,3 problem
@@ -602,6 +755,7 @@ module tests !subroutines for automatic testing
     pr = 0.4_num 
     gamma = 1.4_num
     call constants !reset constants
+    t = 0.15_num
   end subroutine test_2 
 
   subroutine test_3 !left half blast
@@ -613,6 +767,7 @@ module tests !subroutines for automatic testing
     pr = 0.01_num
     gamma = 1.4_num
     call constants !reset constants
+    t = 0.012_num
   end subroutine test_3
 
   subroutine test_4 !right half
@@ -624,6 +779,7 @@ module tests !subroutines for automatic testing
     pr = 100.0_num
     gamma = 1.4_num
     call constants !reset constants
+    t = 0.035_num
   end subroutine test_4
 
   subroutine test_5 !both halfs of the W+C blast 
@@ -635,9 +791,42 @@ module tests !subroutines for automatic testing
     pr = 46.0950_num
     gamma = 1.4_num
     call constants !reset constants
+    t = 0.035_num
   end subroutine 
 
 end module tests
+
+module diagnostics
+
+  use shared_data
+
+  implicit none 
+
+  contains
+
+  subroutine do_io
+    integer :: out_unit =10
+    call execute_command_line("rm -rf x.dat rho.dat p.dat u.dat en.dat")
+       !^ dont stream to existing
+    open(out_unit, file="x.dat", access="stream")
+    write(out_unit) x
+    close(out_unit)
+    open(out_unit, file="rho.dat", access="stream")
+    write(out_unit) rho_x
+    close(out_unit)
+    open(out_unit, file="p.dat", access="stream")
+    write(out_unit) p_x
+    close(out_unit)
+    open(out_unit, file="u.dat", access="stream")
+    write(out_unit) u_x
+    close(out_unit)
+    open(out_unit, file="en.dat", access="stream")
+    write(out_unit) en_x
+    close(out_unit)
+    call execute_command_line("python plot1.py")
+  end subroutine do_io
+
+end module diagnostics
 
 program ers_euler_ideal_1d
 
@@ -645,18 +834,29 @@ program ers_euler_ideal_1d
   use riemann 
   use user 
   use tests
+  use diagnostics
 
   implicit none   
 
   call test_starvals !check passes all numerical tests
 
-!!!  !do calculations for users setup 
-!!!  call initial_conditions
-!!!!  call control 
-!!!  call constants 
-!!!! call check_positivity
-!!!
-!!!  call pstar
-!!!  call ustar
-!!!  call rhostar
+  call initial_conditions
+  call constants
+  call control 
+
+!  print *, 'warning: overwrite user initial conditions with test case'
+!  call test_5 !_1, _2, _3, _4, _5
+!  uncomment above to qualitatively test 
+!  sampling routines against Figs 4.7- 4.11 in Toro 
+
+  call check_positivity
+
+  call pstar
+  call ustar
+  call rhostar
+
+  call sample 
+
+  call do_io
+
 end program ers_euler_ideal_1d

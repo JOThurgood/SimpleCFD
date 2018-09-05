@@ -14,7 +14,6 @@ program pstar
   real(num) :: rhol, rhor, rhok
   real(num) :: ul, ur
   real(num) :: pl, pr, pk
-  real(num) :: cl, cr
   real(num) :: ak, bk, ck
  
   real(num) :: ps, pold, delta, change

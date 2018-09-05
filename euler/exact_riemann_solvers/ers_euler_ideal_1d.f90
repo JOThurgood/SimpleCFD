@@ -74,13 +74,12 @@ module user
 
   end subroutine initial_conditions
   
-  subroutine control
+  subroutine control !sampling and output options
     t = 0.25_num 
     x_min = 0.0_num
     x_max = 1.0_num
     x0 = 0.5_num 
     nx = 1000
-    !stub for setting sampling and output options
   end subroutine 
 
 end module user 
@@ -103,7 +102,17 @@ module riemann !subroutines related to calculating star states
 
 
   subroutine check_positivity
-    !stub
+    real(num) :: du, du_crit
+    du = ul - ur
+    du_crit = cl * g4 + cr * g4
+    if (du_crit < du) then 
+      print *, 'warning - pressure positivity condition violated'
+      print *, 'your ICs will create vacuum'
+      print *, 'STOP'
+      STOP
+    else
+      print *, 'initial conditions pass p. positivity test OK'
+    endif
   end subroutine check_positivity
 
   subroutine pstar
@@ -412,7 +421,7 @@ module riemann !subroutines related to calculating star states
 !!!!!        uk = ul
 !!!!!      else !right of contact
 !!!!!!        print *,x(ix), 'right of contact'
-!!!!!        Sk = Sr
+!1!!!!        Sk = Sr
 !!!!!        Shk = Shr
 !!!!!        Stk = Str
 !!!!!        pk = pr  
@@ -896,18 +905,23 @@ program ers_euler_ideal_1d
 
   call test_starvals !check passes all numerical tests
 
-!!!  !do calculations for users setup 
   call initial_conditions
   call constants
   call control 
-  print *, 'warning: overwriting user initial conditions with predefined case'
-  call test_5
-! call check_positivity
+
+!  print *, 'warning: overwrite user initial conditions with test case'
+!  call test_5 !_1, _2, _3, _4, _5
+!  uncomment above to qualitatively test 
+!  sampling routines against Figs 4.7- 4.11 in Toro 
+
+  call check_positivity
+
   call pstar
   call ustar
   call rhostar
 
   call sample 
+
   call do_io
 
 end program ers_euler_ideal_1d

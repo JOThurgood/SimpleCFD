@@ -19,7 +19,7 @@ FCFLAGS += -I/usr/include
 #LDFLAGS = -li_need_this_lib
 
 # List of executables to be built within the package
-PROGRAMS = ers_euler_ideal_1d pstar
+PROGRAMS = ers_euler_1d pstar
 
 # "make" builds all
 all: $(PROGRAMS)

@@ -341,7 +341,7 @@ module riemann !subroutines related to calculating star states
 !            print *, x(ix), 'rarefaction fan'
               rho_x(ix) = rhok * ( g5 + g6 / ck * (uk-S))**g4  
               p_x(ix) = pk *  ( g5  + g6 / ck * (uk-S))**g3
-              u_x(ix) = g5 * (ck + g5*uk + S)
+              u_x(ix) = g5 * (ck + g7*uk + S)
             endif
           endif 
         endif
@@ -385,7 +385,7 @@ module riemann !subroutines related to calculating star states
   !          print *, x(ix), 'rarefaction fan'
               rho_x(ix) = rhok * ( g5 - g6 / ck * (uk-S))**g4  
               p_x(ix) = pk *  ( g5 - g6 / ck * (uk-S))**g3
-              u_x(ix) = g5 * (-ck + g5 * uk + S) 
+              u_x(ix) = g5 * (-ck + g7 * uk + S) 
             endif
           endif 
         endif

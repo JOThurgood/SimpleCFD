@@ -3,7 +3,7 @@
 ! Exact Riemann Solver for ideal 1D euler equations, producing a 
 ! converged exact solution.
 ! 
-! <link to wiki> 
+! https://github.com/JOThurgood/SimpleCFD/wiki/ers_euler_1d.f90
 
 module shared_data ! a common block essentially
 

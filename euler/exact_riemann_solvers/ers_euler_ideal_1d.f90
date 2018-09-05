@@ -823,6 +823,7 @@ module tests !subroutines for automatic testing
     pr = 0.01_num
     gamma = 1.4_num
     call constants !reset constants
+    t = 0.012_num
   end subroutine test_3
 
   subroutine test_4 !right half
@@ -834,6 +835,7 @@ module tests !subroutines for automatic testing
     pr = 100.0_num
     gamma = 1.4_num
     call constants !reset constants
+    t = 0.035_num
   end subroutine test_4
 
   subroutine test_5 !both halfs of the W+C blast 
@@ -845,6 +847,7 @@ module tests !subroutines for automatic testing
     pr = 46.0950_num
     gamma = 1.4_num
     call constants !reset constants
+    t = 0.035_num
   end subroutine 
 
 end module tests
@@ -898,7 +901,7 @@ program ers_euler_ideal_1d
   call constants
   call control 
   print *, 'warning: overwriting user initial conditions with predefined case'
-  call test_2
+  call test_5
 ! call check_positivity
   call pstar
   call ustar

@@ -4,7 +4,7 @@
 
 [See the wiki for more info](https://github.com/JOThurgood/SimpleCFD/wiki/ers_euler_1d.f90)
 
-This is an *exact* Riemann solver for the 1D Euler equations.
+This is an exact Riemann solver for the 1D Euler equations.
 
 It solves for user-set initial conditions, and at a user-set time  ouputs spatially sampled data as dat files for easy postprocessing. It also automatically produces plots of u(x), p(x), rho(x) and en(x) (internal energy) at the requested sampling by calling a python script.  
 

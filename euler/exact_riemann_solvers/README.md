@@ -2,7 +2,7 @@
 
 ## ers_euler_1d.f90 
 
-[See the wiki for more info](https://github.com/JOThurgood/SimpleCFD/wiki/ers_euler_1d.f90)
+[See the wiki for more info and test figures](https://github.com/JOThurgood/SimpleCFD/wiki/ers_euler_1d.f90)
 
 This is an exact Riemann solver for the 1D Euler equations.
 

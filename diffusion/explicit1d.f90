@@ -1,3 +1,8 @@
+! Solve 
+! phi_t = k phi_xx  
+! using explicit method
+! 2nd order centred in space, 1st order fwd in time
+
 program explicit1d
 
   implicit none

@@ -19,37 +19,3 @@ plt.grid(True)
 #plt.show()
 plt.savefig("x_phi.png")
 
-#\\\plt.clf()
-#\\\plt.plot(x, p)
-#\\\if x.size < 129 :
-#\\\  plt.plot(x,p,'bx')
-#\\\plt.xlabel('x')
-#\\\plt.ylabel('p')
-#\\\plt.title(title)
-#\\\plt.grid(True)
-#\\\#plt.show()
-#\\\plt.savefig("p.png")
-#\\\
-#\\\plt.clf()
-#\\\plt.plot(x, u)
-#\\\if x.size < 129 :
-#\\\  plt.plot(x,u,'bx')
-#\\\plt.xlabel('x')
-#\\\plt.ylabel('u')
-#\\\plt.title(title)
-#\\\plt.grid(True)
-#\\\#plt.show()
-#\\\plt.savefig("u.png")
-#\\\
-#\\\plt.clf()
-#\\\plt.plot(x, en)
-#\\\if x.size < 129 :
-#\\\  plt.plot(x,en,'bx')
-#\\\plt.xlabel('x')
-#\\\plt.ylabel('en')
-#\\\plt.title(title)
-#\\\plt.grid(True)
-#\\\#plt.show()
-#\\\plt.savefig("en.png")
-#\\\
-#\\\

@@ -43,13 +43,13 @@ program smooth1
   ! simulation / domain / grid control parameters
 
   nsteps = 1e6
-  nx = 64
+  nx = 64 
   ny = nx ! currently hardcoded for dx = dy later in the code
   x_min = 0.0_num 
   x_max = 1.0_num
   y_min = x_min !
   y_max = x_max
-  tol = 1e-2_num
+  tol = 1e-2_num !less than 1e-2 takes too long -> clear limitation of the method and slow convergence?
 
   ! array allocation and initialisation
 

@@ -51,6 +51,18 @@ module setup
     allocate(v(-1:nx+2,-1:ny+2))
     allocate(p(-1:nx+2,-1:ny+2))
  
+    ! time centered left and right interface states, defined on
+    ! the MAC grid
+  
+    allocate(uhxl(-2:nx+2,-1:ny+2)) ! uhxl - u hat xface left state
+    allocate(uhxr(-2:nx+2,-1:ny+2)) 
+    allocate(vhxl(-2:nx+2,-1:ny+2))
+    allocate(vhxr(-2:nx+2,-1:ny+2)) 
+  
+    allocate(uhyl(-1:nx+2,-2:ny+2)) ! uhxl - u hat yface "left" state 
+    allocate(uhyr(-1:nx+2,-2:ny+2)) ! (aka "bottom")
+    allocate(vhyl(-1:nx+2,-2:ny+2)) 
+    allocate(vhyr(-1:nx+2,-2:ny+2)) 
 
   end subroutine allocate_global_arrays
 

@@ -8,7 +8,6 @@ program ccaps
 
   implicit none 
 
-
   call initial_setup
 
 end program ccaps

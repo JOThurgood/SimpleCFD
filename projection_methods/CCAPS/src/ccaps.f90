@@ -3,12 +3,13 @@
 program ccaps
 
   use shared_data
+  use setup
   use advance_module
 
   implicit none 
 
   print *, time
 
-  call advance
+  call initial_setup
 
 end program ccaps

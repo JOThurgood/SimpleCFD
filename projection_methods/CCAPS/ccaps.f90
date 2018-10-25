@@ -10,5 +10,9 @@ program ccaps
 
   call initial_setup
 
+  ! do some sort of bootstrap here? 
+  step = step + 1
+  call advance
+
   print *, 'Code Terminated Normally'
 end program ccaps

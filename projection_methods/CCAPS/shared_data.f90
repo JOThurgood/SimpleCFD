@@ -8,6 +8,7 @@ module shared_data
   integer(num) :: step, nsteps
 
   real(num) :: time = 0.0_num, t_end, dt 
+  real(num) :: CFL
   real(num) :: x_min, x_max
   real(num) :: y_min, y_max
   real(num) :: dx, dy

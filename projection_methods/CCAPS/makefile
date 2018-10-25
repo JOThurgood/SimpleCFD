@@ -48,10 +48,6 @@ ccaps: shared_data.o  advance_module.o setup.o control.o initial_conditions.o
 .PHONY: clean cleanall 
 
 clean:
-	rm -f *.o *.mod *.MOD
-
+	rm -rf *.o *.mod *.MOD *.dSYM
 cleanall:  clean
-	rm -f *~ $(PROGRAMS)
-
-
-
+	rm -f *~ $(PROGRAMS) 

@@ -25,8 +25,8 @@ module advance_module
     ! velocities
     ! (list var names here once you know exactly what is needed)
 
-    do iy = -1, ny+2 ! limits for values on x boundaries, y center
-    do ix = -2, nx+2 ! i.e. x faces
+    do iy =  1, ny ! limits for values on x boundaries, y center
+    do ix =  0, nx ! i.e. x faces
       du = 0.0_num
         ! ^ slope of u at relative cc, (should be limited really)
       uhxl(ix,iy) = u(ix-1,iy) + & 

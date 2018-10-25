@@ -49,7 +49,7 @@ program smooth1
   x_max = 1.0_num
   y_min = x_min !
   y_max = x_max
-  tol = 1e-1_num
+  tol = 1e-2_num
 
   ! array allocation and initialisation
 

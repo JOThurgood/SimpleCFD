@@ -20,9 +20,9 @@ all: $(PROGRAMS)
 
 
 
-setup.o: control.o
-ccaps.o: shared_data.o advance_module.o setup.o control.o
-ccaps: shared_data.o  advance_module.o setup.o control.o
+setup.o: control.o initial_conditions.o
+ccaps.o: shared_data.o advance_module.o setup.o control.o initial_conditions.o
+ccaps: shared_data.o  advance_module.o setup.o control.o initial_conditions.o
 
 
 # ======================================================================

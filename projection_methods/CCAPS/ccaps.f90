@@ -8,7 +8,6 @@ program ccaps
 
   implicit none 
 
-  print *, time
 
   call initial_setup
 

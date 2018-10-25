@@ -17,7 +17,7 @@ module control
     y_min = x_min
     y_max = x_max
 
-    nx = 64
+    nx = 10
     ny = nx
 
   end subroutine user_control

@@ -45,12 +45,12 @@ ccaps: shared_data.o  advance_module.o setup.o control.o initial_conditions.o
 	$(FC) $(FCFLAGS) -c $<
 
 # Utility targets
-.PHONY: clean veryclean
+.PHONY: clean cleanall 
 
 clean:
 	rm -f *.o *.mod *.MOD
 
-veryclean: clean
+cleanall:  clean
 	rm -f *~ $(PROGRAMS)
 
 

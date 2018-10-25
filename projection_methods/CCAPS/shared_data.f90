@@ -14,6 +14,6 @@ module shared_data
 
   real(num), dimension(:), allocatable :: xc, xb, yc, yb
 
-  real(num), dimension(:,:), allocatable :: vx, vy, p
+  real(num), dimension(:,:), allocatable :: u, v, p
 
 end module shared_data

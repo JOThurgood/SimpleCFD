@@ -14,8 +14,8 @@ module initial_conditions
 
     ! NB: nx, t_end etc is set in control.f90
 
-    vx = 0.0_num
-    vy = 0.0_num
+    u = 0.0_num
+    v = 0.0_num
     p = 1.0_num
 
   end subroutine set_ic

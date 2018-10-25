@@ -10,4 +10,5 @@ program ccaps
 
   call initial_setup
 
+  print *, 'Code Terminated Normally'
 end program ccaps

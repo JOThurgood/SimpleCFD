@@ -17,9 +17,6 @@ module setup
     call user_control ! assign user control parameters
     call allocate_global_arrays
     call set_ic 
-    print *, nx
-    print *, xc
-    print *, p
 
   end subroutine initial_setup
 
@@ -47,8 +44,8 @@ module setup
 
     ! setup the cell-centered arrays of primative variables
 
-    allocate(vx(-1:nx+2,-1:ny+2))
-    allocate(vy(-1:nx+2,-1:ny+2))
+    allocate(u(-1:nx+2,-1:ny+2))
+    allocate(v(-1:nx+2,-1:ny+2))
     allocate(p(-1:nx+2,-1:ny+2))
  
 

@@ -14,8 +14,19 @@ module advance_module
 
     call set_dt 
     print *,'Step', step,'dt', dt
-  
-  ! Step 1 - calculate 
+
+    ! 1 - Calculate the advective velocities
+
+    ! 1A -  calculate  time-centered interface states for the normal 
+    ! velocities
+    ! (list var names here once you know exactly what is needed)
+
+    do iy = -1, ny+2 ! limits for values on x boundaries, y center
+    do ix = -2, nx+2 ! i.e. x faces
+      uhxl(ix,iy) = 0.0
+    end do
+    end do
+
   end subroutine advance
 
   subroutine set_dt

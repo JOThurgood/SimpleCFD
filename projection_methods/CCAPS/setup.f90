@@ -23,7 +23,7 @@ module setup
 
   end subroutine initial_setup
 
-  subroutine allocate_global_arrays
+  subroutine allocate_global_arrays 
 
     ! setup grid 
 

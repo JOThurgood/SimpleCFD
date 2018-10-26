@@ -17,15 +17,15 @@ module setup
     call user_control ! assign user control parameters
     call allocate_global_arrays
     call set_ic 
-    print *, nx
-    print *, xc
-    print *, p
 
   end subroutine initial_setup
 
   subroutine allocate_global_arrays 
 
     ! setup grid 
+
+    ! This method only requires 1 guard but I use two for future
+    ! expansion..
 
     allocate(xc(-1:nx+2))  !cell center (cc) - counts from 1 to nx
     allocate(xb(-2:nx+2))  !cell boundary (cb) - counts from 0 to nx
@@ -47,10 +47,22 @@ module setup
 
     ! setup the cell-centered arrays of primative variables
 
-    allocate(vx(-1:nx+2,-1:ny+2))
-    allocate(vy(-1:nx+2,-1:ny+2))
+    allocate(u(-1:nx+2,-1:ny+2))
+    allocate(v(-1:nx+2,-1:ny+2))
     allocate(p(-1:nx+2,-1:ny+2))
  
+    ! time centered left and right interface states, defined on
+    ! the MAC grid
+  
+    allocate(uhxl(-2:nx+2,-1:ny+2)) ! uhxl - u hat xface left state
+    allocate(uhxr(-2:nx+2,-1:ny+2)) 
+    allocate(vhxl(-2:nx+2,-1:ny+2))
+    allocate(vhxr(-2:nx+2,-1:ny+2)) 
+  
+    allocate(uhyl(-1:nx+2,-2:ny+2)) ! uhxl - u hat yface "left" state 
+    allocate(uhyr(-1:nx+2,-2:ny+2)) ! (aka "bottom")
+    allocate(vhyl(-1:nx+2,-2:ny+2)) 
+    allocate(vhyr(-1:nx+2,-2:ny+2)) 
 
   end subroutine allocate_global_arrays
 

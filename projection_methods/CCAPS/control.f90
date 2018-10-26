@@ -19,6 +19,8 @@ module control
 
     nx = 10
     ny = nx
+  
+    CFL = 0.8_num ! CFL modifier
 
   end subroutine user_control
 

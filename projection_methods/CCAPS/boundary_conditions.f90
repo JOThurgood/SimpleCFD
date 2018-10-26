@@ -11,7 +11,6 @@ module boundary_conditions
   contains
 
   subroutine velocity_bcs
-    print *,'velocity_bcs stub'
     ! Currently hard-coded as doubly-periodic
     ! (this is suitable for the test problem)
 

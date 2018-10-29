@@ -167,7 +167,7 @@ module advance_module
 
   real(num) function riemann(a,b)  
     real(num), intent(in) :: a, b 
-    if ( (a > 0.0_num) .and. (a+b>0.0_num) ) then
+    if ( (a > 0.0_num) .and. ( (a+b)>0.0_num) ) then
       riemann = a
     else if ( (a <= 0.0_num) .and. (b >= 0.0_num) ) then
       riemann = 0.0_num

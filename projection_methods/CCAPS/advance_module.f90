@@ -118,15 +118,14 @@ module advance_module
     do iy = 0, ny
     do ix = 0, ny
       if (iy /= 0) then !can do the xface stuff
-        transv = 0.5_num * (vha(ix,iy-1) + vha(ix,iy))
-        gp = 0.0_num !pressure grad - should be an array you remember 
-        ul(ix,iy) = uhx(ix,iy) - 0.5_num * dt * (transv   - gp) 
+!        transv = 0.5_num * (vha(ix,iy-1) + vha(ix,iy))
+!        gp = 0.0_num !pressure grad stub - should be full array
+!        ul(ix,iy) = uhx(ix,iy) - 0.5_num * dt * (transv   - gp) 
         !ur - correct form ? 
       endif
       if (ix /= 0) then !can do the yface stuff
-        gp = 0.0_num
-        vl(ix,iy) = vhy(ix,iy) - 0.5_num * dt * trabsv  
-
+!       gp = 0.0_num
+!       vl(ix,iy) = vhy(ix,iy) - 0.5_num * dt * t 
      endif
     enddo
     enddo

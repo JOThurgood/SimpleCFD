@@ -50,8 +50,8 @@ module advance_module
 
     ! maybe easier to iterate through the cc vars and assign to offset 
 
-    do iy = 1, ny
-    do ix = 1, nx  !xc counts from 1 to nx, <=0 and >nx are ghosts 
+    do iy = 0, ny 
+    do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
   
       du = minmod((u(ix,iy)-u(ix-1,iy))/dx,(u(ix+1,iy)-u(ix,iy)/dx))
       uhxl(ix,iy) = u(ix,iy) + &
@@ -64,6 +64,7 @@ module advance_module
       dv = minmod((v(ix,iy)-v(ix-1,iy))/dx, (v(ix+1,iy)-v(ix,iy))/dx) 
       vhxl(ix,iy) = v(ix,iy) + & 
         & 0.5_num * (1.0_num - dt * u(ix,iy) / dx ) * dv
+
       dv = minmod((v(ix+1,iy)-v(ix,iy))/dx, (v(ix+2,iy)-v(ix+1,iy))/dx) 
       vhxr(ix,iy) = v(ix+1,iy) - & 
         & 0.5_num * (1.0_num + dt * u(ix+1,iy) / dx) * dv 
@@ -71,9 +72,12 @@ module advance_module
     enddo 
     enddo
 
+    ! 1B - Use the normal velocities to calculate the advective vel
+    ! by solving a Riemann problem
 
 
 
+  
   end subroutine advance
 
   subroutine set_dt

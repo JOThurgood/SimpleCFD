@@ -113,7 +113,6 @@ module advance_module
     ! 1D construct the full left and right predictions of normal
     ! velocities on the interfaces
 
-    ! do you need a bc call? 
 
     do iy = 0, ny
     do ix = 0, ny

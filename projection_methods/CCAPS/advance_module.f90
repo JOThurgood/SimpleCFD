@@ -104,6 +104,17 @@ module advance_module
     ! by solving a Riemann problem
 
 
+    do iy = 0, ny
+    do ix = 0, ny
+      if (iy /= 0) then !can do the xface stuff
+        uha(ix,iy) = riemann(uhxl(ix,iy),uhxr(ix,iy))
+      endif
+      if (ix /= 0) then !can do the yface stuff
+        vha(ix,iy) = riemann(vhyl(ix,iy), vhyr(ix,iy))
+      endif
+    enddo
+    enddo
+
   
   end subroutine advance
 
@@ -119,14 +130,25 @@ module advance_module
 
   real(num) function minmod(a,b)  
     real(num), intent(in) :: a, b 
-    if ( (abs(a) < abs(b)) .and. (a*b > 0) ) then
+    if ( (abs(a) < abs(b)) .and. (a*b > 0.0_num) ) then
       minmod = a        
-    else if ( (abs(a) > abs(b)) .and. (a*b > 0) ) then
+    else if ( (abs(a) > abs(b)) .and. (a*b > 0.0_num) ) then
       minmod = b        
     else                
       minmod = 0.0_num
     endif               
   end function minmod
+
+  real(num) function riemann(a,b)  
+    real(num), intent(in) :: a, b 
+    if ( (a > 0.0_num) .and. (a+b>0.0_num) ) then
+      riemann = a
+    else if ( (a <= 0.0_num) .and. (b >= 0.0_num) ) then
+      riemann = 0.0_num
+    else 
+      riemann = b
+    endif 
+  end function riemann
 
 end module advance_module
 

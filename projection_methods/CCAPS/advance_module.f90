@@ -68,8 +68,6 @@ module advance_module
       vhxr(ix,iy) = v(ix+1,iy) - & 
         & 0.5_num * (1.0_num + dt * u(ix+1,iy) / dx) * dv 
       
-
-
     enddo 
     enddo
 

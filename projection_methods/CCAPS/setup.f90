@@ -67,6 +67,12 @@ module setup
     allocate(uha(-2:nx+2,-1:ny+2)) ! uhxl - u hat advective (x face)
     allocate(vha(-1:nx+2,-2:ny+2)) ! v hat advective (y face)
 
+    allocate(ul(-2:nx+2,-1:ny+2)) ! full prediction for normal vel left state
+    allocate(ur(-2:nx+2,-1:ny+2)) ! near end of step 1C
+    allocate(vl(-1:nx+2,-2:ny+2)) !
+    allocate(vr(-1:nx+2,-2:ny+2)) !
+
+
   end subroutine allocate_global_arrays
 
 end module setup

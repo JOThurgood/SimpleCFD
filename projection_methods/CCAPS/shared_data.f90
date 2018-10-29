@@ -21,4 +21,6 @@ module shared_data
 
   real(num), dimension(:,:), allocatable :: uha, vha
 
+  real(num), dimension(:,:), allocatable :: ul, ur, vl, vr 
+
 end module shared_data

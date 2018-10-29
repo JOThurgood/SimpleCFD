@@ -110,7 +110,19 @@ module advance_module
         uha(ix,iy) = riemann(uhxl(ix,iy),uhxr(ix,iy))
       endif
       if (ix /= 0) then !can do the yface stuff
-        vha(ix,iy) = riemann(vhyl(ix,iy), vhyr(ix,iy))
+        vha(ix,iy) = riemann(vhyl(ix,iy), vhyr(ix,iy)) 
+      endif
+    enddo
+    enddo
+
+    ! 1C - Upwind the hat states using the advective vels 
+
+    do iy = 0, ny
+    do ix = 0, ny
+      if (iy /= 0) then !can do the xface stuff
+        uhx(ix,iy) = upwind(uha(ix,iy),uhxl(ix,iy),uhxr(ix,iy))
+      endif
+      if (ix /= 0) then !can do the yface stuff
       endif
     enddo
     enddo
@@ -149,6 +161,17 @@ module advance_module
       riemann = b
     endif 
   end function riemann
+
+  real(num) function upwind(sadv, a, b)
+    real(num), intent(in) :: sadv,a,b
+    if (sadv > 0.0_num) then
+      upwind = a
+    else if (sadv < 0.0_num) then
+      upwind = b
+    else
+      upwind = 0.0_num
+    endif
+  end function upwind
 
 end module advance_module
 

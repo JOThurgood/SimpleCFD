@@ -64,6 +64,9 @@ module setup
     allocate(vhyl(-1:nx+2,-2:ny+2)) 
     allocate(vhyr(-1:nx+2,-2:ny+2)) 
 
+    allocate(uha(-2:nx+2,-1:ny+2)) ! uhxl - u hat advective (x face)
+    allocate(vha(-1:nx+2,-2:ny+2)) ! v hat advective (y face)
+
   end subroutine allocate_global_arrays
 
 end module setup

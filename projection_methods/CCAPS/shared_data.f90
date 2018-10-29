@@ -20,6 +20,7 @@ module shared_data
   real(num), dimension(:,:), allocatable :: uhyl, uhyr, vhyl, vhyr
 
   real(num), dimension(:,:), allocatable :: uha, vha
+  real(num), dimension(:,:), allocatable :: uhx, vhx, uhy, vhy
 
   real(num), dimension(:,:), allocatable :: ul, ur, vl, vr 
 

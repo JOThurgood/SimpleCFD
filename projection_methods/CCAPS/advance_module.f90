@@ -14,6 +14,8 @@ module advance_module
   subroutine advance
 
     real(num) :: du, dv
+    real(num) :: gp
+    real(num) :: transv
 
     call set_dt 
     print *,'Step', step,'dt', dt
@@ -23,32 +25,9 @@ module advance_module
 
     ! 1A -  calculate  time-centered interface states for the normal 
     ! velocities
-    ! (list var names here once you know exactly what is needed)
 
     ! be careful with indicies (conversion between i+1/2 type notation 
     ! and separate indicies for xc and xb values)
-
-!    do iy =  1, ny ! limits for values on x boundaries, y center
-!    do ix =  0, nx ! i.e. x faces
-!
-!      du = minmod((u(ix-1,iy)-u(ix-2,iy))/dx, (u(ix,iy)-u(ix-1,iy))/dx)
-!
-!      uhxl(ix,iy) = u(ix-1,iy) + & 
-!        & 0.5_num * (1.0_num - dt * u(ix-1,iy) / dx ) * du
-!      du = 0.0_num
-!      uhxr(ix,iy) = u(ix,iy) - & 
-!        & 0.5_num * (1.0_num + dt * u(ix,iy) / dx) * du 
-!      dv = 0.0_num
-!      vhxl(ix,iy) = v(ix-1,iy) + & 
-!        & 0.5_num * (1.0_num - dt * u(ix-1,iy) / dx ) * dv
-!      dv = 0.0_num
-!      vhxr(ix,iy) = v(ix,iy) - & 
-!        & 0.5_num * (1.0_num + dt * u(ix,iy) / dx) * dv 
-!
-!    end do
-!    end do
-
-    ! maybe easier to iterate through the cc vars and assign to offset 
 
     ! x faced data 
 
@@ -115,19 +94,55 @@ module advance_module
     enddo
     enddo
 
-    ! 1C - Upwind the hat states using the advective vels 
+    ! 1C - Upwind the hat states (normal velocity predictions)
+    ! using the advective vels 
 
     do iy = 0, ny
     do ix = 0, ny
       if (iy /= 0) then !can do the xface stuff
         uhx(ix,iy) = upwind(uha(ix,iy),uhxl(ix,iy),uhxr(ix,iy))
+        vhx(ix,iy) = upwind(uha(ix,iy),vhxl(ix,iy),vhxr(ix,iy)) 
       endif
       if (ix /= 0) then !can do the yface stuff
+        uhy(ix,iy) = upwind(vha(ix,iy),uhyl(ix,iy),uhyr(ix,iy))
+        vhy(ix,iy) = upwind(vha(ix,iy),vhyl(ix,iy),vhyr(ix,iy)) 
       endif
     enddo
     enddo
 
-  
+    ! 1D construct the full left and right predictions of normal
+    ! velocities on the interfaces
+
+    ! do you need a bc call? 
+
+    do iy = 0, ny
+    do ix = 0, ny
+      if (iy /= 0) then !can do the xface stuff
+        transv = 0.5_num * (vha(ix,iy-1) + vha(ix,iy))
+        gp = 0.0_num !pressure grad - should be an array you remember 
+        ul(ix,iy) = uhx(ix,iy) - 0.5_num * dt * (transv   - gp) 
+        !ur - correct form ? 
+      endif
+      if (ix /= 0) then !can do the yface stuff
+        gp = 0.0_num
+        vl(ix,iy) = vhy(ix,iy) - 0.5_num * dt * trabsv  
+
+     endif
+    enddo
+    enddo
+
+    ! 1E Final riemann solve for full normal velocities 
+    ! (sometimes AKA the MAC velocities)
+
+    ! Step 2 : MAC Projection 
+
+    ! Step 3: Reconstruct interface states consistent with MAC-projected
+    ! velocities 
+
+    ! Step 4: Provisional update for full dt (star state)
+
+    ! Step 5: Project provisional field to constraint
+ 
   end subroutine advance
 
   subroutine set_dt

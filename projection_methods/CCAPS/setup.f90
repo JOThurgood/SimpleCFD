@@ -48,7 +48,7 @@ module setup
 
     allocate(u(-1:nx+2,-1:ny+2))
     allocate(v(-1:nx+2,-1:ny+2))
-    allocate(p(-1:nx+2,-1:ny+2))
+!    allocate(p(-1:nx+2,-1:ny+2))
  
     ! time centered left and right interface states, defined on
     ! the MAC grid
@@ -95,12 +95,13 @@ module setup
     allocate(vx(-2:nx+2,-1:ny+2))
     allocate(vy(-1:nx+2,-2:ny+2))
 
-    !macu is ux, and macv is vy. Should remove this redundancy..  
-
     allocate(divu(-1:nx+1,-1:ny+2)) ! divergence of mac velocities, cell centers
 
     allocate(phi(-1:nx+1,-1:ny+2))
     phi = 0.0_num !initial guess in step 0
+
+    allocate(ustar(-1:nx+2,-1:ny+2))
+    allocate(vstar(-1:nx+2,-1:ny+2))
 
   end subroutine allocate_global_arrays
 

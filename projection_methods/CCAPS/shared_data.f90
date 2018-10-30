@@ -35,4 +35,8 @@ module shared_data
   real(num), dimension(:,:), allocatable :: phi !cc 
 
   real(num), parameter :: pi = 4.0_num * ATAN(1.0_num)
+
+  real(num), dimension(:,:), allocatable :: ustar, vstar
+
+
 end module shared_data

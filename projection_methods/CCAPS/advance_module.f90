@@ -26,7 +26,7 @@ module advance_module
     call step_3 ! Step 3: Reconstruct interface states consistent with MAC-projected
     ! velocities 
 
-    ! Step 4: Provisional update for full dt (star state)
+    call step_4 ! Step 4: Provisional update for full dt (star state)
 
     ! Step 5: Project provisional field to constraint
  
@@ -356,6 +356,25 @@ module advance_module
 !!!  
 
   end subroutine step_3
+
+  subroutine step_4
+
+    real(num) :: Au, Av, gp ! evaluation of advection term
+
+    do iy = 1, ny
+    do ix = 1, nx
+      Au = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (ux(ix,iy)-ux(ix-1,iy))/dx &
+        &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (uy(ix,iy)-uy(ix,iy-1))/dy 
+      Av = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (vx(ix,iy)-vx(ix-1,iy))/dx &
+        &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (vy(ix,iy)-vy(ix,iy-1))/dy 
+      gp = 0.0_num 
+      ustar(ix,iy) = u(ix,iy) - dt * Au - dt * gp
+      vstar(ix,iy) = v(ix,iy) - dt * Av - dt * gp
+    enddo
+    enddo
+
+
+  end subroutine step_4
 
   subroutine set_dt
 

@@ -116,18 +116,27 @@ module advance_module
     do iy = 0, ny
     do ix = 0, ny
       if (iy /= 0) then !can do the xface stuff
-        transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy) ) &
-          & * (uhy(ix,iy)-uhy(ix,iy-1 )) /dy
+        transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
+          & * (uhy(ix,iy)-uhy(ix,iy-1 )) / dy
         gp = -0.0_num 
         ul(ix,iy) = uhxl(ix,iy)  + transv + gp
   
-        transv = -0.5_num * dt * 0.5_num * (vha(ix+1,iy-1)+vha(ix+1,iy)) &
+
+        transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (uhy(ix+1,iy)-uhy(ix+1,iy-1 )) /dy
         gp = -0.0_num 
         ur(ix,iy) = uhxr(ix,iy)  + transv + gp
-  
       endif
       if (ix /= 0) then !can do the yface stuff
+        transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
+          & * (vhx(ix,iy) - vhx(ix-1,iy)) / dx
+        gp = -0.0_num
+        vl(ix,iy) = vhyl(ix,iy) + transv + gp
+
+        transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
+          & * (vhx(ix,iy+1) - vhx(ix-1,iy+1)) / dx
+        gp = -0.0_num
+        vr(ix,iy) = vhyr(ix,iy) + transv + gp
 
      endif
     enddo

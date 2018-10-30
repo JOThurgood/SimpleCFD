@@ -6,7 +6,7 @@ module boundary_conditions
 
   private
 
-  public :: velocity_bcs
+  public :: velocity_bcs, phi_bcs
 
   contains
 
@@ -33,6 +33,16 @@ module boundary_conditions
     v(:,ny+1) = v(:,2)
 
   end subroutine velocity_bcs
+
+  subroutine phi_bcs
+    ! the relaxation only needs 1 ghost
+    phi(0,:) = phi(nx,:)
+    phi(nx+1,:) = phi(1,:)
+    phi(:,0) = phi(:,ny)
+    phi(:,ny+1) = phi(:,1)   
+
+  end subroutine phi_bcs
+
 
 end module boundary_conditions
 

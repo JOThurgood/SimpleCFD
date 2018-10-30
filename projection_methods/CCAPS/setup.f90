@@ -82,8 +82,14 @@ module setup
     allocate(ua(-2:nx+2,-1:ny+2)) ! ua - u advective (x face)
     allocate(va(-1:nx+2,-2:ny+2)) ! v  advective (y face)
 
-    allocate(macu(-2:nx+2,-1:ny+2)) ! mac velocities
+    allocate(macu(-2:nx+2,-1:ny+2)) ! mac velocities on faces
     allocate(macv(-1:nx+2,-2:ny+2)) 
+
+    allocate(divu(-1:nx+1,-1:ny+2)) ! divergence of mac velocities, cell centers
+
+    allocate(phi(-1:nx+1,-1:ny+2))
+    phi = 0.0_num !initial guess in step 0
+
   end subroutine allocate_global_arrays
 
 end module setup

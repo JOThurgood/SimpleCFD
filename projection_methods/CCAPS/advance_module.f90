@@ -21,7 +21,7 @@ module advance_module
 
     call step_1 ! Calculate time-centered normal velocities on the interfaces
 
-    ! Step 2 : MAC Projection 
+    call step_2 ! Step 2 : MAC Projection 
 
     ! Step 3: Reconstruct interface states consistent with MAC-projected
     ! velocities 
@@ -187,6 +187,69 @@ module advance_module
 
   end subroutine step_1
   
+  subroutine step_2
+
+    real(num) :: residual, L_phi
+    real(num) :: tol = 1e-3_num
+    integer :: relaxation_steps = 0
+    integer :: max_relaxation_steps = 10000
+
+    ! MAC Projection via Gauss-Seidel
+
+    print *, 'Step2'
+
+
+    ! calc divU at cc using the MAC velocities
+    do iy = 1, ny
+    do ix = 1, nx
+      divu(ix,iy) = (macu(ix,iy) - macu(ix-1,iy) ) /dx &
+        & + (macv(ix,iy) - macv(ix,iy-1))/dy
+    enddo
+    enddo
+
+    print *, 'max divu',maxval(abs(divu))
+
+    call phi_bcs 
+
+    do 
+
+      relaxation_steps = relaxation_steps + 1
+
+      do iy = 1, ny
+      do ix = 1, nx
+        phi(ix,iy) = 0.25_num * ( & 
+          & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
+          - dx*dy * divu(ix,iy) ) 
+      enddo
+      enddo
+
+      ! reset the maxmimum val of residual
+      residual = -1e6_num 
+   
+      do iy = 1, ny  
+      do ix = 1, nx  
+        L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) &
+          & / dx**2 + & 
+          & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
+   
+        residual = max(residual, abs(divu(ix,iy) - L_phi))
+!        print *,abs(divu(ix,iy)-L_phi)  
+    end do
+      end do 
+
+      if (residual <= tol) exit
+      if (relaxation_steps > max_relaxation_steps) then
+        print *, 'failed to converge quickly, STOP'
+        STOP 
+      endif
+    enddo
+
+    print *, 'Step', step,'relaxation finished in',relaxation_steps, &
+      & 'residual',residual
+
+  end subroutine step_2
+
+
 
   subroutine set_dt
 

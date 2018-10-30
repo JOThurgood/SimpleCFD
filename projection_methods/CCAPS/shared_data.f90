@@ -27,6 +27,9 @@ module shared_data
   real(num), dimension(:,:), allocatable :: ua, va
   real(num), dimension(:,:), allocatable :: macu, macv
 
+  real(num), dimension(:,:), allocatable :: divu ! divergence of MAC, cc
 
+  real(num), dimension(:,:), allocatable :: phi !cc 
 
+  real(num), parameter :: pi = 4.0_num * ATAN(1.0_num)
 end module shared_data

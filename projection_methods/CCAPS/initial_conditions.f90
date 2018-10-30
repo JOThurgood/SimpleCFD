@@ -14,8 +14,17 @@ module initial_conditions
 
     ! NB: nx, t_end etc is set in control.f90
 
-    u = 1.0_num
-    v = 0.0_num
+    real(num) :: x,y
+
+    do iy = -1,ny+1
+    do ix = -1,nx+1
+      x = xc(ix)
+      y = yc(iy)
+      u(ix,iy) = 1.0_num - 2.0_num * cos(2.0_num*pi*x)*sin(2.0_num*pi*y)
+      v(ix,iy) = 1.0_num + 2.0_num * sin(2.0_num*pi*x)*cos(2.0_num*pi*y)
+    enddo
+    enddo
+
     p = 1.0_num
 
   end subroutine set_ic

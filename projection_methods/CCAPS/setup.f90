@@ -79,7 +79,11 @@ module setup
     allocate(vl(-1:nx+2,-2:ny+2)) !
     allocate(vr(-1:nx+2,-2:ny+2)) !
 
+    allocate(ua(-2:nx+2,-1:ny+2)) ! ua - u advective (x face)
+    allocate(va(-1:nx+2,-2:ny+2)) ! v  advective (y face)
 
+    allocate(macu(-2:nx+2,-1:ny+2)) ! mac velocities
+    allocate(macv(-1:nx+2,-2:ny+2)) 
   end subroutine allocate_global_arrays
 
 end module setup

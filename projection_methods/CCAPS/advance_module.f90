@@ -13,14 +13,30 @@ module advance_module
 
   subroutine advance_dt 
 
-    real(num) :: du, dv
-    real(num) :: gp
-    real(num) :: transv
 
     call set_dt 
     print *,'Step', step,'dt', dt
 
     call velocity_bcs
+
+    call step_1 ! Calculate time-centered normal velocities on the interfaces
+
+    ! Step 2 : MAC Projection 
+
+    ! Step 3: Reconstruct interface states consistent with MAC-projected
+    ! velocities 
+
+    ! Step 4: Provisional update for full dt (star state)
+
+    ! Step 5: Project provisional field to constraint
+ 
+  end subroutine advance_dt
+
+  subroutine step_1
+
+    real(num) :: du, dv
+    real(num) :: gp
+    real(num) :: transv
 
     ! 1 - Calculate the advective velocities
 
@@ -142,19 +158,35 @@ module advance_module
     enddo
     enddo
 
-    ! 1E Final riemann solve for full normal velocities 
+    ! 1E Final riemann solve + upwinding for full normal velocities 
     ! (sometimes AKA the MAC velocities)
 
-    ! Step 2 : MAC Projection 
 
-    ! Step 3: Reconstruct interface states consistent with MAC-projected
-    ! velocities 
+    do iy = 0, ny
+    do ix = 0, ny
+      if (iy /= 0) then !can do the xface stuff
+        ua(ix,iy) = riemann(ul(ix,iy),ur(ix,iy))
+      endif
+      if (ix /= 0) then !can do the yface stuff
+        va(ix,iy) = riemann(vl(ix,iy), vr(ix,iy)) 
+      endif
+    enddo
+    enddo
 
-    ! Step 4: Provisional update for full dt (star state)
+    do iy = 0, ny
+    do ix = 0, ny
+      if (iy /= 0) then !can do the xface stuff
+        macu(ix,iy) = upwind(ua(ix,iy),ul(ix,iy),ur(ix,iy))
+      endif
+      if (ix /= 0) then !can do the yface stuff
+        macv(ix,iy) = upwind(va(ix,iy),vl(ix,iy),vr(ix,iy)) 
+      endif
+    enddo
+    enddo
 
-    ! Step 5: Project provisional field to constraint
- 
-  end subroutine advance_dt
+
+  end subroutine step_1
+  
 
   subroutine set_dt
 

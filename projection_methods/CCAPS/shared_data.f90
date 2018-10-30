@@ -29,6 +29,7 @@ module shared_data
   real(num), dimension(:,:), allocatable :: ua, va
   real(num), dimension(:,:), allocatable :: macu, macv
 
+  real(num), dimension(:,:), allocatable :: ux, vx, uy, vy !u on x face, v on x face..
   real(num), dimension(:,:), allocatable :: divu ! divergence of MAC, cc
 
   real(num), dimension(:,:), allocatable :: phi !cc 

@@ -90,6 +90,13 @@ module setup
     allocate(macu(-2:nx+2,-1:ny+2)) ! mac velocities on faces
     allocate(macv(-1:nx+2,-2:ny+2)) 
 
+    allocate(ux(-2:nx+2,-1:ny+2)) ! u on x face
+    allocate(uy(-1:nx+2,-2:ny+2)) !u on y face
+    allocate(vx(-2:nx+2,-1:ny+2))
+    allocate(vy(-1:nx+2,-2:ny+2))
+
+    !macu is ux, and macv is vy. Should remove this redundancy..  
+
     allocate(divu(-1:nx+1,-1:ny+2)) ! divergence of mac velocities, cell centers
 
     allocate(phi(-1:nx+1,-1:ny+2))

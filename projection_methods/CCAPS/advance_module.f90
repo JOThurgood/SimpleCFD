@@ -134,18 +134,31 @@ module advance_module
     do iy = 0, ny
     do ix = 0, ny
       if (iy /= 0) then !can do the xface stuff
+        ! normal components
+        ! left
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
-          & * (uhy(ix,iy)-uhy(ix,iy-1 )) / dy
+          & * (uhy(ix,iy)-uhy(ix,iy-1)) / dy
         gp = -0.0_num 
         uxl(ix,iy) = uhxl(ix,iy)  + transv + gp
-  
-
+        ! right
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (uhy(ix+1,iy)-uhy(ix+1,iy-1 )) /dy
         gp = -0.0_num 
         uxr(ix,iy) = uhxr(ix,iy)  + transv + gp
+        ! also calc the tangential vel states for step 3
+        ! left 
+        transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
+          & * (vhy(ix,iy)-vhy(ix,iy-1)) / dy
+        gp = -0.0_num 
+        vxl(ix,iy) = vhxl(ix,iy) + transv + gp
+        ! right 
+        transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
+          & * (vhy(ix+1,iy)-vhy(ix+1,iy-1 )) /dy
+        gp = -0.0_num 
+        vxr(ix,iy) = vhxr(ix,iy) + transv + gp 
       endif
       if (ix /= 0) then !can do the yface stuff
+        ! normal components
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (vhx(ix,iy) - vhx(ix-1,iy)) / dx
         gp = -0.0_num
@@ -155,6 +168,17 @@ module advance_module
           & * (vhx(ix,iy+1) - vhx(ix-1,iy+1)) / dx
         gp = -0.0_num
         vyr(ix,iy) = vhyr(ix,iy) + transv + gp
+
+        ! also calc the tangential vel states for step 3
+        transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
+          & * (uhx(ix,iy) - uhx(ix-1,iy)) / dx
+        gp = -0.0_num
+        uyl(ix,iy) = uhyl(ix,iy) + transv + gp
+
+        transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
+          & * (uhx(ix,iy+1) - uhx(ix-1,iy+1)) / dx
+        gp = -0.0_num
+        uyr(ix,iy) = uhyr(ix,iy) + transv + gp
 
      endif
     enddo
@@ -293,7 +317,43 @@ module advance_module
 
     ! I think we only need to re-do D (extra terms) and E 
 
+    ! Step 1D calculated the full tangential velocity states 
+    ! in anticipation of this - only need E which differs 
 
+    ! Step 3E Upwind face components based upon MAC vels
+    
+
+    do iy = 0, ny
+    do ix = 0, ny
+      if (iy /= 0) then !can do the xface stuff
+        ux(ix,iy) = upwind(macu(ix,iy),uxl(ix,iy),uxr(ix,iy))
+        vx(ix,iy) = upwind(macu(ix,iy),vxl(ix,iy),vxr(ix,iy))
+      endif
+      if (ix /= 0) then !can do the yface stuff
+        uy(ix,iy) = upwind(macv(ix,iy),uyl(ix,iy),uyr(ix,iy))
+        vy(ix,iy) = upwind(macv(ix,iy),vyl(ix,iy),vyr(ix,iy)) 
+      endif
+    enddo
+    enddo
+
+!!!    ! If you uncommment the following, it suggests that step_3 does nothing for
+!!!    ! the test IC...
+!!!    ! might just be that you're divergence cleaning adjustment was consistent 
+!!!    ! with the initial upwinding.... Not 100% happy with this yet
+!!! 
+!!!
+!!!   ! check the equivalent to the macu and macv (ux and vy) still has
+!!!   ! small divergence?
+!!!
+!!!     do iy = 1, ny
+!!!     do ix = 1, nx
+!!!       divu(ix,iy) = (ux(ix,iy) - ux(ix-1,iy) ) /dx &
+!!!         & + (vy(ix,iy) - vy(ix,iy-1))/dy
+!!!     enddo
+!!!     enddo
+!!!  
+!!!     print *, 'max divu after 3E',maxval(abs(divu))
+!!!  
 
   end subroutine step_3
 

@@ -129,6 +129,8 @@ module advance_module
     ! 1D construct the full left and right predictions of normal
     ! velocities on the interfaces
 
+    ! if you find bugs in 1D - check not also in 3D which is similar
+
     do iy = 0, ny
     do ix = 0, ny
       if (iy /= 0) then !can do the xface stuff
@@ -161,6 +163,7 @@ module advance_module
     ! 1E Final riemann solve + upwinding for full normal velocities 
     ! (sometimes AKA the MAC velocities)
 
+    ! if you find bugs here check 3E also
 
     do iy = 0, ny
     do ix = 0, ny
@@ -285,6 +288,10 @@ module advance_module
     ! for consistency
     ! (redo some of step 1 but use mac velocities  for upwinding)
 
+    ! Because you haven't been deallocating arrays etc, you can directly
+    ! skip a few of the recalculations
+
+    ! I think we only need to re-do D (extra terms) and E 
 
 
 

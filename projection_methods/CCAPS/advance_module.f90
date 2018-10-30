@@ -280,7 +280,15 @@ module advance_module
 
   end subroutine step_2
 
+  subroutine step_3
+    ! reconstruct the interface states using the MAC velocities
+    ! for consistency
+    ! (redo some of step 1 but use mac velocities  for upwinding)
 
+
+
+
+  end subroutine step_3
 
   subroutine set_dt
 

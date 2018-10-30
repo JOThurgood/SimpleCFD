@@ -22,7 +22,6 @@ program smooth1
   integer(num) :: nsteps 
 
   real(num) :: tol
-  real(num) :: u, v
   real(num) :: x_min, x_max 
   real(num) :: y_min, y_max 
   real(num) :: dx, dy
@@ -39,17 +38,18 @@ program smooth1
   real(num), dimension(:,:), allocatable :: v_reconstructed
   real(num), dimension(:,:), allocatable :: phi
   real(num), dimension(:,:), allocatable:: D_pol ! numerical div of polluted velocity field
+  real(num) :: L2, old_L2
 
   ! simulation / domain / grid control parameters
 
-  nsteps = 1e6
+  nsteps = 10000 ! max no of steps before crashing out
   nx = 64 
   ny = nx ! currently hardcoded for dx = dy later in the code
   x_min = 0.0_num 
   x_max = 1.0_num
   y_min = x_min !
   y_max = x_max
-  tol = 1e-2_num !less than 1e-2 takes too long -> clear limitation of the method and slow convergence?
+  tol = 1e-14_num !less than 1e-2 takes too long -> clear limitation of the method and slow convergence?
 
   ! array allocation and initialisation
 
@@ -109,14 +109,13 @@ program smooth1
 
   allocate(phi(0:nx+1,0:ny+1))
 
-!  phi = 1.0_num
 
-  do iy = 0, ny + 1
-  do ix = 0, nx + 1
-    phi(ix,iy) = (u_pol(ix+1,iy) - u_pol(ix-1,iy)) / 2.0_num / dx + &
-      & (v_pol(ix,iy+1) - v_pol(ix,iy-1)) / 2.0_num / dy
-  end do
-  enddo 
+!  do iy = 0, ny + 1
+!  do ix = 0, nx + 1
+!    phi(ix,iy) = (u_pol(ix+1,iy) - u_pol(ix-1,iy)) / 2.0_num / dx + &
+!      & (v_pol(ix,iy+1) - v_pol(ix,iy-1)) / 2.0_num / dy
+!  end do
+!  enddo 
 
   phi = 0.0_num  
 
@@ -155,9 +154,16 @@ program smooth1
     end do
     end do 
 
+    ! re-apply bc ? perversely seems to have a -ve effect on error
+
+    !phi(0,:) = phi(nx,:)
+    !phi(nx+1,:) = phi(1,:)
+    !phi(:,0) = phi(:,ny)
+    !phi(:,ny+1) = phi(:,1)
+
     ! reset the maxmimum val of residual
     residual = -1e6_num 
-
+    L2 = 0.0_num
     do iy = 1, ny 
     do ix = 1, nx 
       L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) &
@@ -165,12 +171,15 @@ program smooth1
         & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
 
       residual = max(residual, abs(D_pol(ix,iy) - L_phi))
+      L2 = L2 + abs(D_pol(ix,iy)-L_phi)**2
     end do
     end do 
-
+      L2 = L2 / REAL(nx*ny,num)
     print *, 'Step',step,'completed, residual error is',residual
+    print *, 'Step',step,'completed, L2 is',residual
  
-   if ((step >= nsteps .and. nsteps >= 0) .or. (residual <= tol)) exit
+   if ((step >= nsteps .and. nsteps >= 0) .or. (abs(L2-old_L2) <= tol)) exit
+   old_L2 = L2
   end do
 
   print *, 'Relaxation completed in',step,'steps'

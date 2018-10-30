@@ -7,11 +7,11 @@ module advance_module
 
   private 
 
-  public :: advance
+  public :: advance_dt 
 
   contains
 
-  subroutine advance
+  subroutine advance_dt 
 
     real(num) :: du, dv
     real(num) :: gp
@@ -113,18 +113,22 @@ module advance_module
     ! 1D construct the full left and right predictions of normal
     ! velocities on the interfaces
 
-
     do iy = 0, ny
     do ix = 0, ny
       if (iy /= 0) then !can do the xface stuff
-!        transv = 0.5_num * (vha(ix,iy-1) + vha(ix,iy))
-!        gp = 0.0_num !pressure grad stub - should be full array
-!        ul(ix,iy) = uhx(ix,iy) - 0.5_num * dt * (transv   - gp) 
-        !ur - correct form ? 
+        transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy) ) &
+          & * (uhy(ix,iy)-uhy(ix,iy-1 )) /dy
+        gp = -0.0_num 
+        ul(ix,iy) = uhxl(ix,iy)  + transv + gp
+  
+        transv = -0.5_num * dt * 0.5_num * (vha(ix+1,iy-1)+vha(ix+1,iy)) &
+          & * (uhy(ix+1,iy)-uhy(ix+1,iy-1 )) /dy
+        gp = -0.0_num 
+        ur(ix,iy) = uhxr(ix,iy)  + transv + gp
+  
       endif
       if (ix /= 0) then !can do the yface stuff
-!       gp = 0.0_num
-!       vl(ix,iy) = vhy(ix,iy) - 0.5_num * dt * t 
+
      endif
     enddo
     enddo
@@ -141,7 +145,7 @@ module advance_module
 
     ! Step 5: Project provisional field to constraint
  
-  end subroutine advance
+  end subroutine advance_dt
 
   subroutine set_dt
 

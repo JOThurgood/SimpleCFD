@@ -37,19 +37,19 @@ module advance_module
   
       du = minmod((u(ix,iy)-u(ix-1,iy))/dx,(u(ix+1,iy)-u(ix,iy))/dx)
       uhxl(ix,iy) = u(ix,iy) + &
-        0.5_num * (1.0_num - dt * u(ix,iy) / dx ) * du
+        0.5_num * (1.0_num - dt * u(ix,iy) / dx ) * du * dx
 
       du = minmod((u(ix+1,iy)-u(ix,iy))/dx,(u(ix+2,iy)-u(ix+1,iy))/dx)
       uhxr(ix,iy) = u(ix+1,iy) - &
-        0.5_num * (1.0_num + dt * u(ix+1,iy) / dx ) * du
+        0.5_num * (1.0_num + dt * u(ix+1,iy) / dx ) * du * dx
 
       dv = minmod((v(ix,iy)-v(ix-1,iy))/dx, (v(ix+1,iy)-v(ix,iy))/dx) 
       vhxl(ix,iy) = v(ix,iy) + & 
-        & 0.5_num * (1.0_num - dt * u(ix,iy) / dx ) * dv
+        & 0.5_num * (1.0_num - dt * u(ix,iy) / dx ) * dv * dx
 
       dv = minmod((v(ix+1,iy)-v(ix,iy))/dx, (v(ix+2,iy)-v(ix+1,iy))/dx) 
       vhxr(ix,iy) = v(ix+1,iy) - & 
-        & 0.5_num * (1.0_num + dt * u(ix+1,iy) / dx) * dv 
+        & 0.5_num * (1.0_num + dt * u(ix+1,iy) / dx) * dv * dx 
       
     enddo 
     enddo
@@ -61,19 +61,19 @@ module advance_module
 
       du = minmod( (u(ix,iy)-u(ix,iy-1))/dy, (u(ix,iy+1)-u(ix,iy))/dy)
       uhyl(ix,iy) = u(ix,iy) + &
-        & 0.5_num * (1.0_num - dt * u(ix,iy) / dy) * du
+        & 0.5_num * (1.0_num - dt * u(ix,iy) / dy) * du * dy
 
       du = minmod( (u(ix,iy+1)-u(ix,iy))/dy, (u(ix,iy+2)-u(ix,iy+1))/dy)
       uhyr(ix,iy) = u(ix,iy+1) - &
-        & 0.5_num * (1.0_num + dt * u(ix,iy+1) / dy) * du
+        & 0.5_num * (1.0_num + dt * u(ix,iy+1) / dy) * du * dy
 
       dv = minmod( (v(ix,iy)-v(ix,iy-1))/dy, (v(ix,iy+1)-v(ix,iy))/dy)
       vhyl(ix,iy) = v(ix,iy) + &
-        & 0.5_num * (1.0_num - dt * v(ix,iy) / dy ) * dv
+        & 0.5_num * (1.0_num - dt * v(ix,iy) / dy ) * dv * dy
 
       dv = minmod( (v(ix,iy+1)-v(ix,iy))/dy, (v(ix,iy+2)-v(ix,iy+1))/dy)
       vhyr(ix,iy) = v(ix,iy+1) - &
-        & 0.5_num * (1.0_num + dt * v(ix,iy+1) / dy) * dv
+        & 0.5_num * (1.0_num + dt * v(ix,iy+1) / dy) * dv * dy
 
     enddo
     enddo

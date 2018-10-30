@@ -190,9 +190,10 @@ module advance_module
   subroutine step_2
 
     real(num) :: residual, L_phi
-    real(num) :: tol = 1e-3_num
+    real(num) :: tol = 5e-3_num
+    real(num) :: correction
     integer :: relaxation_steps = 0
-    integer :: max_relaxation_steps = 10000
+    integer :: max_relaxation_steps = 100000
 
     ! MAC Projection via Gauss-Seidel
 
@@ -207,13 +208,14 @@ module advance_module
     enddo
     enddo
 
-    print *, 'max divu',maxval(abs(divu))
+    print *, 'max divu before cleaning',maxval(abs(divu))
 
-    call phi_bcs 
 
     do 
 
       relaxation_steps = relaxation_steps + 1
+
+      call phi_bcs 
 
       do iy = 1, ny
       do ix = 1, nx
@@ -246,6 +248,35 @@ module advance_module
 
     print *, 'Step', step,'relaxation finished in',relaxation_steps, &
       & 'residual',residual
+
+    ! perform the divergence cleaning
+
+    call phi_bcs
+
+    do iy = 0, ny
+    do ix = 0, nx
+      if (iy /= 0) then !can do the xface stuff
+        correction = (phi(ix+1,iy) - phi(ix,iy))/dx
+        macu(ix,iy) = macu(ix,iy) - correction 
+      endif
+      if (ix /= 0) then !can do the yface stuff
+        correction = (phi(ix,iy+1)-phi(ix,iy))/dy
+        macv(ix,iy) = macv(ix,iy) - correction 
+      endif
+    enddo
+    enddo
+
+    ! calculate the new divergence
+    ! calc divU at cc using the MAC velocities
+
+    do iy = 1, ny
+    do ix = 1, nx
+      divu(ix,iy) = (macu(ix,iy) - macu(ix-1,iy) ) /dx &
+        & + (macv(ix,iy) - macv(ix,iy-1))/dy
+    enddo
+    enddo
+
+    print *, 'max divu after cleaning',maxval(abs(divu))
 
   end subroutine step_2
 

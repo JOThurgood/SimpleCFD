@@ -1,3 +1,5 @@
 # Stuff to ignore
 *.swp
 ccaps
+*.o
+*.mod

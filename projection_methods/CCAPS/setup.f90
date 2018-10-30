@@ -24,8 +24,7 @@ module setup
 
     ! setup grid 
 
-    ! This method only requires 1 guard but I use two for future
-    ! expansion..
+    ! This method requires 2 ghost cells
 
     allocate(xc(-1:nx+2))  !cell center (cc) - counts from 1 to nx
     allocate(xb(-2:nx+2))  !cell boundary (cb) - counts from 0 to nx
@@ -49,7 +48,7 @@ module setup
 
     allocate(u(-1:nx+2,-1:ny+2))
     allocate(v(-1:nx+2,-1:ny+2))
-    allocate(p(-1:nx+2,-1:ny+2))
+!    allocate(p(-1:nx+2,-1:ny+2))
  
     ! time centered left and right interface states, defined on
     ! the MAC grid
@@ -63,6 +62,46 @@ module setup
     allocate(uhyr(-1:nx+2,-2:ny+2)) ! (aka "bottom")
     allocate(vhyl(-1:nx+2,-2:ny+2)) 
     allocate(vhyr(-1:nx+2,-2:ny+2)) 
+
+    allocate(uha(-2:nx+2,-1:ny+2)) ! uhx - u hat advective (x face)
+    allocate(vha(-1:nx+2,-2:ny+2)) ! v hat advective (y face)
+
+    allocate(uhx(-2:nx+2,-1:ny+2)) ! u hat x face at end of 1C 
+    allocate(vhx(-2:nx+2,-1:ny+2)) 
+    allocate(uhy(-1:nx+2,-2:ny+2)) ! y gace at end of 1C 
+    allocate(vhy(-1:nx+2,-2:ny+2)) 
+
+
+  
+
+    allocate(uxl(-2:nx+2,-1:ny+2)) ! full prediction for normal vel left state
+    allocate(uxr(-2:nx+2,-1:ny+2)) ! in 1D and 3E (some aren't used in
+    allocate(vxl(-1:nx+2,-2:ny+2)) !
+    allocate(vxr(-1:nx+2,-2:ny+2)) !
+
+    allocate(uyl(-2:nx+2,-1:ny+2)) 
+    allocate(uyr(-2:nx+2,-1:ny+2))
+    allocate(vyl(-1:nx+2,-2:ny+2)) 
+    allocate(vyr(-1:nx+2,-2:ny+2))
+
+    allocate(ua(-2:nx+2,-1:ny+2)) ! ua - u advective (x face)
+    allocate(va(-1:nx+2,-2:ny+2)) ! v  advective (y face)
+
+    allocate(macu(-2:nx+2,-1:ny+2)) ! mac velocities on faces
+    allocate(macv(-1:nx+2,-2:ny+2)) 
+
+    allocate(ux(-2:nx+2,-1:ny+2)) ! u on x face
+    allocate(uy(-1:nx+2,-2:ny+2)) !u on y face
+    allocate(vx(-2:nx+2,-1:ny+2))
+    allocate(vy(-1:nx+2,-2:ny+2))
+
+    allocate(divu(-1:nx+1,-1:ny+2)) ! divergence of mac velocities, cell centers
+
+    allocate(phi(-1:nx+1,-1:ny+2))
+    phi = 0.0_num !initial guess in step 0
+
+    allocate(ustar(-1:nx+2,-1:ny+2))
+    allocate(vstar(-1:nx+2,-1:ny+2))
 
   end subroutine allocate_global_arrays
 

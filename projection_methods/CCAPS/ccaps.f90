@@ -12,7 +12,7 @@ program ccaps
 
   ! do some sort of bootstrap here? 
   step = step + 1
-  call advance
+  call advance_dt
 
   print *, 'Code Terminated Normally'
 end program ccaps

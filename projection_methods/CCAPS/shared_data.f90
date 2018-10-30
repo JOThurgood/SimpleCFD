@@ -18,4 +18,25 @@ module shared_data
   real(num), dimension(:,:), allocatable :: u, v, p
   real(num), dimension(:,:), allocatable :: uhxl, uhxr, vhxl, vhxr
   real(num), dimension(:,:), allocatable :: uhyl, uhyr, vhyl, vhyr
+
+  real(num), dimension(:,:), allocatable :: uha, vha
+  real(num), dimension(:,:), allocatable :: uhx, vhx, uhy, vhy
+
+
+  real(num), dimension(:,:), allocatable :: uxl, uxr, vxl, vxr
+  real(num), dimension(:,:), allocatable :: uyl, uyr, vyl, vyr
+
+  real(num), dimension(:,:), allocatable :: ua, va
+  real(num), dimension(:,:), allocatable :: macu, macv
+
+  real(num), dimension(:,:), allocatable :: ux, vx, uy, vy !u on x face, v on x face..
+  real(num), dimension(:,:), allocatable :: divu ! divergence of MAC, cc
+
+  real(num), dimension(:,:), allocatable :: phi !cc 
+
+  real(num), parameter :: pi = 4.0_num * ATAN(1.0_num)
+
+  real(num), dimension(:,:), allocatable :: ustar, vstar
+
+
 end module shared_data

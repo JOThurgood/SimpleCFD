@@ -32,6 +32,25 @@ module boundary_conditions
     v(:,ny) = v(:,1)
     v(:,ny+1) = v(:,2)
 
+    ustar(0,:) = ustar(nx,:)
+    ustar(-1,:) = ustar(nx-1,:)
+    ustar(nx+1,:) = ustar(1,:)
+    ustar(nx+1,:) = ustar(2,:)
+    ustar(:,0) = ustar(:,ny)
+    ustar(:,-1) = ustar(:,ny-1)
+    ustar(:,ny) = ustar(:,1)
+    ustar(:,ny+1) = ustar(:,2)
+
+    vstar(0,:) = vstar(nx,:)
+    vstar(-1,:) = vstar(nx-1,:)
+    vstar(nx+1,:) = vstar(1,:)
+    vstar(nx+1,:) = vstar(2,:)
+    vstar(:,0) = vstar(:,ny)
+    vstar(:,-1) = vstar(:,ny-1)
+    vstar(:,ny) = vstar(:,1)
+    vstar(:,ny+1) = vstar(:,2)
+
+
   end subroutine velocity_bcs
 
   subroutine phi_bcs

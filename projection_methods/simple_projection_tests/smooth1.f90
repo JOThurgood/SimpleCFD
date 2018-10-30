@@ -174,9 +174,10 @@ program smooth1
       L2 = L2 + abs(D_pol(ix,iy)-L_phi)**2
     end do
     end do 
-      L2 = L2 / REAL(nx*ny,num)
+      L2 = sqrt( L2 / REAL(nx*ny,num))
     print *, 'Step',step,'completed, residual error is',residual
     print *, 'Step',step,'completed, L2 is',residual
+    print *, 'Step', step,'completed, |L2-old_l2| is',abs(L2-old_L2)
  
    if ((step >= nsteps .and. nsteps >= 0) .or. (abs(L2-old_L2) <= tol)) exit
    old_L2 = L2

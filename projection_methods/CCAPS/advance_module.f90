@@ -83,7 +83,6 @@ module advance_module
     ! 1B - Use the normal velocities to calculate the advective vel
     ! by solving a Riemann problem
 
-
     do iy = 0, ny
     do ix = 0, ny
       if (iy /= 0) then !can do the xface stuff
@@ -183,7 +182,7 @@ module advance_module
     else if (sadv < 0.0_num) then
       upwind = b
     else
-      upwind = 0.0_num
+      upwind = 0.5_num * (a + b)
     endif
   end function upwind
 

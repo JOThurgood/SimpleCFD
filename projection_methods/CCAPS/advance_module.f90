@@ -28,7 +28,7 @@ module advance_module
 
     call step_4 ! Step 4: Provisional update for full dt (star state)
 
-    call step_5    ! Step 5: Project provisional field to constraint
+!    call step_5    ! Step 5: Project provisional field to constraint
  
   end subroutine advance_dt
 
@@ -214,10 +214,10 @@ module advance_module
   
   subroutine step_2
 
-    real(num) :: residual, L_phi
-    real(num) :: tol = 5e-3_num
+    real(num) :: residual, L_phi, L2, L2_old
+    real(num) :: tol = 1e-14_num
     real(num) :: correction
-    integer :: relaxation_steps = 0
+    integer :: relaxation_step = 0
     integer :: max_relaxation_steps = 100000
 
     ! MAC Projection via Gauss-Seidel
@@ -235,12 +235,13 @@ module advance_module
 
     print *, 'max divu before cleaning',maxval(abs(divu))
 
-
+    L2_old = 1e6_num
+    call phi_bcs
     do 
 
-      relaxation_steps = relaxation_steps + 1
+      relaxation_step = relaxation_step + 1
 
-      call phi_bcs 
+      !call phi_bcs 
 
       do iy = 1, ny
       do ix = 1, nx
@@ -252,7 +253,10 @@ module advance_module
 
       ! reset the maxmimum val of residual
       residual = -1e6_num 
-   
+      L2 = 0.0_num
+ 
+      call phi_bcs 
+
       do iy = 1, ny  
       do ix = 1, nx  
         L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) &
@@ -260,19 +264,23 @@ module advance_module
           & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
    
         residual = max(residual, abs(divu(ix,iy) - L_phi))
+        L2 = L2 + abs(divu(ix,iy)-L_phi)**2 
       end do
       end do 
-!      print *, relaxation_Steps, residual
+      L2 = sqrt( L2 / real(nx*ny,num))
+!      print *, relaxation_step, residual, L2,abs(L2-L2_old)
 
-      if (residual <= tol) exit
-      if (relaxation_steps > max_relaxation_steps) then
-        print *, 'failed to converge quickly, STOP'
+      if ((abs(L2-L2_old) <= tol) .and. (relaxation_step> 1)) exit
+      if (relaxation_step > max_relaxation_steps) then
+        print *, 'failed to converge within',max_relaxation_steps, 'to tolerance of', tol
+        print *, 'STOP'
         STOP 
       endif
+      L2_old = L2
     enddo
 
-    print *, 'Step 2','relaxation finished in',relaxation_steps, &
-      & 'residual',residual
+    print *, 'Step 2','relaxation finished in',relaxation_step, &
+      & 'max residual',residual, 'L2 norm',L2
 
     ! perform the divergence cleaning
 

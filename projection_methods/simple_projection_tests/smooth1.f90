@@ -117,7 +117,8 @@ program smooth1
       & (v_pol(ix,iy+1) - v_pol(ix,iy-1)) / 2.0_num / dy
   end do
   enddo 
-  
+
+  phi = 0.0_num  
 
   ! Solve Poisson equation via relaxation for phi
 

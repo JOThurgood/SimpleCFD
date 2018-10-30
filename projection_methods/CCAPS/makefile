@@ -49,7 +49,7 @@ ccaps: shared_data.o  advance_module.o setup.o control.o initial_conditions.o \
 # Utility targets
 .PHONY: clean cleanall 
 
-clean:
+cleanmods:
 	rm -rf *.o *.mod *.MOD *.dSYM
-cleanall:  clean
+clean:  cleanmods
 	rm -f *~ $(PROGRAMS) 

@@ -21,6 +21,7 @@ module advance_module
     print *,'Step', step,'dt', dt
 
     call velocity_bcs
+
     ! 1 - Calculate the advective velocities
 
     ! 1A -  calculate  time-centered interface states for the normal 

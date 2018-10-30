@@ -24,8 +24,7 @@ module setup
 
     ! setup grid 
 
-    ! This method only requires 1 guard but I use two for future
-    ! expansion..
+    ! This method requires 2 ghost cells
 
     allocate(xc(-1:nx+2))  !cell center (cc) - counts from 1 to nx
     allocate(xb(-2:nx+2))  !cell boundary (cb) - counts from 0 to nx

@@ -23,7 +23,7 @@ module advance_module
 
     call step_2 ! Step 2 : MAC Projection 
 
-    ! Step 3: Reconstruct interface states consistent with MAC-projected
+    call step_3 ! Step 3: Reconstruct interface states consistent with MAC-projected
     ! velocities 
 
     ! Step 4: Provisional update for full dt (star state)
@@ -137,24 +137,24 @@ module advance_module
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (uhy(ix,iy)-uhy(ix,iy-1 )) / dy
         gp = -0.0_num 
-        ul(ix,iy) = uhxl(ix,iy)  + transv + gp
+        uxl(ix,iy) = uhxl(ix,iy)  + transv + gp
   
 
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (uhy(ix+1,iy)-uhy(ix+1,iy-1 )) /dy
         gp = -0.0_num 
-        ur(ix,iy) = uhxr(ix,iy)  + transv + gp
+        uxr(ix,iy) = uhxr(ix,iy)  + transv + gp
       endif
       if (ix /= 0) then !can do the yface stuff
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (vhx(ix,iy) - vhx(ix-1,iy)) / dx
         gp = -0.0_num
-        vl(ix,iy) = vhyl(ix,iy) + transv + gp
+        vyl(ix,iy) = vhyl(ix,iy) + transv + gp
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (vhx(ix,iy+1) - vhx(ix-1,iy+1)) / dx
         gp = -0.0_num
-        vr(ix,iy) = vhyr(ix,iy) + transv + gp
+        vyr(ix,iy) = vhyr(ix,iy) + transv + gp
 
      endif
     enddo
@@ -168,10 +168,10 @@ module advance_module
     do iy = 0, ny
     do ix = 0, ny
       if (iy /= 0) then !can do the xface stuff
-        ua(ix,iy) = riemann(ul(ix,iy),ur(ix,iy))
+        ua(ix,iy) = riemann(uxl(ix,iy),uxr(ix,iy))
       endif
       if (ix /= 0) then !can do the yface stuff
-        va(ix,iy) = riemann(vl(ix,iy), vr(ix,iy)) 
+        va(ix,iy) = riemann(vyl(ix,iy), vyr(ix,iy)) 
       endif
     enddo
     enddo
@@ -179,10 +179,10 @@ module advance_module
     do iy = 0, ny
     do ix = 0, ny
       if (iy /= 0) then !can do the xface stuff
-        macu(ix,iy) = upwind(ua(ix,iy),ul(ix,iy),ur(ix,iy))
+        macu(ix,iy) = upwind(ua(ix,iy),uxl(ix,iy),uxr(ix,iy))
       endif
       if (ix /= 0) then !can do the yface stuff
-        macv(ix,iy) = upwind(va(ix,iy),vl(ix,iy),vr(ix,iy)) 
+        macv(ix,iy) = upwind(va(ix,iy),vyl(ix,iy),vyr(ix,iy)) 
       endif
     enddo
     enddo

@@ -74,10 +74,15 @@ module setup
 
   
 
-    allocate(ul(-2:nx+2,-1:ny+2)) ! full prediction for normal vel left state
-    allocate(ur(-2:nx+2,-1:ny+2)) ! near end of step 1C
-    allocate(vl(-1:nx+2,-2:ny+2)) !
-    allocate(vr(-1:nx+2,-2:ny+2)) !
+    allocate(uxl(-2:nx+2,-1:ny+2)) ! full prediction for normal vel left state
+    allocate(uxr(-2:nx+2,-1:ny+2)) ! in 1D and 3E (some aren't used in
+    allocate(vxl(-1:nx+2,-2:ny+2)) !
+    allocate(vxr(-1:nx+2,-2:ny+2)) !
+
+    allocate(uyl(-2:nx+2,-1:ny+2)) 
+    allocate(uyr(-2:nx+2,-1:ny+2))
+    allocate(vyl(-1:nx+2,-2:ny+2)) 
+    allocate(vyr(-1:nx+2,-2:ny+2))
 
     allocate(ua(-2:nx+2,-1:ny+2)) ! ua - u advective (x face)
     allocate(va(-1:nx+2,-2:ny+2)) ! v  advective (y face)

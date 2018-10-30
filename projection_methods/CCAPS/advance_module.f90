@@ -260,9 +260,9 @@ module advance_module
           & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
    
         residual = max(residual, abs(divu(ix,iy) - L_phi))
-!        print *,abs(divu(ix,iy)-L_phi)  
-    end do
+      end do
       end do 
+!      print *, relaxation_Steps, residual
 
       if (residual <= tol) exit
       if (relaxation_steps > max_relaxation_steps) then
@@ -271,7 +271,7 @@ module advance_module
       endif
     enddo
 
-    print *, 'Step', step,'relaxation finished in',relaxation_steps, &
+    print *, 'Step 2','relaxation finished in',relaxation_steps, &
       & 'residual',residual
 
     ! perform the divergence cleaning
@@ -379,7 +379,7 @@ module advance_module
     real(num) :: tol = 1e-1_num
     real(num) :: correction
     integer :: relaxation_steps = 0
-    integer :: max_relaxation_steps = 10000
+    integer :: max_relaxation_steps = 100000
 
     ! MAC Projection via Gauss-Seidel
 
@@ -427,10 +427,10 @@ module advance_module
         residual = max(residual, abs(divu(ix,iy) - L_phi))
       end do
       end do 
-
-      if (modulo(relaxation_steps,1000) == 0) then
-        print *, relaxation_steps,residual
-      endif
+!
+!      if (modulo(relaxation_steps,1000) == 0) then
+!        print *, relaxation_steps,residual
+!      endif
 
       if (residual <= tol) exit
       if (relaxation_steps > max_relaxation_steps) then
@@ -455,7 +455,7 @@ module advance_module
       endif
       if (ix /= 0) then !can do the yface stuff
         correction = dt* (phi(ix,iy+1)-phi(ix,iy))/dy
-        v(ix,iy) = macv(ix,iy) - correction 
+        v(ix,iy) = vstar(ix,iy) - correction 
       endif
     enddo
     enddo
@@ -470,6 +470,7 @@ module advance_module
     enddo
 
     print *, 'max divu after cleaning',maxval(abs(divu))
+    print *, 'max divu/dt after cleaning',maxval(abs(divu/dt))
 
 
   end subroutine step_5

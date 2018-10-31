@@ -28,7 +28,7 @@ module advance_module
 
     call step_4 ! Step 4: Provisional update for full dt (star state)
 
-    ! Step 5: Project provisional field to constraint
+!    call step_5    ! Step 5: Project provisional field to constraint
  
   end subroutine advance_dt
 
@@ -93,8 +93,6 @@ module advance_module
 
     enddo
     enddo
-
-
 
     ! 1B - Use the normal velocities to calculate the advective vel
     ! by solving a Riemann problem
@@ -216,10 +214,10 @@ module advance_module
   
   subroutine step_2
 
-    real(num) :: residual, L_phi
-    real(num) :: tol = 5e-3_num
+    real(num) :: residual, L_phi, L2, L2_old
+    real(num) :: tol = 1e-14_num
     real(num) :: correction
-    integer :: relaxation_steps = 0
+    integer :: relaxation_step = 0
     integer :: max_relaxation_steps = 100000
 
     ! MAC Projection via Gauss-Seidel
@@ -237,12 +235,13 @@ module advance_module
 
     print *, 'max divu before cleaning',maxval(abs(divu))
 
-
+    L2_old = 1e6_num
+    call phi_bcs
     do 
 
-      relaxation_steps = relaxation_steps + 1
+      relaxation_step = relaxation_step + 1
 
-      call phi_bcs 
+      !call phi_bcs 
 
       do iy = 1, ny
       do ix = 1, nx
@@ -254,7 +253,10 @@ module advance_module
 
       ! reset the maxmimum val of residual
       residual = -1e6_num 
-   
+      L2 = 0.0_num
+ 
+      call phi_bcs 
+
       do iy = 1, ny  
       do ix = 1, nx  
         L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) &
@@ -262,19 +264,23 @@ module advance_module
           & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
    
         residual = max(residual, abs(divu(ix,iy) - L_phi))
-!        print *,abs(divu(ix,iy)-L_phi)  
-    end do
+        L2 = L2 + abs(divu(ix,iy)-L_phi)**2 
+      end do
       end do 
+      L2 = sqrt( L2 / real(nx*ny,num))
+!      print *, relaxation_step, residual, L2,abs(L2-L2_old)
 
-      if (residual <= tol) exit
-      if (relaxation_steps > max_relaxation_steps) then
-        print *, 'failed to converge quickly, STOP'
+      if ((abs(L2-L2_old) <= tol) .and. (relaxation_step> 1)) exit
+      if (relaxation_step > max_relaxation_steps) then
+        print *, 'failed to converge within',max_relaxation_steps, 'to tolerance of', tol
+        print *, 'STOP'
         STOP 
       endif
+      L2_old = L2
     enddo
 
-    print *, 'Step', step,'relaxation finished in',relaxation_steps, &
-      & 'residual',residual
+    print *, 'Step 2','relaxation finished in',relaxation_step, &
+      & 'max residual',residual, 'L2 norm',L2
 
     ! perform the divergence cleaning
 
@@ -376,6 +382,104 @@ module advance_module
   end subroutine step_4
 
   subroutine step_5 ! Approximate projection 
+
+    real(num) :: residual, L_phi
+    real(num) :: tol = 1e-1_num
+    real(num) :: correction
+    integer :: relaxation_steps = 0
+    integer :: max_relaxation_steps = 100000
+
+    ! MAC Projection via Gauss-Seidel
+
+    print *, 'Step 5'
+
+
+    ! calc divU at cc using the MAC velocities
+    call velocity_bcs
+    do iy = 1, ny
+    do ix = 1, nx
+      divu(ix,iy) = (ustar(ix+1,iy) - ustar(ix-1,iy))/dx/2.0_num &
+        & + (vstar(ix,iy+1) - vstar(ix,iy-1))/dy/2.0_num
+    enddo
+    enddo
+
+    print *, 'max divu before cleaning',maxval(abs(divu))
+
+    divu = divu/dt
+ 
+    print *, 'max divu/dt before cleaning',maxval(abs(divu))
+
+    do 
+
+      relaxation_steps = relaxation_steps + 1
+
+      call phi_bcs 
+
+      do iy = 1, ny
+      do ix = 1, nx
+        phi(ix,iy) = 0.25_num * ( & 
+          & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
+          - dx*dy * divu(ix,iy) ) 
+      enddo
+      enddo
+
+      ! reset the maxmimum val of residual
+      residual = -1e6_num 
+   
+      do iy = 1, ny  
+      do ix = 1, nx  
+        L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) &
+          & / dx**2 + & 
+          & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
+   
+        residual = max(residual, abs(divu(ix,iy) - L_phi))
+      end do
+      end do 
+!
+!      if (modulo(relaxation_steps,1000) == 0) then
+!        print *, relaxation_steps,residual
+!      endif
+
+      if (residual <= tol) exit
+      if (relaxation_steps > max_relaxation_steps) then
+        print *, 'failed to converge quickly, STOP'
+        exit
+        !STOP 
+      endif
+    enddo
+
+    print *, 'Step', step,'2nd relaxation finished in',relaxation_steps, &
+      & 'residual',residual
+
+    ! perform the divergence cleaning
+
+    call phi_bcs
+
+    do iy = 0, ny
+    do ix = 0, nx
+      if (iy /= 0) then !can do the xface stuff
+        correction = dt * (phi(ix+1,iy) - phi(ix,iy))/dx
+        u(ix,iy) = ustar(ix,iy) - correction 
+      endif
+      if (ix /= 0) then !can do the yface stuff
+        correction = dt* (phi(ix,iy+1)-phi(ix,iy))/dy
+        v(ix,iy) = vstar(ix,iy) - correction 
+      endif
+    enddo
+    enddo
+
+    ! calculate the new divergence
+    call velocity_bcs
+    do iy = 1, ny
+    do ix = 1, nx
+      divu(ix,iy) = (u(ix+1,iy) - u(ix-1,iy))/dx/2.0_num &
+        & + (v(ix,iy+1) - v(ix,iy-1))/dy/2.0_num
+    enddo
+    enddo
+
+    print *, 'max divu after cleaning',maxval(abs(divu))
+    print *, 'max divu/dt after cleaning',maxval(abs(divu/dt))
+
 
   end subroutine step_5
 

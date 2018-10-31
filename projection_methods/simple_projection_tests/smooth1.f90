@@ -16,6 +16,8 @@ program smooth1
   real(num), parameter :: pi = 4.0_num * ATAN(1.0_num)
   integer :: out_unit = 10 
 
+  logical :: verbose=.false.
+
   integer :: nx, ny 
   integer :: ix,iy
   integer(num) :: step = 0
@@ -42,14 +44,14 @@ program smooth1
 
   ! simulation / domain / grid control parameters
 
-  nsteps = 10000 ! max no of steps before crashing out
-  nx = 64 
+  nsteps = int(1e6) ! max no of steps before crashing out
+  nx = 128
   ny = nx ! currently hardcoded for dx = dy later in the code
   x_min = 0.0_num 
   x_max = 1.0_num
   y_min = x_min !
   y_max = x_max
-  tol = 1e-14_num !less than 1e-2 takes too long -> clear limitation of the method and slow convergence?
+  tol = 1e-16_num !1e-16 appropriate if using L2-L2_old type condition
 
   ! array allocation and initialisation
 
@@ -59,17 +61,20 @@ program smooth1
   allocate(y(0:ny+1))  ! cell center (cc) - counts from 1 to ny
                         ! ONE GUARD CELL FOR THIS PROBLEM
 
-  dx = (x_max - x_min) / REAL(nx-1,num)
-  x(0) = x_min - dx
+  dx = (x_max - x_min) / REAL(nx,num)
+  x(0) = x_min - dx/2.0_num
   do ix = 1, nx+1
     x(ix) = x(ix-1) + dx
   end do
 
-  dy = (y_max - y_min) / REAL(ny-1,num)
-  y(0) = y_min - dy
+  dy = (y_max - y_min) / REAL(ny,num)
+  y(0) = y_min - dy/2.0_num
   do iy = 1, ny+1
     y(iy) = y(iy-1) + dy
   end do
+
+  print *,y
+  print *,dy
 
   if (dy /= dx) then
     print *, 'Warning: dy /= dx set. Has not yet being generalised.'
@@ -108,21 +113,10 @@ program smooth1
   ! -- initial guess on phi 
 
   allocate(phi(0:nx+1,0:ny+1))
+  phi = 0.0_num !gives an initial guess value in domanin + in ghosts
+    !i.e. dont need a BC call before first relaxation iteration 
 
-
-!  do iy = 0, ny + 1
-!  do ix = 0, nx + 1
-!    phi(ix,iy) = (u_pol(ix+1,iy) - u_pol(ix-1,iy)) / 2.0_num / dx + &
-!      & (v_pol(ix,iy+1) - v_pol(ix,iy-1)) / 2.0_num / dy
-!  end do
-!  enddo 
-
-  phi = 0.0_num  
-
-  ! Solve Poisson equation via relaxation for phi
-
-  print *, 'begining relaxation'
-
+  ! Calculate the numerical divergence of the polluted field
 
   allocate(D_pol(0:nx,0:ny))
 
@@ -133,16 +127,13 @@ program smooth1
   end do
   end do
 
+  ! Solve Poisson equation via relaxation for phi
+
+  print *, 'begining relaxation to solve for phi.'
+  print *, 'this can take a while, use VERBOSE if you want to monitor stepping'
 
   do
     step = step + 1
-
-    ! Periodic boundary conditions on phi
-
-    phi(0,:) = phi(nx,:)
-    phi(nx+1,:) = phi(1,:)
-    phi(:,0) = phi(:,ny)
-    phi(:,ny+1) = phi(:,1)
 
     do iy = 1, ny 
     do ix = 1, nx 
@@ -154,15 +145,14 @@ program smooth1
     end do
     end do 
 
-    ! re-apply bc ? perversely seems to have a -ve effect on error
+    ! Apply periodic boundary conditions on phi's ghost cells
 
-    !phi(0,:) = phi(nx,:)
-    !phi(nx+1,:) = phi(1,:)
-    !phi(:,0) = phi(:,ny)
-    !phi(:,ny+1) = phi(:,1)
+    phi(0,:) = phi(nx,:)
+    phi(nx+1,:) = phi(1,:)
+    phi(:,0) = phi(:,ny)
+    phi(:,ny+1) = phi(:,1)
 
-    ! reset the maxmimum val of residual
-    residual = -1e6_num 
+    !residual = -1e6_num ! reset the maximum value of the residual to <0 
     L2 = 0.0_num
     do iy = 1, ny 
     do ix = 1, nx 
@@ -170,42 +160,43 @@ program smooth1
         & / dx**2 + &
         & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
 
-      residual = max(residual, abs(D_pol(ix,iy) - L_phi))
+      !residual = max(residual, abs(D_pol(ix,iy) - L_phi))
       L2 = L2 + abs(D_pol(ix,iy)-L_phi)**2
     end do
     end do 
       L2 = sqrt( L2 / REAL(nx*ny,num))
-    print *, 'Step',step,'completed, residual error is',residual
-    print *, 'Step',step,'completed, L2 is',residual
-    print *, 'Step', step,'completed, |L2-old_l2| is',abs(L2-old_L2)
- 
-   if ((step >= nsteps .and. nsteps >= 0) .or. (abs(L2-old_L2) <= tol)) exit
-   old_L2 = L2
+!    print *, 'Step',step,'completed, residual error is',residual
+!    print *, 'Step',step,'completed, L2 is',L2
+!    print *, 'Step', step,'completed, |L2-old_l2| is',abs(L2-old_L2)
+
+
+    if (verbose) &
+      & print *, 'Step',step,'complete. L2 is',L2,'|L2-old_L2| is',abs(L2-old_L2),'tol is',tol
+
+   !exit conditions 
+   !if ((step >= nsteps .and. nsteps >= 0) .or. (L2 <= tol)) exit
+   ! alt, exit if the difference between L2 and L2 prev is small - might
+   ! indicate convergence
+    if ((step >= nsteps .and. nsteps >= 0) .or. (abs(L2-old_L2) <= tol)) exit
+    old_L2 = L2
+
   end do
 
   print *, 'Relaxation completed in',step,'steps'
+  print *, 'L2 norm on D(polluted velocity)- L(phi)',L2
 
 
   ! reconstruct velocity field 
 
   print *, 'Reconstructing the velocity field' 
 
-  phi(0,:) = phi(nx,:) !need to update BC here
-  phi(nx+1,:) = phi(1,:)
-  phi(:,0) = phi(:,ny)
-  phi(:,ny+1) = phi(:,1)
-
   do iy = 1, ny
   do ix = 1, nx
-
     u_reconstructed(ix,iy) = u_pol(ix,iy) - &
       & (phi(ix+1,iy) - phi(ix-1,iy))/2.0_num/dx 
  
     v_reconstructed(ix,iy) = v_pol(ix,iy) - &
       & (phi(ix,iy+1) - phi(ix,iy-1))/2.0_num/dy
-
-
-
   enddo
   enddo
 
@@ -216,12 +207,25 @@ program smooth1
 
 
   print *, 'Reconstruction complete'
-  print *, 'Maximum absolute difference between origional and', & 
-    & ' reconstructed field is', &
-    & max(maxval(abs(u_orig-u_reconstructed)), &
-        & maxval(abs(v_orig-v_reconstructed)))
+!  print *, 'Maximum absolute difference between origional and', & 
+!    & ' reconstructed field is', &
+!    & max(maxval(abs(u_orig-u_reconstructed)), &
+!        & maxval(abs(v_orig-v_reconstructed)))
 
-  ! calculate the l2 norm ? 
+  ! calculate the l2 norm of difference between reconstructed and analytical
+  ! field
+
+  L2 = 0.0_num
+  
+  do ix = 1, nx
+  do iy = 1, ny
+    L2=  L2 + abs(u_orig(ix,iy)-u_reconstructed(ix,iy))**2 + &
+      & abs(v_orig(ix,iy)-v_reconstructed(ix,iy))**2
+  enddo
+  enddo
+  L2 = sqrt(L2 / REAL(2*nx*ny,num)) 
+
+  print *,'L2 norm of velocity differences',L2
 
   ! generate output 
  

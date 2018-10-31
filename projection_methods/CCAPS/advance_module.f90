@@ -15,7 +15,7 @@ module advance_module
 
 
     call set_dt 
-    print *,'Step', step,'dt', dt
+    print *,'Cycle', step,'hydro dt', dt
 
     call velocity_bcs
 
@@ -23,13 +23,17 @@ module advance_module
 
     call step_2 ! Step 2 : MAC Projection 
 
+
+
     call step_3 ! Step 3: Reconstruct interface states consistent with MAC-projected
     ! velocities 
 
     call step_4 ! Step 4: Provisional update for full dt (star state)
 
-!    call step_5    ! Step 5: Project provisional field to constraint
+    call step_5 ! Step 5: Project provisional field to constraint
  
+    time = time + dt
+
   end subroutine advance_dt
 
   subroutine step_1
@@ -212,18 +216,10 @@ module advance_module
 
   end subroutine step_1
   
+
   subroutine step_2
 
-    real(num) :: residual, L_phi, L2, L2_old
-    real(num) :: tol = 1e-14_num
     real(num) :: correction
-    integer :: relaxation_step = 0
-    integer :: max_relaxation_steps = 100000
-
-    ! MAC Projection via Gauss-Seidel
-
-    print *, 'Step2'
-
 
     ! calc divU at cc using the MAC velocities
     do iy = 1, ny
@@ -233,61 +229,13 @@ module advance_module
     enddo
     enddo
 
+
+    call step2_gauss_seidel
+
     print *, 'max divu before cleaning',maxval(abs(divu))
 
-    L2_old = 1e6_num
-    call phi_bcs
-    do 
-
-      relaxation_step = relaxation_step + 1
-
-      !call phi_bcs 
-
-      do iy = 1, ny
-      do ix = 1, nx
-        phi(ix,iy) = 0.25_num * ( & 
-          & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
-          - dx*dy * divu(ix,iy) ) 
-      enddo
-      enddo
-
-      ! reset the maxmimum val of residual
-      residual = -1e6_num 
-      L2 = 0.0_num
- 
-      call phi_bcs 
-
-      do iy = 1, ny  
-      do ix = 1, nx  
-        L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) &
-          & / dx**2 + & 
-          & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
-   
-        residual = max(residual, abs(divu(ix,iy) - L_phi))
-        L2 = L2 + abs(divu(ix,iy)-L_phi)**2 
-      end do
-      end do 
-      L2 = sqrt( L2 / real(nx*ny,num))
-!      print *, relaxation_step, residual, L2,abs(L2-L2_old)
-
-      if ((abs(L2-L2_old) <= tol) .and. (relaxation_step> 1)) exit
-      if (relaxation_step > max_relaxation_steps) then
-        print *, 'failed to converge within',max_relaxation_steps, 'to tolerance of', tol
-        print *, 'STOP'
-        STOP 
-      endif
-      L2_old = L2
-    enddo
-
-    print *, 'Step 2','relaxation finished in',relaxation_step, &
-      & 'max residual',residual, 'L2 norm',L2
-
-    ! perform the divergence cleaning
-
-    call phi_bcs
-
-    do iy = 0, ny
     do ix = 0, nx
+    do iy = 0, ny
       if (iy /= 0) then !can do the xface stuff
         correction = (phi(ix+1,iy) - phi(ix,iy))/dx
         macu(ix,iy) = macu(ix,iy) - correction 
@@ -312,6 +260,72 @@ module advance_module
     print *, 'max divu after cleaning',maxval(abs(divu))
 
   end subroutine step_2
+
+  subroutine step2_gauss_seidel
+
+    real(num) :: tol = 1e-16_num
+    real(num) :: L2, L2_old !norms
+    real(num) :: L_phi !lagrangian of phi
+    integer :: maxir = 100000
+    integer :: ir = 0 
+    logical :: verbose=.false. 
+
+ 
+    print *, 'begining relaxation to solve for phi.'
+    print *, 'this can take a while, use VERBOSE if you want to monitor stepping'
+
+    phi = 0.0_num
+    L2_old = 1e6_num
+
+    do
+      ir = ir + 1 
+   
+      do iy = 1, ny  
+      do ix = 1, nx  
+        !is this the appropriate form of GS for these equations!!!!
+        phi(ix,iy) = 0.25_num * ( & 
+          & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
+          - dx**2 * divu(ix,iy) ) 
+   
+      end do
+      end do 
+   
+      ! Apply periodic boundary conditions on phi's ghost cells
+
+      call phi_bcs  
+ 
+      L2 = 0.0_num
+      do iy = 1, ny  
+      do ix = 1, nx  
+        L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) &
+          & / dx**2 + & 
+          & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
+   
+        L2 = L2 + abs(divu(ix,iy)-L_phi)**2
+      end do
+      end do 
+      L2 = sqrt( L2 / REAL(nx*ny,num))
+   
+   
+      if (verbose) &
+        & print *, 'GS-Step2-iteration',ir,'complete. L2 is',L2,'|L2-L2_old| is',abs(L2-L2_old),'tol is',tol
+   
+     !exit conditions 
+     !if ((step >= nsteps .and. nsteps >= 0) .or. (L2 <= tol)) exit
+     ! alt, exit if the difference between L2 and L2 prev is small - might
+     ! indicate convergence
+      if ((ir >= maxir .and. maxir >= 0) .or. (abs(L2-L2_old) <= tol)) exit
+      L2_old = L2
+    end do
+
+
+
+  print *, 'Cycle',step, '#2: GSRelaxation completed in',ir,'steps'
+  print *, 'L2 norm on D(velocity_field)- L(phi)',L2
+ 
+
+  end subroutine step2_gauss_seidel
+
 
   subroutine step_3
     ! reconstruct the interface states using the MAC velocities
@@ -381,20 +395,11 @@ module advance_module
 
   end subroutine step_4
 
-  subroutine step_5 ! Approximate projection 
-
-    real(num) :: residual, L_phi
-    real(num) :: tol = 1e-1_num
+  subroutine step_5
     real(num) :: correction
-    integer :: relaxation_steps = 0
-    integer :: max_relaxation_steps = 100000
 
-    ! MAC Projection via Gauss-Seidel
-
-    print *, 'Step 5'
-
-
-    ! calc divU at cc using the MAC velocities
+    ! calc divU at cc using the star velocities which themselves are cc
+    ! (this differs to step two which uses face vars to get a CC var)
     call velocity_bcs
     do iy = 1, ny
     do ix = 1, nx
@@ -403,57 +408,12 @@ module advance_module
     enddo
     enddo
 
-    print *, 'max divu before cleaning',maxval(abs(divu))
 
     divu = divu/dt
- 
+
+    call step2_gauss_seidel
+    print *, 'max divu before cleaning',maxval(abs(divu)*dt)
     print *, 'max divu/dt before cleaning',maxval(abs(divu))
-
-    do 
-
-      relaxation_steps = relaxation_steps + 1
-
-      call phi_bcs 
-
-      do iy = 1, ny
-      do ix = 1, nx
-        phi(ix,iy) = 0.25_num * ( & 
-          & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
-          - dx*dy * divu(ix,iy) ) 
-      enddo
-      enddo
-
-      ! reset the maxmimum val of residual
-      residual = -1e6_num 
-   
-      do iy = 1, ny  
-      do ix = 1, nx  
-        L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) &
-          & / dx**2 + & 
-          & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
-   
-        residual = max(residual, abs(divu(ix,iy) - L_phi))
-      end do
-      end do 
-!
-!      if (modulo(relaxation_steps,1000) == 0) then
-!        print *, relaxation_steps,residual
-!      endif
-
-      if (residual <= tol) exit
-      if (relaxation_steps > max_relaxation_steps) then
-        print *, 'failed to converge quickly, STOP'
-        exit
-        !STOP 
-      endif
-    enddo
-
-    print *, 'Step', step,'2nd relaxation finished in',relaxation_steps, &
-      & 'residual',residual
-
-    ! perform the divergence cleaning
-
-    call phi_bcs
 
     do iy = 0, ny
     do ix = 0, nx
@@ -480,9 +440,7 @@ module advance_module
     print *, 'max divu after cleaning',maxval(abs(divu))
     print *, 'max divu/dt after cleaning',maxval(abs(divu/dt))
 
-
   end subroutine step_5
-
 
   subroutine set_dt
 

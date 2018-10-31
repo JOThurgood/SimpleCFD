@@ -59,7 +59,6 @@ module boundary_conditions
     phi(nx+1,:) = phi(1,:)
     phi(:,0) = phi(:,ny)
     phi(:,ny+1) = phi(:,1)   
-
   end subroutine phi_bcs
 
 

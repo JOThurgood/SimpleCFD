@@ -18,6 +18,9 @@ module setup
     call allocate_global_arrays
     call set_ic 
 
+    step = 0
+    time = 0.0_num
+
   end subroutine initial_setup
 
   subroutine allocate_global_arrays 
@@ -37,6 +40,11 @@ module setup
       xb(ix) = REAL(ix,num) * dx                    
       if (ix /= -2) xc(ix) = xb(ix) - dx/2.0_num 
     enddo                                           
+
+!    print *,dx
+!    print *,xb
+!    print *,xc
+!    STOP
                                                     
     dy = (y_max - y_min) / REAL(ny,num)             
     do iy = -2, ny+2                                
@@ -97,11 +105,12 @@ module setup
 
     allocate(divu(-1:nx+1,-1:ny+2)) ! divergence of mac velocities, cell centers
 
-    allocate(phi(-1:nx+1,-1:ny+2))
+    allocate(phi(-1:nx+1,-1:ny+2)) !phi on cc
     phi = 0.0_num !initial guess in step 0
 
     allocate(ustar(-1:nx+2,-1:ny+2))
     allocate(vstar(-1:nx+2,-1:ny+2))
+
 
   end subroutine allocate_global_arrays
 

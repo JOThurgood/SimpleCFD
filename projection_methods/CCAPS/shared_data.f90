@@ -2,6 +2,8 @@ module shared_data
 
   implicit none
 
+  integer :: out_unit = 10
+
   integer, parameter :: num=selected_real_kind(p=15) 
   integer :: nx, ny
   integer :: ix, iy

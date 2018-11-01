@@ -19,19 +19,22 @@ program ccaps
   call advance_dt ! to initialise gradp_x, gradp_y 
 
   call bootstrap
+  call execute_command_line("clear")
 
   do
     step = step + 1
     if ((step > nsteps .and. nsteps >= 0) .or. (time >= t_end)) exit
 
     print *,'******************************************************************'
-    print *,'Cycle: ', step
+    print *,'Cycle: ', step, 'Time: ',time
     print *,'******************************************************************'
 
     call advance_dt
     call test_analytic_sln
 
   enddo 
+
+  call analytic_sln_plots
 
   print *, 'Code Terminated Normally'
 end program ccaps

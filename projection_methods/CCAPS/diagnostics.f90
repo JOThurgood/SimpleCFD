@@ -8,7 +8,7 @@ module diagnostics
 
   private
 
-  public :: test_analytic_sln, analytic_sln_plots 
+  public :: test_analytic_sln, analytic_sln_plots, sln_plots 
 
   contains
 

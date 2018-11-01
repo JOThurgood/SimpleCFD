@@ -9,6 +9,7 @@ program ccaps
 
   implicit none 
 
+
   call initial_setup
   call test_analytic_sln
 
@@ -31,10 +32,13 @@ program ccaps
 
     call advance_dt
     call test_analytic_sln
+  
+    if (modulo(step,10) ==0) call sln_plots
 
   enddo 
 
-  call analytic_sln_plots
+  call sln_plots
+
 
   print *, 'Code Terminated Normally'
 end program ccaps

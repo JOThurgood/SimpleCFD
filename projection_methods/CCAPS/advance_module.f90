@@ -421,7 +421,7 @@ module advance_module
     call step5_gauss_seidel
 
     print *, '*** max divu before cleaning',maxval(abs(divu)*dt)
-    print *, '*** max divu/dt before cleaning',maxval(abs(divu))
+!    print *, '*** max divu/dt before cleaning',maxval(abs(divu))
 
     do iy = 1, ny
     do ix = 1, nx
@@ -457,7 +457,7 @@ module advance_module
     enddo
 
     print *, '*** max divu after cleaning',maxval(abs(divu))
-    print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
+   !   print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
 
 
     ! update the pressure gradient 

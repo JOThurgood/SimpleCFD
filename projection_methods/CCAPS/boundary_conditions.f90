@@ -54,11 +54,15 @@ module boundary_conditions
 
   subroutine phi_bcs
 
-    ! the relaxation only needs 1 ghost
     phi(0,:) = phi(nx,:)
+    phi(-1,:) = phi(nx-1,:)
     phi(nx+1,:) = phi(1,:)
+    phi(nx+2,:) = phi(2,:)
     phi(:,0) = phi(:,ny)
-    phi(:,ny+1) = phi(:,1)   
+    phi(:,-1) = phi(:,ny-1)
+    phi(:,ny+1) = phi(:,1)
+    phi(:,ny+2) = phi(:,2)
+
 
   end subroutine phi_bcs
 

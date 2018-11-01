@@ -7,7 +7,7 @@ module shared_data
   integer, parameter :: num=selected_real_kind(p=15) 
   integer :: nx, ny
   integer :: ix, iy
-  integer(num) :: step, nsteps
+  integer :: step, nsteps
 
   real(num) :: time = 0.0_num, t_end, dt 
   real(num) :: CFL

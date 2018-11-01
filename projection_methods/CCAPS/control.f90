@@ -17,15 +17,16 @@ module control
     y_min = x_min
     y_max = x_max
 
-    nx = 64
+    nx = 32 
     ny = nx
   
     CFL = 0.8_num ! CFL modifier
 
-    nsteps = 2000 
-    t_end = 1.0_num
+    nsteps = 1     
+    t_end = 0.5_num
 
   end subroutine user_control
+
 
 end module control 
 

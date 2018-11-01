@@ -6,21 +6,13 @@ program ccaps
   use setup
   use advance_module
   use diagnostics
+  use welcome
 
   implicit none 
 
+  call welcome_msg
 
   call initial_setup
-  call test_analytic_sln
-
-  print *,nsteps 
-
-  ! step zero / bootstrapping
-
-  call advance_dt ! to initialise gradp_x, gradp_y 
-
-  call bootstrap
-!  call execute_command_line("clear")
 
   do
     step = step + 1
@@ -31,14 +23,18 @@ program ccaps
     print *,'******************************************************************'
 
     call advance_dt
-    call test_analytic_sln
+    if ( step ==0 ) call bootstrap 
+    call test_analytic_sln !compare against Minion's analytic sln (only for the relevant IC!)
   
-    if (modulo(step,10) ==0) call sln_plots
+    !if (modulo(step,10) ==0) call sln_plots
+!    if (modulo(step,10) ==0) call minion_plots
 
   enddo 
 
-  call sln_plots
+  call minion_plots
+! call sln_plots
 
+!    print *,'warning bootstrap turned off'
+  print *, 'CCAPS Terminated Normally'
 
-  print *, 'Code Terminated Normally'
 end program ccaps

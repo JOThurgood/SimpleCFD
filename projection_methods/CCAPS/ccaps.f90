@@ -14,8 +14,6 @@ program ccaps
 
   call initial_setup
 
-  print *,nsteps 
-
   do
     step = step + 1
     if ((step > nsteps .and. nsteps >= 0) .or. (time >= t_end)) exit
@@ -29,12 +27,12 @@ program ccaps
 
 !    call test_analytic_sln !compare against Morrisons analytic sln (only for the relevant IC!)
   
-!    if (modulo(step,10) ==0) call sln_plots
+    if (modulo(step,10) ==0) call sln_plots
 
   enddo 
 
   call sln_plots
 
+  print *, 'CCAPS Terminated Normally'
 
-  print *, 'Code Terminated Normally'
 end program ccaps

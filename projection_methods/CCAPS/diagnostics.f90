@@ -5,6 +5,7 @@ module diagnostics
   implicit none
 
   real(num), allocatable, dimension(:,:) :: utestarr, vtestarr
+  real(num), allocatable, dimension(:,:) :: curlu
 
   private
 
@@ -74,6 +75,13 @@ module diagnostics
     write(out_unit) divu(1:nx,1:ny)
     close(out_unit)
 
+    call get_vorticity
+
+    open(out_unit, file="curlu.dat", access="stream")
+    write(out_unit) curlu(1:nx,1:ny)
+    close(out_unit)
+
+
     !open(out_unit, file="phi.dat", access="stream")
     !write(out_unit) phi(1:nx,1:ny)
     !close(out_unit)
@@ -138,5 +146,22 @@ module diagnostics
     call execute_command_line("rm -rf *.dat")
 
   end subroutine analytic_sln_plots
+  
+  subroutine get_vorticity !calc z component of curl U
+
+    real(num) :: dv_dx, du_dy
+
+    if (.not. allocated(curlu)) allocate( curlu(1:nx,1:ny))
+
+    !call velocity_bcs ! not currently necessary
+
+    do ix = 1, nx
+    do iy = 1, ny
+      dv_dx = (v(ix+1,iy)-v(ix-1,iy))/dx/2.0_num
+      du_dy = (u(ix,iy+1)-u(ix,iy-1))/dy/2.0_num
+      curlu(ix,iy) = dv_dx - du_dy 
+    enddo
+    enddo
+  end subroutine get_vorticity
 
 end module diagnostics

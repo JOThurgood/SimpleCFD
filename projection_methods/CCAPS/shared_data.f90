@@ -2,6 +2,8 @@ module shared_data
 
   implicit none
 
+  integer :: out_unit = 10
+
   integer, parameter :: num=selected_real_kind(p=15) 
   integer :: nx, ny
   integer :: ix, iy
@@ -38,5 +40,7 @@ module shared_data
 
   real(num), dimension(:,:), allocatable :: ustar, vstar
 
+
+  real(num), dimension(:,:), allocatable :: gradp_x, gradp_y ! pressure gradient, cc
 
 end module shared_data

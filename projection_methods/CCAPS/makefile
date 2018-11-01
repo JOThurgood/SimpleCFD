@@ -5,7 +5,7 @@ FC = gfortran
 # flags for debugging or for maximum performance, comment as necessary
 FCFLAGS = -g -fbounds-check -Wall  -Wline-truncation  -Wcharacter-truncation  -Wsurprising  -Waliasing  -Wimplicit-interface  -Wunused-parameter  -fwhole-file  -fcheck=all  -std=f2008  -pedantic      -fbacktrace -Wextra -Wconversion -Wconversion-extra 
 
-#FCFLAGS = -O2
+FCFLAGS = -O2
 # flags forall (e.g. look for system .mod files, required in gfortran)
 FCFLAGS += -I/usr/include
 
@@ -22,9 +22,9 @@ all: $(PROGRAMS)
 advance_module.o: boundary_conditions.o
 setup.o: control.o initial_conditions.o
 ccaps.o: shared_data.o advance_module.o setup.o control.o initial_conditions.o \
-  boundary_conditions.o
+  boundary_conditions.o diagnostics.o
 ccaps: shared_data.o  advance_module.o setup.o control.o initial_conditions.o \
-  boundary_conditions.o
+  boundary_conditions.o diagnostics.o
 
 
 # ======================================================================
@@ -52,4 +52,4 @@ ccaps: shared_data.o  advance_module.o setup.o control.o initial_conditions.o \
 cleanmods:
 	rm -rf *.o *.mod *.MOD *.dSYM
 clean:  cleanmods
-	rm -f *~ $(PROGRAMS) 
+	rm -f *~ $(PROGRAMS) *.png

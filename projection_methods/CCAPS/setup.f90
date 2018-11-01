@@ -8,7 +8,7 @@ module setup
 
   private
 
-  public :: initial_setup
+  public :: initial_setup, bootstrap
 
   contains
 
@@ -18,7 +18,17 @@ module setup
     call allocate_global_arrays
     call set_ic 
 
+    step = 0
+    time = 0.0_num
+
   end subroutine initial_setup
+
+  subroutine bootstrap
+
+    call set_ic 
+    time = 0.0_num !reset to zero important
+
+  endsubroutine bootstrap
 
   subroutine allocate_global_arrays 
 
@@ -37,6 +47,11 @@ module setup
       xb(ix) = REAL(ix,num) * dx                    
       if (ix /= -2) xc(ix) = xb(ix) - dx/2.0_num 
     enddo                                           
+
+!    print *,dx
+!    print *,xb
+!    print *,xc
+!    STOP
                                                     
     dy = (y_max - y_min) / REAL(ny,num)             
     do iy = -2, ny+2                                
@@ -95,13 +110,19 @@ module setup
     allocate(vx(-2:nx+2,-1:ny+2))
     allocate(vy(-1:nx+2,-2:ny+2))
 
-    allocate(divu(-1:nx+1,-1:ny+2)) ! divergence of mac velocities, cell centers
+    allocate(divu(1:nx,1:ny)) ! divergence of mac velocities, cell centers, no ghost
 
-    allocate(phi(-1:nx+1,-1:ny+2))
+    allocate(phi(-1:nx+1,-1:ny+2)) !phi on cc
     phi = 0.0_num !initial guess in step 0
 
     allocate(ustar(-1:nx+2,-1:ny+2))
     allocate(vstar(-1:nx+2,-1:ny+2))
+
+    allocate(gradp_x(-1:nx+2,-1:ny+2)) !gradp_x
+    allocate(gradp_y(-1:nx+2,-1:ny+2)) !gradp_y
+    gradp_x = 0.0_num
+    gradp_y = 0.0_num
+
 
   end subroutine allocate_global_arrays
 

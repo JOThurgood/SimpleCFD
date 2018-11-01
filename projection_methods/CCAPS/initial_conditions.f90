@@ -11,9 +11,38 @@ module initial_conditions
   contains
 
   subroutine set_ic
-
     ! NB: nx, t_end etc is set in control.f90
 
+    call shear_problem
+    !call minion_convergence_test
+
+
+  end subroutine set_ic
+
+  subroutine shear_problem
+
+    real(num) :: x,y, rho_s, delta_s
+
+    rho_s = 42.0_num
+    delta_s = 0.05_num
+
+    do iy = -1,ny+1
+    do ix = -1,nx+1
+      x = xc(ix)
+      y = yc(iy)
+      if (y <= 0.5_num) then
+        u(ix,iy) =  tanh(rho_s * (y-0.25_num))
+      else
+        u(ix,iy) = tanh(rho_s * (0.75_num -y))
+      endif 
+      v(ix,iy) = delta_s * sin(2.0_num * pi * x)
+    enddo
+    enddo
+
+  end subroutine shear_problem
+
+
+  subroutine minion_convergence_test
     real(num) :: x,y
 
     do iy = -1,ny+1
@@ -25,9 +54,8 @@ module initial_conditions
     enddo
     enddo
 
-!    p = 1.0_num
+  end subroutine minion_convergence_test
 
-  end subroutine set_ic
 
   ! Helper subroutines may go here! 
 

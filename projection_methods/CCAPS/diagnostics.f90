@@ -44,6 +44,45 @@ module diagnostics
 
   end subroutine test_analytic_sln
 
+  subroutine sln_plots
+
+    print *,'******************************************************************'
+    print *, 'Drawing plots'
+    print *,'******************************************************************'
+
+    call execute_command_line("rm -rf *.dat *.png")
+
+    open(out_unit, file="xc.dat", access="stream")
+    write(out_unit) xc(1:nx)
+    close(out_unit)
+   
+    open(out_unit, file="yc.dat", access="stream")
+    write(out_unit) yc(1:ny)
+    close(out_unit)
+  
+    open(out_unit, file="u.dat", access="stream")
+    write(out_unit) u(1:nx,1:ny)
+    close(out_unit)
+  
+    open(out_unit, file="v.dat", access="stream")
+    write(out_unit) v(1:nx,1:ny)
+    close(out_unit)
+
+    open(out_unit, file="divu.dat", access="stream")
+    write(out_unit) divu(1:nx,1:ny)
+    close(out_unit)
+
+    open(out_unit, file="phi.dat", access="stream")
+    write(out_unit) phi(1:nx,1:ny)
+    close(out_unit)
+
+    call execute_command_line("python sln_plots.py")
+    call execute_command_line("rm -rf *.dat")
+
+!    call execute_command_line("rm -rf xc.dat yc.dat u.dat v.dat utest.dat vtest.dat udiff.dat vdiff.dat")
+
+  end subroutine sln_plots
+
   subroutine analytic_sln_plots
 
     print *,'******************************************************************'

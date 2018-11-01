@@ -267,7 +267,7 @@ module advance_module
     real(num) :: tol = 1e-16_num
     real(num) :: L2, L2_old !norms
     real(num) :: L_phi !lagrangian of phi
-    integer :: maxir = 100000
+    integer :: maxir = 100000000
     integer :: ir = 0 
     logical :: verbose=.false. 
 
@@ -484,7 +484,7 @@ module advance_module
     real(num) :: tol = 1e-16_num
     real(num) :: L2, L2_old !norms
     real(num) :: L_phi !lagrangian of phi
-    integer :: maxir = 100000
+    integer :: maxir = 10000000
     integer :: ir = 0 
     logical :: verbose=.false. 
 

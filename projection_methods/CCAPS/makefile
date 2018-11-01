@@ -22,9 +22,9 @@ all: $(PROGRAMS)
 advance_module.o: boundary_conditions.o
 setup.o: control.o initial_conditions.o
 ccaps.o: shared_data.o advance_module.o setup.o control.o initial_conditions.o \
-  boundary_conditions.o diagnostics.o
+  boundary_conditions.o diagnostics.o welcome.o
 ccaps: shared_data.o  advance_module.o setup.o control.o initial_conditions.o \
-  boundary_conditions.o diagnostics.o
+  boundary_conditions.o diagnostics.o welcome.o
 
 
 # ======================================================================

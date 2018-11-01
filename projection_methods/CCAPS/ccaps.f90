@@ -6,9 +6,11 @@ program ccaps
   use setup
   use advance_module
   use diagnostics
+  use welcome
 
   implicit none 
 
+  call welcome_msg
 
   call initial_setup
   call test_analytic_sln

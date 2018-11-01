@@ -25,6 +25,7 @@ module initial_conditions
     enddo
     enddo
 
+
 !    p = 1.0_num
 
   end subroutine set_ic

@@ -110,7 +110,7 @@ module setup
     allocate(vx(-2:nx+2,-1:ny+2))
     allocate(vy(-1:nx+2,-2:ny+2))
 
-    allocate(divu(-1:nx+1,-1:ny+2)) ! divergence of mac velocities, cell centers
+    allocate(divu(1:nx,1:ny)) ! divergence of mac velocities, cell centers, no ghost
 
     allocate(phi(-1:nx+1,-1:ny+2)) !phi on cc
     phi = 0.0_num !initial guess in step 0

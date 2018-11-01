@@ -16,8 +16,6 @@ module advance_module
 
     call set_dt 
 
-    call velocity_bcs
-
     call step_1 ! Calculate time-centered normal velocities on the interfaces
 
     call step_2 ! Step 2 : MAC Projection 
@@ -48,6 +46,8 @@ module advance_module
     ! and separate indicies for xc and xb values)
 
     ! x faced data 
+
+    call velocity_bcs
 
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
@@ -153,30 +153,30 @@ module advance_module
         ! right 
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (vhy(ix+1,iy)-vhy(ix+1,iy-1 )) /dy
-        gp = -0.5_num * dt * gradp_y(ix,iy+1) 
+        gp = -0.5_num * dt * gradp_y(ix+1,iy) 
         vxr(ix,iy) = vhxr(ix,iy) + transv + gp 
       endif
       if (ix /= 0) then !can do the yface stuff
         ! normal components
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (vhx(ix,iy) - vhx(ix-1,iy)) / dx
-        gp = -0.0_num
+        gp = -0.5_num * dt * gradp_y(ix,iy) 
         vyl(ix,iy) = vhyl(ix,iy) + transv + gp
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (vhx(ix,iy+1) - vhx(ix-1,iy+1)) / dx
-        gp = -0.0_num
+        gp = -0.5_num * dt * gradp_y(ix,iy+1) 
         vyr(ix,iy) = vhyr(ix,iy) + transv + gp
 
         ! also calc the tangential vel states for step 3
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (uhx(ix,iy) - uhx(ix-1,iy)) / dx
-        gp = -0.0_num
+        gp = -0.5_num * dt * gradp_x(ix,iy)
         uyl(ix,iy) = uhyl(ix,iy) + transv + gp
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (uhx(ix,iy+1) - uhx(ix-1,iy+1)) / dx
-        gp = -0.0_num
+        gp = -0.5_num * dt * gradp_x(ix,iy+1)
         uyr(ix,iy) = uhyr(ix,iy) + transv + gp
 
      endif
@@ -329,6 +329,7 @@ module advance_module
 
 
   subroutine step_3
+
     ! reconstruct the interface states using the MAC velocities
     ! for consistency
     ! (redo some of step 1 but use mac velocities  for upwinding)
@@ -455,11 +456,11 @@ module advance_module
     do iy = 1, ny
       gpsi = (phi(ix+1,iy) - phi(ix,iy))/dx  
       !gpsi = (phi(ix+1,iy) - phi(ix-1,iy))/dx/2.0_num
-      gradp_x(ix,iy) = gpsi
+      gradp_x(ix,iy) = gradp_x(ix,iy) + gpsi
 
       gpsi = (phi(ix,iy+1)-phi(ix,iy))/dy
       !gpsi = (phi(ix,iy+1)-phi(ix,iy-1))/dy/2.0_num
-      gradp_y(ix,iy) = gpsi
+      gradp_y(ix,iy) = gradp_y(ix,iy) + gpsi
  
     enddo
     enddo
@@ -481,7 +482,7 @@ module advance_module
     print *, '*** begining relaxation to solve for phi.'
     print *, '*** this can take a while, use VERBOSE if you want to monitor stepping'
 
-    phi = 0.0_num
+    call phi_bcs !use old phi as initial guess
     L2_old = 1e6_num
 
     do
@@ -527,7 +528,7 @@ module advance_module
 
 
 
-  print *, '*** Gauss Seidel rRelaxation completed in',ir,'steps'
+  print *, '*** Gauss Seidel relaxation completed in',ir,'steps'
   print *, '*** L2 norm on D(velocity_field)- L(phi)',L2
  
 

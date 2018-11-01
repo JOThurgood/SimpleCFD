@@ -17,10 +17,10 @@ module control
     y_min = x_min
     y_max = x_max
 
-    nx = 64 
+    nx = 32 
     ny = nx
   
-    CFL = 0.8_num ! CFL modifier
+    CFL = 0.5_num ! CFL modifier
 
     nsteps = 1000
     t_end = 0.5_num

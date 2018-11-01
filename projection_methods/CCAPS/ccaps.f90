@@ -24,7 +24,7 @@ program ccaps
 
     call advance_dt
     if ( step ==0 ) call bootstrap 
-    call test_analytic_sln !compare against Minion's analytic sln (only for the relevant IC!)
+    call test_minion
   
     !if (modulo(step,10) ==0) call sln_plots
 !    if (modulo(step,10) ==0) call minion_plots
@@ -36,5 +36,4 @@ program ccaps
 
 !    print *,'warning bootstrap turned off'
   print *, 'CCAPS Terminated Normally'
-
 end program ccaps

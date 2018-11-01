@@ -9,11 +9,11 @@ module diagnostics
 
   private
 
-  public :: test_analytic_sln, minion_plots, sln_plots 
+  public :: test_minion, minion_plots, sln_plots 
 
   contains
 
-  subroutine test_analytic_sln
+  subroutine test_minion
 
     real(num) :: x,y,t
     real(num) :: utest, vtest
@@ -45,7 +45,7 @@ module diagnostics
     print *,' Morrisons Convergence test: - L2 of velocity vs analytic sln:',L2
     print *,''
 
-  end subroutine test_analytic_sln
+  end subroutine test_minion
 
   subroutine sln_plots
 

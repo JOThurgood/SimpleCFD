@@ -6,7 +6,7 @@ module boundary_conditions
 
   private
 
-  public :: velocity_bcs, phi_bcs
+  public :: velocity_bcs, phi_bcs, gradp_bcs
 
   contains
 
@@ -54,12 +54,37 @@ module boundary_conditions
   end subroutine velocity_bcs
 
   subroutine phi_bcs
+
     ! the relaxation only needs 1 ghost
     phi(0,:) = phi(nx,:)
     phi(nx+1,:) = phi(1,:)
     phi(:,0) = phi(:,ny)
     phi(:,ny+1) = phi(:,1)   
+
   end subroutine phi_bcs
+
+  subroutine gradp_bcs
+
+    gradp_x(0,:) = gradp_x(nx,:)
+    gradp_x(-1,:) = gradp_x(nx-1,:)
+    gradp_x(nx+1,:) = gradp_x(1,:)
+    gradp_x(nx+1,:) = gradp_x(2,:)
+    gradp_x(:,0) = gradp_x(:,ny)
+    gradp_x(:,-1) = gradp_x(:,ny-1)
+    gradp_x(:,ny) = gradp_x(:,1)
+    gradp_x(:,ny+1) = gradp_x(:,2)
+
+    gradp_y(0,:) = gradp_y(nx,:)
+    gradp_y(-1,:) = gradp_y(nx-1,:)
+    gradp_y(nx+1,:) = gradp_y(1,:)
+    gradp_y(nx+1,:) = gradp_y(2,:)
+    gradp_y(:,0) = gradp_y(:,ny)
+    gradp_y(:,-1) = gradp_y(:,ny-1)
+    gradp_y(:,ny) = gradp_y(:,1)
+    gradp_y(:,ny+1) = gradp_y(:,2)
+
+  end subroutine gradp_bcs
+
 
 
 end module boundary_conditions

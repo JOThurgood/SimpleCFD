@@ -39,4 +39,6 @@ module shared_data
   real(num), dimension(:,:), allocatable :: ustar, vstar
 
 
+  real(num), dimension(:,:), allocatable :: gradp_x, gradp_y ! pressure gradient, cc
+
 end module shared_data

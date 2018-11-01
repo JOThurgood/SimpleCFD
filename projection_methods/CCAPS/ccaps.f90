@@ -12,11 +12,26 @@ program ccaps
   call initial_setup
   call test_analytic_sln
 
+  print *,nsteps 
 
+  ! step zero / bootstrapping
 
-  ! do some sort of bootstrap here? 
-  step = step + 1
-  call advance_dt
-  call test_analytic_sln
+  call advance_dt ! to initialise gradp_x, gradp_y 
+
+  call bootstrap
+
+  do
+    step = step + 1
+    if ((step > nsteps .and. nsteps >= 0) .or. (time >= t_end)) exit
+
+    print *,'******************************************************************'
+    print *,'Cycle: ', step
+    print *,'******************************************************************'
+
+    call advance_dt
+    call test_analytic_sln
+
+  enddo 
+
   print *, 'Code Terminated Normally'
 end program ccaps

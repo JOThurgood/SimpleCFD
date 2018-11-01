@@ -15,15 +15,12 @@ module advance_module
 
 
     call set_dt 
-    print *,'Cycle', step,'hydro dt', dt
 
     call velocity_bcs
 
     call step_1 ! Calculate time-centered normal velocities on the interfaces
 
     call step_2 ! Step 2 : MAC Projection 
-
-
 
     call step_3 ! Step 3: Reconstruct interface states consistent with MAC-projected
     ! velocities 
@@ -38,8 +35,8 @@ module advance_module
 
   subroutine step_1
 
-    real(num) :: du, dv
     real(num) :: gp
+    real(num) :: du, dv
     real(num) :: transv
 
     ! 1 - Calculate the advective velocities
@@ -140,23 +137,23 @@ module advance_module
         ! left
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (uhy(ix,iy)-uhy(ix,iy-1)) / dy
-        gp = -0.0_num 
+        gp = -0.5_num * dt * gradp_x(ix,iy) 
         uxl(ix,iy) = uhxl(ix,iy)  + transv + gp
         ! right
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (uhy(ix+1,iy)-uhy(ix+1,iy-1 )) /dy
-        gp = -0.0_num 
+        gp = -0.5_num * dt * gradp_x(ix+1,iy) 
         uxr(ix,iy) = uhxr(ix,iy)  + transv + gp
         ! also calc the tangential vel states for step 3
         ! left 
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (vhy(ix,iy)-vhy(ix,iy-1)) / dy
-        gp = -0.0_num 
+        gp = -0.5_num * dt * gradp_y(ix,iy) 
         vxl(ix,iy) = vhxl(ix,iy) + transv + gp
         ! right 
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (vhy(ix+1,iy)-vhy(ix+1,iy-1 )) /dy
-        gp = -0.0_num 
+        gp = -0.5_num * dt * gradp_y(ix,iy+1) 
         vxr(ix,iy) = vhxr(ix,iy) + transv + gp 
       endif
       if (ix /= 0) then !can do the yface stuff
@@ -213,6 +210,7 @@ module advance_module
     enddo
     enddo
 
+    print *, 'Step #1 completed normally'
 
   end subroutine step_1
   
@@ -220,6 +218,9 @@ module advance_module
   subroutine step_2
 
     real(num) :: correction
+
+    print *, 'Step #2'
+    print *, '*** start'
 
     ! calc divU at cc using the MAC velocities
     do iy = 1, ny
@@ -232,7 +233,7 @@ module advance_module
 
     call step2_gauss_seidel
 
-    print *, 'max divu before cleaning',maxval(abs(divu))
+    print *, '*** max divu before cleaning',maxval(abs(divu))
 
     do ix = 0, nx
     do iy = 0, ny
@@ -257,8 +258,8 @@ module advance_module
     enddo
     enddo
 
-    print *, 'max divu after cleaning',maxval(abs(divu))
-
+    print *, '*** max divu after cleaning',maxval(abs(divu))
+    print *, '*** complete'
   end subroutine step_2
 
   subroutine step2_gauss_seidel
@@ -271,8 +272,8 @@ module advance_module
     logical :: verbose=.false. 
 
  
-    print *, 'begining relaxation to solve for phi.'
-    print *, 'this can take a while, use VERBOSE if you want to monitor stepping'
+    print *, '*** begining relaxation to solve for phi.'
+    print *, '*** this can take a while, use VERBOSE if you want to monitor stepping'
 
     phi = 0.0_num
     L2_old = 1e6_num
@@ -320,8 +321,8 @@ module advance_module
 
 
 
-  print *, 'Cycle',step, '#2: GSRelaxation completed in',ir,'steps'
-  print *, 'L2 norm on D(velocity_field)- L(phi)',L2
+  print *, '*** Gauss Seidel relaxation completed in',ir,'steps'
+  print *, '*** L2 norm on D(velocity_field)- L(phi)',L2
  
 
   end subroutine step2_gauss_seidel
@@ -375,11 +376,12 @@ module advance_module
 !!!     print *, 'max divu after 3E',maxval(abs(divu))
 !!!  
 
+    print *, 'Step #3 completed normally'
   end subroutine step_3
 
   subroutine step_4
 
-    real(num) :: Au, Av, gp ! evaluation of advection term
+    real(num) :: Au, Av ! evaluation of advection term
 
     do iy = 1, ny
     do ix = 1, nx
@@ -387,20 +389,25 @@ module advance_module
         &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (uy(ix,iy)-uy(ix,iy-1))/dy 
       Av = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (vx(ix,iy)-vx(ix-1,iy))/dx &
         &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (vy(ix,iy)-vy(ix,iy-1))/dy 
-      gp = 0.0_num 
-      ustar(ix,iy) = u(ix,iy) - dt * Au - dt * gp
-      vstar(ix,iy) = v(ix,iy) - dt * Av - dt * gp
+      ustar(ix,iy) = u(ix,iy) - dt * Au - dt * gradp_x(ix,iy)
+      vstar(ix,iy) = v(ix,iy) - dt * Av - dt * gradp_y(ix,iy)
     enddo
     enddo
 
+    print *, 'Step #4 completed normally'
   end subroutine step_4
 
   subroutine step_5
-    real(num) :: correction
+
+    real(num) :: correction, gpsi
+
+    print *,'Step #5'
 
     ! calc divU at cc using the star velocities which themselves are cc
     ! (this differs to step two which uses face vars to get a CC var)
+
     call velocity_bcs
+
     do iy = 1, ny
     do ix = 1, nx
       divu(ix,iy) = (ustar(ix+1,iy) - ustar(ix-1,iy))/dx/2.0_num &
@@ -411,20 +418,21 @@ module advance_module
 
     divu = divu/dt
 
-    call step2_gauss_seidel
-    print *, 'max divu before cleaning',maxval(abs(divu)*dt)
-    print *, 'max divu/dt before cleaning',maxval(abs(divu))
+    call step5_gauss_seidel
 
-    do iy = 0, ny
-    do ix = 0, nx
-      if (iy /= 0) then !can do the xface stuff
-        correction = dt * (phi(ix+1,iy) - phi(ix,iy))/dx
-        u(ix,iy) = ustar(ix,iy) - correction 
-      endif
-      if (ix /= 0) then !can do the yface stuff
-        correction = dt* (phi(ix,iy+1)-phi(ix,iy))/dy
-        v(ix,iy) = vstar(ix,iy) - correction 
-      endif
+    print *, '*** max divu before cleaning',maxval(abs(divu)*dt)
+    print *, '*** max divu/dt before cleaning',maxval(abs(divu))
+
+    do iy = 1, ny
+    do ix = 1, nx
+      gpsi = (phi(ix+1,iy) - phi(ix,iy))/dx  
+      !gpsi = (phi(ix+1,iy) - phi(ix-1,iy))/dx/2.0_num
+      correction = dt * gpsi
+      u(ix,iy) = ustar(ix,iy) - correction 
+      gpsi = (phi(ix,iy+1)-phi(ix,iy))/dy
+      !gpsi = (phi(ix,iy+1)-phi(ix,iy-1))/dy/2.0_num
+      correction = dt * gpsi
+      v(ix,iy) = vstar(ix,iy) - correction 
     enddo
     enddo
 
@@ -437,10 +445,93 @@ module advance_module
     enddo
     enddo
 
-    print *, 'max divu after cleaning',maxval(abs(divu))
-    print *, 'max divu/dt after cleaning',maxval(abs(divu/dt))
+    print *, '*** max divu after cleaning',maxval(abs(divu))
+    print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
+
+
+    ! update the pressure gradient 
+  
+    do ix = 1, nx
+    do iy = 1, ny
+      gpsi = (phi(ix+1,iy) - phi(ix,iy))/dx  
+      !gpsi = (phi(ix+1,iy) - phi(ix-1,iy))/dx/2.0_num
+      gradp_x(ix,iy) = gpsi
+
+      gpsi = (phi(ix,iy+1)-phi(ix,iy))/dy
+      !gpsi = (phi(ix,iy+1)-phi(ix,iy-1))/dy/2.0_num
+      gradp_y(ix,iy) = gpsi
+ 
+    enddo
+    enddo
+
+    call gradp_bcs
 
   end subroutine step_5
+
+  subroutine step5_gauss_seidel
+
+    real(num) :: tol = 1e-16_num
+    real(num) :: L2, L2_old !norms
+    real(num) :: L_phi !lagrangian of phi
+    integer :: maxir = 100000
+    integer :: ir = 0 
+    logical :: verbose=.false. 
+
+ 
+    print *, '*** begining relaxation to solve for phi.'
+    print *, '*** this can take a while, use VERBOSE if you want to monitor stepping'
+
+    phi = 0.0_num
+    L2_old = 1e6_num
+
+    do
+      ir = ir + 1 
+   
+      do iy = 1, ny  
+      do ix = 1, nx  
+        !is this the appropriate form of GS for these equations!!!!
+        phi(ix,iy) = 0.25_num * ( & 
+          & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
+          - dx**2 * divu(ix,iy) ) 
+   
+      end do
+      end do 
+   
+      ! Apply periodic boundary conditions on phi's ghost cells
+
+      call phi_bcs  
+ 
+      L2 = 0.0_num
+      do iy = 1, ny  
+      do ix = 1, nx  
+        L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) &
+          & / dx**2 + & 
+          & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
+   
+        L2 = L2 + abs(divu(ix,iy)-L_phi)**2
+      end do
+      end do 
+      L2 = sqrt( L2 / REAL(nx*ny,num))
+   
+   
+      if (verbose) &
+        & print *, 'GS-Step5-iteration',ir,'complete. L2 is',L2,'|L2-L2_old| is',abs(L2-L2_old),'tol is',tol
+   
+     !exit conditions 
+     !if ((step >= nsteps .and. nsteps >= 0) .or. (L2 <= tol)) exit
+     ! alt, exit if the difference between L2 and L2 prev is small - might
+     ! indicate convergence
+      if ((ir >= maxir .and. maxir >= 0) .or. (abs(L2-L2_old) <= tol)) exit
+      L2_old = L2
+    end do
+
+
+
+  print *, '*** Gauss Seidel rRelaxation completed in',ir,'steps'
+  print *, '*** L2 norm on D(velocity_field)- L(phi)',L2
+ 
+
+  end subroutine step5_gauss_seidel
 
   subroutine set_dt
 
@@ -449,6 +540,8 @@ module advance_module
     dtx = CFL * dx / maxval(abs(u))
     dty = CFL * dy / maxval(abs(v))
     dt = MIN(dtx,dty)
+
+    print *, 'hydro dt = ',dt
 
   end subroutine set_dt
 

@@ -22,7 +22,7 @@ module control
   
     CFL = 0.8_num ! CFL modifier
 
-    nsteps = 100
+    nsteps = 1
     t_end = 1.0_num
 
   end subroutine user_control

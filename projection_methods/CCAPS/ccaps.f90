@@ -19,7 +19,7 @@ program ccaps
   call advance_dt ! to initialise gradp_x, gradp_y 
 
   call bootstrap
-  call execute_command_line("clear")
+!  call execute_command_line("clear")
 
   do
     step = step + 1

@@ -84,10 +84,18 @@ module diagnostics
     write(out_unit) v(1:nx,1:ny) - vtestarr(1:nx,1:ny)
     close(out_unit)
 
+    open(out_unit, file="divu.dat", access="stream")
+    write(out_unit) divu(1:nx,1:ny)
+    close(out_unit)
 
+    open(out_unit, file="phi.dat", access="stream")
+    write(out_unit) phi(1:nx,1:ny)
+    close(out_unit)
 
     call execute_command_line("python analytic_sln_plots.py")
-    call execute_command_line("rm -rf xc.dat yc.dat u.dat v.dat utest.dat vtest.dat udiff.dat vdiff.dat")
+    call execute_command_line("rm -rf *.dat")
+
+!    call execute_command_line("rm -rf xc.dat yc.dat u.dat v.dat utest.dat vtest.dat udiff.dat vdiff.dat")
 
   end subroutine analytic_sln_plots
 

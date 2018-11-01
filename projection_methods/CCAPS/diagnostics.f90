@@ -46,6 +46,10 @@ module diagnostics
 
   subroutine analytic_sln_plots
 
+    print *,'******************************************************************'
+    print *, 'Drawing plots'
+    print *,'******************************************************************'
+
     call execute_command_line("rm -rf *.dat *.png")
 
     open(out_unit, file="xc.dat", access="stream")
@@ -72,8 +76,18 @@ module diagnostics
     write(out_unit) vtestarr(1:nx,1:ny)
     close(out_unit)
 
+    open(out_unit, file="udiff.dat", access="stream")
+    write(out_unit) u(1:nx,1:ny) - utestarr(1:nx,1:ny)
+    close(out_unit)
+  
+    open(out_unit, file="vdiff.dat", access="stream")
+    write(out_unit) v(1:nx,1:ny) - vtestarr(1:nx,1:ny)
+    close(out_unit)
+
+
+
     call execute_command_line("python analytic_sln_plots.py")
-    call execute_command_line("rm -rf xc.dat yc.dat u.dat v.dat utest.dat vtest.dat")
+    call execute_command_line("rm -rf xc.dat yc.dat u.dat v.dat utest.dat vtest.dat udiff.dat vdiff.dat")
 
   end subroutine analytic_sln_plots
 

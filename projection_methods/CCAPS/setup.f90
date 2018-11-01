@@ -118,8 +118,8 @@ module setup
     allocate(ustar(-1:nx+2,-1:ny+2))
     allocate(vstar(-1:nx+2,-1:ny+2))
 
-    allocate(gradp_x(-1:nx+1,-1:ny+2)) !gradp_x
-    allocate(gradp_y(-1:nx+1,-1:ny+2)) !gradp_y
+    allocate(gradp_x(-1:nx+2,-1:ny+2)) !gradp_x
+    allocate(gradp_y(-1:nx+2,-1:ny+2)) !gradp_y
     gradp_x = 0.0_num
     gradp_y = 0.0_num
 

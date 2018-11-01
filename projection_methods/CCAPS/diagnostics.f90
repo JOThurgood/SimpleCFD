@@ -40,7 +40,9 @@ module diagnostics
     enddo
     L2 = sqrt( L2 / real(2*nx*ny,num))
 
-    print *,'Cycle: ',step,'time: ',time,'L2 of velocity vs analytic',L2
+    print *,''
+    print *,' Morrisons Convergence test: - L2 of velocity vs analytic sln:',L2
+    print *,''
 
   end subroutine test_analytic_sln
 

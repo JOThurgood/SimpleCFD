@@ -18,7 +18,7 @@ module setup
     call allocate_global_arrays
     call set_ic 
 
-    step = 0
+    step = -1 !so that the bootstrap can be in the main loop (+1)
     time = 0.0_num
 
   end subroutine initial_setup

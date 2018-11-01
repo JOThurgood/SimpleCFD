@@ -13,16 +13,8 @@ program ccaps
   call welcome_msg
 
   call initial_setup
-  call test_analytic_sln
 
   print *,nsteps 
-
-  ! step zero / bootstrapping
-
-  call advance_dt ! to initialise gradp_x, gradp_y 
-
-  call bootstrap
-!  call execute_command_line("clear")
 
   do
     step = step + 1
@@ -33,9 +25,11 @@ program ccaps
     print *,'******************************************************************'
 
     call advance_dt
-    call test_analytic_sln
+    if ( step ==0 ) call bootstrap 
+
+!    call test_analytic_sln !compare against Morrisons analytic sln (only for the relevant IC!)
   
-    if (modulo(step,10) ==0) call sln_plots
+!    if (modulo(step,10) ==0) call sln_plots
 
   enddo 
 

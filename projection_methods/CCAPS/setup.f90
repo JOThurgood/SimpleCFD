@@ -135,7 +135,7 @@ module setup
     print *,''
     print *,'x_min =',x_min 
     print *,'x_max =',x_max
-    print *,'y_min =',y_max
+    print *,'y_min =',y_min
     print *,'y_max =',y_max
     print *,'nx =', nx
     print *,'ny =', ny

@@ -25,13 +25,15 @@ program ccaps
     call advance_dt
     if ( step ==0 ) call bootstrap 
 
-!    call test_analytic_sln !compare against Morrisons analytic sln (only for the relevant IC!)
+    call test_analytic_sln !compare against Minion's analytic sln (only for the relevant IC!)
   
-    if (modulo(step,10) ==0) call sln_plots
+    !if (modulo(step,10) ==0) call sln_plots
+    if (modulo(step,10) ==0) call minion_plots
 
   enddo 
 
-  call sln_plots
+  call minion_plots
+! call sln_plots
 
   print *, 'CCAPS Terminated Normally'
 

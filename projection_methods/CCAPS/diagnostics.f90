@@ -9,7 +9,7 @@ module diagnostics
 
   private
 
-  public :: test_analytic_sln, analytic_sln_plots, sln_plots 
+  public :: test_analytic_sln, minion_plots, sln_plots 
 
   contains
 
@@ -94,7 +94,7 @@ module diagnostics
 
   end subroutine sln_plots
 
-  subroutine analytic_sln_plots
+  subroutine minion_plots
 
     print *,'******************************************************************'
     print *, 'Drawing plots'
@@ -142,10 +142,10 @@ module diagnostics
     write(out_unit) phi(1:nx,1:ny)
     close(out_unit)
 
-    call execute_command_line("python analytic_sln_plots.py")
+    call execute_command_line("python minion_plots.py")
     call execute_command_line("rm -rf *.dat")
 
-  end subroutine analytic_sln_plots
+  end subroutine minion_plots
   
   subroutine get_vorticity !calc z component of curl U
 

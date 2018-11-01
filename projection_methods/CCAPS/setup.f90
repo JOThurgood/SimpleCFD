@@ -21,6 +21,8 @@ module setup
     step = -1 !so that the bootstrap can be in the main loop (+1)
     time = 0.0_num
 
+    call setup_report
+
   end subroutine initial_setup
 
   subroutine bootstrap
@@ -125,6 +127,29 @@ module setup
 
 
   end subroutine allocate_global_arrays
+  
+  subroutine setup_report
+
+    print *,'******************************************************************'
+    print *,' Code initialised with the following control vars'
+    print *,''
+    print *,'x_min =',x_min 
+    print *,'x_max =',x_max
+    print *,'y_min =',y_max
+    print *,'y_max =',y_max
+    print *,'nx =', nx
+    print *,'ny =', ny
+    print *,'CFL factor CFL = ',CFL
+    print *,'Max no of cycles nsteps = ',nsteps
+    print *,'Termination time t_end =', t_end
+    print *,''
+    print *,' This gives the derived grid vars:'
+    print *,''
+    print *,'dx =', dx
+    print *,'dy =', dy
+ 
+
+  end subroutine setup_report
 
 end module setup
 

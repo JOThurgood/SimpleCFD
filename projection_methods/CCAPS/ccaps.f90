@@ -24,15 +24,15 @@ program ccaps
 
     call advance_dt
     if ( step ==0 ) call bootstrap 
-    call test_minion
+!    call test_minion
   
     !if (modulo(step,10) ==0) call sln_plots
 !    if (modulo(step,10) ==0) call minion_plots
 
   enddo 
 
-  call minion_plots
-! call sln_plots
+!  call minion_plots
+ call sln_plots
 
 !    print *,'warning bootstrap turned off'
   print *, 'CCAPS Terminated Normally'

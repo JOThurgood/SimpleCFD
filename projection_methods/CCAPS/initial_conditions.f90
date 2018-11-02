@@ -12,8 +12,8 @@ module initial_conditions
 
   subroutine set_ic ! NB: nx, t_end etc is set in control.f90
 
-    !call shear_problem
-    call minion_convergence_test
+    call shear_problem
+    !call minion_convergence_test
 
   end subroutine set_ic
 

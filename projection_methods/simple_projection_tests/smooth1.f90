@@ -40,6 +40,7 @@ program smooth1
   real(num), dimension(:,:), allocatable :: v_reconstructed
   real(num), dimension(:,:), allocatable :: phi
   real(num), dimension(:,:), allocatable:: D_pol ! numerical div of polluted velocity field
+  real(num), dimension(:,:), allocatable:: D_reconstructed
   real(num) :: L2, old_L2
 
   ! simulation / domain / grid control parameters
@@ -72,9 +73,6 @@ program smooth1
   do iy = 1, ny+1
     y(iy) = y(iy-1) + dy
   end do
-
-  print *,y
-  print *,dy
 
   if (dy /= dx) then
     print *, 'Warning: dy /= dx set. Has not yet being generalised.'
@@ -227,7 +225,21 @@ program smooth1
 
   print *,'L2 norm of velocity differences',L2
 
+  ! calculate numerical divercence of reconstructed velocity field
+  allocate(D_reconstructed(0:nx,0:ny))
+
+
+  do iy = 1, ny 
+  do ix = 1, nx 
+    D_reconstructed(ix,iy) = (u_reconstructed(ix+1,iy) - u_reconstructed(ix-1,iy)) / 2.0_num / dx + &
+            & (v_reconstructed(ix,iy+1) - v_reconstructed(ix,iy-1)) / 2.0_num / dy
+  end do
+  end do
   ! generate output 
+
+
+  print *,'Maximum divu before cleaning',maxval(abs(D_pol))
+  print *,'Maximum divu after cleaning',maxval(abs(D_reconstructed))
  
   call execute_command_line("rm -rf *.dat *.png") 
     !dont want to stream to existing files
@@ -263,6 +275,14 @@ program smooth1
   open(out_unit, file="v_rec.dat", access="stream")
   write(out_unit) v_reconstructed(1:nx,1:ny)
   close(out_unit)
+
+  open(out_unit, file="d_pol.dat", access="stream")
+  write(out_unit) D_pol(1:nx,1:ny)
+  close(out_unit)
+  open(out_unit, file="d_rec.dat", access="stream")
+  write(out_unit) D_reconstructed(1:nx,1:ny)
+  close(out_unit)
+
 
   call execute_command_line("python plot_smooth1.py")
 

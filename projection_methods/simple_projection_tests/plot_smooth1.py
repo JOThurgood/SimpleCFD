@@ -9,6 +9,8 @@ upol = np.fromfile('u_pol.dat', dtype = np.float64)
 vpol = np.fromfile('v_pol.dat', dtype = np.float64)
 urec = np.fromfile('u_rec.dat', dtype = np.float64)
 vrec = np.fromfile('v_rec.dat', dtype = np.float64)
+divpol = np.fromfile('d_pol.dat', dtype = np.float64)
+divrec = np.fromfile('d_rec.dat', dtype = np.float64)
 
 u = u.reshape(yc.size, xc.size)
 v = v.reshape(yc.size, xc.size)
@@ -16,6 +18,8 @@ upol = upol.reshape(yc.size, xc.size)
 vpol = vpol.reshape(yc.size, xc.size)
 urec = urec.reshape(yc.size, xc.size)
 vrec = vrec.reshape(yc.size, xc.size)
+divpol = divpol.reshape(yc.size, xc.size)
+divrec = divrec.reshape(yc.size, xc.size)
 
 
 plt.clf()
@@ -77,3 +81,27 @@ plt.title('reconstructed v')
 plt.colorbar()
 #plt.show()
 plt.savefig('v_rec.png')
+
+
+
+plt.clf()
+plt.contourf(xc, yc, divpol, 255) 
+#plt.grid(True)
+plt.xlabel('x')
+plt.ylabel('y') 
+plt.colorbar()
+plt.title('div polluted u')
+#plt.show()
+plt.savefig('div_pol.png')
+
+plt.clf()
+plt.contourf(xc, yc, divrec, 255) 
+#plt.grid(True)
+plt.xlabel('x')
+plt.ylabel('y') 
+plt.colorbar()
+plt.title('div recon u')
+#plt.show()
+plt.savefig('div_rec.png')
+
+

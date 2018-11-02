@@ -50,6 +50,6 @@ ccaps: shared_data.o  advance_module.o setup.o control.o initial_conditions.o \
 .PHONY: clean cleanall 
 
 cleanmods:
-	rm -rf *.o *.mod *.MOD *.dSYM
+	rm -rf *.o *.mod *.MOD *.dSYM *.dat
 clean:  cleanmods
 	rm -f *~ $(PROGRAMS) *.png

@@ -320,7 +320,6 @@ module advance_module
           endif
         end do
         end do 
-!        call phi_bcs
         ! even iteration
         do iy = 1, ny  
         do ix = 1, nx  

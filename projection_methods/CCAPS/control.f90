@@ -22,7 +22,7 @@ module control
   
     !for shear
     CFL = 0.8_num ! CFL modifier
-    nsteps = 1000 
+    nsteps = 1 
     t_end = 1.0_num 
 
     ! for Minion

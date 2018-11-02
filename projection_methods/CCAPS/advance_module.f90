@@ -2,6 +2,7 @@ module advance_module
 
   use shared_data
   use boundary_conditions
+  use diagnostics
 
   implicit none
 
@@ -416,6 +417,8 @@ module advance_module
     enddo
     enddo
 
+!    if (step /=0) call plot_divergence_now
+
     divu = divu/dt
 
     call step5_gauss_seidel
@@ -425,36 +428,29 @@ module advance_module
 
     do iy = 1, ny
     do ix = 1, nx
-      !gpsi = (phi(ix+1,iy) - phi(ix,iy))/dx  
+
       gpsi = (phi(ix+1,iy) - phi(ix-1,iy))/dx/2.0_num
-
-      !gpsi = ( (phi(ix+1,iy)-phi(ix,iy))/dx + &
-      !  & (phi(ix,iy)-phi(ix-1,iy))/dx ) /2.0_num
-
-
       correction = dt * gpsi
       u(ix,iy) = ustar(ix,iy) - correction 
 
-      !gpsi = (phi(ix,iy+1)-phi(ix,iy))/dy
       gpsi = (phi(ix,iy+1)-phi(ix,iy-1))/dy/2.0_num
-
-      !gpsi = ( (phi(ix,iy+1)-phi(ix,iy))/dy + &
-      !  & (phi(ix,iy)-phi(ix,iy-1))/dy ) /2.0_num
-
-
       correction = dt * gpsi
       v(ix,iy) = vstar(ix,iy) - correction 
+
     enddo
     enddo
 
     ! calculate the divergence of the updated velocity field
     call velocity_bcs
+
     do iy = 1, ny
     do ix = 1, nx
       divu(ix,iy) = (u(ix+1,iy) - u(ix-1,iy))/dx/2.0_num &
         & + (v(ix,iy+1) - v(ix,iy-1))/dy/2.0_num
     enddo
     enddo
+
+    if (step /=0) call plot_divergence_now
 
     print *, '*** max divu after cleaning',maxval(abs(divu))
    !   print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
@@ -464,11 +460,10 @@ module advance_module
   
     do ix = 1, nx
     do iy = 1, ny
-      !gpsi = (phi(ix+1,iy) - phi(ix,iy))/dx  
+
       gpsi = (phi(ix+1,iy) - phi(ix-1,iy))/dx/2.0_num
       gradp_x(ix,iy) = gradp_x(ix,iy) + gpsi
 
-      !gpsi = (phi(ix,iy+1)-phi(ix,iy))/dy
       gpsi = (phi(ix,iy+1)-phi(ix,iy-1))/dy/2.0_num
       gradp_y(ix,iy) = gradp_y(ix,iy) + gpsi
  

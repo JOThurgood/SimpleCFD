@@ -9,7 +9,8 @@ module diagnostics
 
   private
 
-  public :: test_minion, minion_plots, sln_plots 
+  public :: test_minion, minion_plots, sln_plots, &
+    & plot_divergence_now
 
   contains
 
@@ -163,5 +164,38 @@ module diagnostics
     enddo
     enddo
   end subroutine get_vorticity
+
+
+  subroutine plot_divergence_now
+    !for runtime debugging
+
+    print *,'******************************************************************'
+    print *, 'call plot_divercence_now'
+    print *,'******************************************************************'
+
+    call execute_command_line("rm -rf divu_rt.dat xc.dat yc.dat")
+
+    open(out_unit, file="divu_rt.dat", access="stream")
+    write(out_unit) divu(1:nx,1:ny)
+    close(out_unit)
+
+    open(out_unit, file="xc.dat", access="stream")
+    write(out_unit) xc(1:nx)
+    close(out_unit)
+   
+    open(out_unit, file="yc.dat", access="stream")
+    write(out_unit) yc(1:ny)
+    close(out_unit)
+
+    call execute_command_line("python plot_divercence_now.py")
+    call execute_command_line("rm -rf divu_rt.dat")
+
+    print *,'******************************************************************'
+    print *, 'Early stop'
+    print *,'******************************************************************'
+    STOP
+
+  end subroutine plot_divergence_now
+
 
 end module diagnostics

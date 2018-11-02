@@ -12,7 +12,7 @@ module boundary_conditions
 
   subroutine velocity_bcs
     ! Currently hard-coded as doubly-periodic
-    ! (this is suitable for the test problem)
+    ! (this is suitable for the test problems)
 
     u(0,:) = u(nx,:)
     u(-1,:) = u(nx-1,:)
@@ -62,7 +62,6 @@ module boundary_conditions
     phi(:,-1) = phi(:,ny-1)
     phi(:,ny+1) = phi(:,1)
     phi(:,ny+2) = phi(:,2)
-
 
   end subroutine phi_bcs
 

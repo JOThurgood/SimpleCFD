@@ -2,6 +2,7 @@ module advance_module
 
   use shared_data
   use boundary_conditions
+  use diagnostics
 
   implicit none
 
@@ -416,6 +417,8 @@ module advance_module
     enddo
     enddo
 
+!    if (step /=0) call plot_divergence_now
+
     divu = divu/dt
 
     call step5_gauss_seidel
@@ -446,6 +449,8 @@ module advance_module
         & + (v(ix,iy+1) - v(ix,iy-1))/dy/2.0_num
     enddo
     enddo
+
+    if (step /=0) call plot_divergence_now
 
     print *, '*** max divu after cleaning',maxval(abs(divu))
    !   print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))

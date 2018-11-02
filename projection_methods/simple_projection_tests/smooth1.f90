@@ -18,6 +18,8 @@ program smooth1
 
   logical :: verbose=.false.
 
+  logical :: gsrb=.true.
+
   integer :: nx, ny 
   integer :: ix,iy
   integer(num) :: step = 0
@@ -133,15 +135,46 @@ program smooth1
   do
     step = step + 1
 
-    do iy = 1, ny 
-    do ix = 1, nx 
 
-      phi(ix,iy) = 0.25_num * ( &
-        & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
-        - dx**2 * D_pol(ix,iy) ) 
+    ! if not using redblack order
+    if (.not. gsrb) then 
+      do iy = 1, ny 
+      do ix = 1, nx 
+        phi(ix,iy) = 0.25_num * ( &
+          & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
+          - dx**2 * D_pol(ix,iy) ) 
+      end do
+      end do 
+   
+    else !use red black
 
-    end do
-    end do 
+      ! odd iteration
+      do iy = 1, ny 
+      do ix = 1, nx 
+        if (modulo(ix+iy,2) == 1) then
+          phi(ix,iy) = 0.25_num * ( &
+            & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
+            - dx**2 * D_pol(ix,iy) ) 
+        endif
+      end do
+      end do 
+
+      ! even iteration
+
+      do iy = 1, ny 
+      do ix = 1, nx 
+        if (modulo(ix+iy,2) == 0) then
+          phi(ix,iy) = 0.25_num * ( &
+            & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
+            - dx**2 * D_pol(ix,iy) ) 
+        endif
+      end do
+      end do 
+
+    endif
+
+
+
 
     ! Apply periodic boundary conditions on phi's ghost cells
 

@@ -231,6 +231,8 @@ module advance_module
     enddo
     enddo
 
+!    call plot_divergence_now
+!    if (step /=0) call plot_divergence_now
 
     call step2_gauss_seidel
 
@@ -259,13 +261,19 @@ module advance_module
     enddo
     enddo
 
+
     print *, '*** max divu after cleaning',maxval(abs(divu))
     print *, '*** complete'
+
+!    if (step /=0) call plot_divergence_now
+    !call plot_divergence_now
   end subroutine step_2
 
   subroutine step2_gauss_seidel
 
-    real(num) :: tol = 1e-16_num
+    logical :: gsrb=.true. !should move to control eventually
+
+    real(num) :: tol = 1e-18_num
     real(num) :: L2, L2_old !norms
     real(num) :: L_phi !lagrangian of phi
     integer :: maxir = 100000000
@@ -282,15 +290,49 @@ module advance_module
     do
       ir = ir + 1 
    
-      do iy = 1, ny  
-      do ix = 1, nx  
-        !is this the appropriate form of GS for these equations!!!!
-        phi(ix,iy) = 0.25_num * ( & 
-          & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
-          - dx**2 * divu(ix,iy) ) 
+!      do iy = 1, ny  
+!      do ix = 1, nx  
+!        !is this the appropriate form of GS for these equations!!!!
+!        phi(ix,iy) = 0.25_num * ( & 
+!          & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
+!          - dx**2 * divu(ix,iy) ) 
+!   
+!      end do
+!      end do 
+
+      ! if not using redblack order
+      if (.not. gsrb) then 
+        do iy = 1, ny  
+        do ix = 1, nx  
+          phi(ix,iy) = 0.25_num * ( & 
+            & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
+            - dx**2 * divu(ix,iy) ) 
+        end do
+        end do 
+      else !use red black
+        ! odd iteration
+        do iy = 1, ny  
+        do ix = 1, nx  
+          if (modulo(ix+iy,2) == 1) then
+            phi(ix,iy) = 0.25_num * ( & 
+              & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
+              - dx**2 * divu(ix,iy) ) 
+          endif
+        end do
+        end do 
+!        call phi_bcs
+        ! even iteration
+        do iy = 1, ny  
+        do ix = 1, nx  
+          if (modulo(ix+iy,2) == 0) then
+            phi(ix,iy) = 0.25_num * ( & 
+              & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
+              - dx**2 * divu(ix,iy) ) 
+          endif
+        end do
+        end do 
    
-      end do
-      end do 
+      endif
    
       ! Apply periodic boundary conditions on phi's ghost cells
 

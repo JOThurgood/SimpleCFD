@@ -258,6 +258,7 @@ module advance_module
 
     print *, 'Step #2'
     print *, '*** start'
+    print *, 'Warning: experimental suppresion of boundary handling'
 
     ! calc divU at cc using the MAC velocities
     do iy = 1, ny
@@ -371,7 +372,8 @@ module advance_module
    
       ! Apply periodic boundary conditions on phi's ghost cells
 
-      call phi_bcs  
+      !call phi_bcs ! commenting this out makes it better behaved?! 
+      ! but it most certainly DOESNT make step 5 better behaved...
  
       L2 = 0.0_num
       do iy = 1, ny  
@@ -481,6 +483,8 @@ module advance_module
     real(num) :: correction, gpsi
 
     print *,'Step #5'
+    print *, '*** start'
+!    print *, 'Warning: experimental suppresion of boundary handling'
 
     ! calc divU at cc using the star velocities which themselves are cc
     ! (this differs to step two which uses face vars to get a CC var)
@@ -495,6 +499,7 @@ module advance_module
     enddo
 
 !    if (step /=0) call plot_divergence_now
+!    call plot_divergence_now
 
     divu = divu/dt
 
@@ -519,7 +524,6 @@ module advance_module
 
     ! calculate the divergence of the updated velocity field
     call velocity_bcs
-
     do iy = 1, ny
     do ix = 1, nx
       divu(ix,iy) = (u(ix+1,iy) - u(ix-1,iy))/dx/2.0_num &
@@ -527,11 +531,11 @@ module advance_module
     enddo
     enddo
 
-!    if (step /=0) call plot_divergence_now
-
     print *, '*** max divu after cleaning',maxval(abs(divu))
    !   print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
 
+!    if (step /=0) call plot_divergence_now
+!    call plot_divergence_now
 
     ! update the pressure gradient 
   
@@ -566,7 +570,8 @@ module advance_module
     print *, '*** begining relaxation to solve for phi.'
     print *, '*** this can take a while, use VERBOSE if you want to monitor stepping'
 
-    call phi_bcs !use old phi as initial guess
+    !call phi_bcs !use old phi as initial guess
+    phi = 0.0_num
     L2_old = 1e6_num
 
     do
@@ -623,6 +628,7 @@ module advance_module
       ! Apply periodic boundary conditions on phi's ghost cells
 
       call phi_bcs  
+
  
       L2 = 0.0_num
       do iy = 1, ny  

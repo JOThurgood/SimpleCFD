@@ -53,19 +53,40 @@ module advance_module
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
   
-      du = minmod((u(ix,iy)-u(ix-1,iy))/dx,(u(ix+1,iy)-u(ix,iy))/dx)
+      if (use_minmod) then
+        du = minmod((u(ix,iy)-u(ix-1,iy))/dx,(u(ix+1,iy)-u(ix,iy))/dx)
+      else
+        print *,'option to not use minmod not yet implemented. STOP'
+        STOP
+      endif
+
       uhxl(ix,iy) = u(ix,iy) + &
         0.5_num * (1.0_num - dt * u(ix,iy) / dx ) * du * dx
 
-      du = minmod((u(ix+1,iy)-u(ix,iy))/dx,(u(ix+2,iy)-u(ix+1,iy))/dx)
+      if (use_minmod) then
+        du = minmod((u(ix+1,iy)-u(ix,iy))/dx,(u(ix+2,iy)-u(ix+1,iy))/dx)
+      else
+        print *,'option to not use minmod not yet implemented. STOP'
+        STOP
+      endif
       uhxr(ix,iy) = u(ix+1,iy) - &
         0.5_num * (1.0_num + dt * u(ix+1,iy) / dx ) * du * dx
 
-      dv = minmod((v(ix,iy)-v(ix-1,iy))/dx, (v(ix+1,iy)-v(ix,iy))/dx) 
+      if (use_minmod) then
+        dv = minmod((v(ix,iy)-v(ix-1,iy))/dx, (v(ix+1,iy)-v(ix,iy))/dx) 
+      else
+        print *,'option to not use minmod not yet implemented. STOP'
+        STOP
+      endif
       vhxl(ix,iy) = v(ix,iy) + & 
         & 0.5_num * (1.0_num - dt * u(ix,iy) / dx ) * dv * dx
 
-      dv = minmod((v(ix+1,iy)-v(ix,iy))/dx, (v(ix+2,iy)-v(ix+1,iy))/dx) 
+      if (use_minmod) then
+        dv = minmod((v(ix+1,iy)-v(ix,iy))/dx, (v(ix+2,iy)-v(ix+1,iy))/dx) 
+      else
+        print *,'option to not use minmod not yet implemented. STOP'
+        STOP
+      endif
       vhxr(ix,iy) = v(ix+1,iy) - & 
         & 0.5_num * (1.0_num + dt * u(ix+1,iy) / dx) * dv * dx 
       
@@ -77,19 +98,39 @@ module advance_module
     do iy = 0, ny 
     do ix = 1, nx
 
-      du = minmod( (u(ix,iy)-u(ix,iy-1))/dy, (u(ix,iy+1)-u(ix,iy))/dy)
+      if (use_minmod) then
+       du = minmod( (u(ix,iy)-u(ix,iy-1))/dy, (u(ix,iy+1)-u(ix,iy))/dy)
+      else
+        print *,'option to not use minmod not yet implemented. STOP'
+        STOP
+      endif
       uhyl(ix,iy) = u(ix,iy) + &
         & 0.5_num * (1.0_num - dt * u(ix,iy) / dy) * du * dy
 
-      du = minmod( (u(ix,iy+1)-u(ix,iy))/dy, (u(ix,iy+2)-u(ix,iy+1))/dy)
+      if (use_minmod) then
+        du = minmod( (u(ix,iy+1)-u(ix,iy))/dy, (u(ix,iy+2)-u(ix,iy+1))/dy)
+      else
+        print *,'option to not use minmod not yet implemented. STOP'
+        STOP
+      endif
       uhyr(ix,iy) = u(ix,iy+1) - &
         & 0.5_num * (1.0_num + dt * u(ix,iy+1) / dy) * du * dy
 
-      dv = minmod( (v(ix,iy)-v(ix,iy-1))/dy, (v(ix,iy+1)-v(ix,iy))/dy)
+      if (use_minmod) then
+        dv = minmod( (v(ix,iy)-v(ix,iy-1))/dy, (v(ix,iy+1)-v(ix,iy))/dy)
+      else
+        print *,'option to not use minmod not yet implemented. STOP'
+        STOP
+      endif
       vhyl(ix,iy) = v(ix,iy) + &
         & 0.5_num * (1.0_num - dt * v(ix,iy) / dy ) * dv * dy
 
-      dv = minmod( (v(ix,iy+1)-v(ix,iy))/dy, (v(ix,iy+2)-v(ix,iy+1))/dy)
+      if (use_minmod) then
+        dv = minmod( (v(ix,iy+1)-v(ix,iy))/dy, (v(ix,iy+2)-v(ix,iy+1))/dy)
+      else
+        print *,'option to not use minmod not yet implemented. STOP'
+        STOP
+      endif
       vhyr(ix,iy) = v(ix,iy+1) - &
         & 0.5_num * (1.0_num + dt * v(ix,iy+1) / dy) * dv * dy
 

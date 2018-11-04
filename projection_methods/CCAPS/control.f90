@@ -30,7 +30,7 @@ module control
     nsteps = 1!000
     t_end = 0.5_num
 
-    
+    use_minmod = .true.    
 
   end subroutine user_control
 

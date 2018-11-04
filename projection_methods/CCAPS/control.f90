@@ -17,7 +17,7 @@ module control
     y_min = x_min
     y_max = x_max
 
-    nx = 64
+    nx = 32 
     ny = nx
   
     !for shear
@@ -27,10 +27,10 @@ module control
 
     ! for Minion
     CFL = 0.5_num
-    nsteps = 1000
+    nsteps = 1!000
     t_end = 0.5_num
 
-    
+    use_minmod = .false.    
 
   end subroutine user_control
 

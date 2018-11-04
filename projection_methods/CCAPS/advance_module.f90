@@ -53,19 +53,37 @@ module advance_module
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
   
-      du = minmod((u(ix,iy)-u(ix-1,iy))/dx,(u(ix+1,iy)-u(ix,iy))/dx)
+      if (use_minmod) then
+        du = minmod((u(ix,iy)-u(ix-1,iy))/dx,(u(ix+1,iy)-u(ix,iy))/dx)
+      else
+        du = ( u(ix+1,iy) - u(ix-1,iy) ) /2.0_num / dx
+      endif
+
       uhxl(ix,iy) = u(ix,iy) + &
         0.5_num * (1.0_num - dt * u(ix,iy) / dx ) * du * dx
 
-      du = minmod((u(ix+1,iy)-u(ix,iy))/dx,(u(ix+2,iy)-u(ix+1,iy))/dx)
+      if (use_minmod) then
+        du = minmod((u(ix+1,iy)-u(ix,iy))/dx,(u(ix+2,iy)-u(ix+1,iy))/dx)
+      else
+        du= ( u(ix+2,iy)-u(ix,iy) ) / 2.0_num / dx
+      endif
+
       uhxr(ix,iy) = u(ix+1,iy) - &
         0.5_num * (1.0_num + dt * u(ix+1,iy) / dx ) * du * dx
 
-      dv = minmod((v(ix,iy)-v(ix-1,iy))/dx, (v(ix+1,iy)-v(ix,iy))/dx) 
+      if (use_minmod) then
+        dv = minmod((v(ix,iy)-v(ix-1,iy))/dx, (v(ix+1,iy)-v(ix,iy))/dx) 
+      else
+        dv = (v(ix+1,iy) - v(ix-1,iy))/2.0_num/dx
+      endif
       vhxl(ix,iy) = v(ix,iy) + & 
         & 0.5_num * (1.0_num - dt * u(ix,iy) / dx ) * dv * dx
 
-      dv = minmod((v(ix+1,iy)-v(ix,iy))/dx, (v(ix+2,iy)-v(ix+1,iy))/dx) 
+      if (use_minmod) then
+        dv = minmod((v(ix+1,iy)-v(ix,iy))/dx, (v(ix+2,iy)-v(ix+1,iy))/dx) 
+      else
+        dv = (v(ix+2,iy)-v(ix,iy)) /2.0_num/dx
+      endif
       vhxr(ix,iy) = v(ix+1,iy) - & 
         & 0.5_num * (1.0_num + dt * u(ix+1,iy) / dx) * dv * dx 
       
@@ -77,19 +95,37 @@ module advance_module
     do iy = 0, ny 
     do ix = 1, nx
 
-      du = minmod( (u(ix,iy)-u(ix,iy-1))/dy, (u(ix,iy+1)-u(ix,iy))/dy)
+      if (use_minmod) then
+        du = minmod( (u(ix,iy)-u(ix,iy-1))/dy, (u(ix,iy+1)-u(ix,iy))/dy)
+      else
+        du = (u(ix,iy+1) - u(ix,iy-1)) / 2.0_num / dy
+      endif
+
       uhyl(ix,iy) = u(ix,iy) + &
         & 0.5_num * (1.0_num - dt * u(ix,iy) / dy) * du * dy
 
-      du = minmod( (u(ix,iy+1)-u(ix,iy))/dy, (u(ix,iy+2)-u(ix,iy+1))/dy)
+      if (use_minmod) then
+        du = minmod( (u(ix,iy+1)-u(ix,iy))/dy, (u(ix,iy+2)-u(ix,iy+1))/dy)
+      else
+        du = (u(ix,iy+2)-u(ix,iy)) / 2.0_num/dy
+      endif
+
       uhyr(ix,iy) = u(ix,iy+1) - &
         & 0.5_num * (1.0_num + dt * u(ix,iy+1) / dy) * du * dy
 
-      dv = minmod( (v(ix,iy)-v(ix,iy-1))/dy, (v(ix,iy+1)-v(ix,iy))/dy)
+      if (use_minmod) then
+        dv = minmod( (v(ix,iy)-v(ix,iy-1))/dy, (v(ix,iy+1)-v(ix,iy))/dy)
+      else
+        dv = (v(ix,iy+1)-v(ix,iy-1))/2.0_num/dy
+      endif
       vhyl(ix,iy) = v(ix,iy) + &
         & 0.5_num * (1.0_num - dt * v(ix,iy) / dy ) * dv * dy
 
-      dv = minmod( (v(ix,iy+1)-v(ix,iy))/dy, (v(ix,iy+2)-v(ix,iy+1))/dy)
+      if (use_minmod) then
+        dv = minmod( (v(ix,iy+1)-v(ix,iy))/dy, (v(ix,iy+2)-v(ix,iy+1))/dy)
+      else
+        dv = (v(ix,iy+2)-v(ix,iy))/2.0_num/dy
+      endif
       vhyr(ix,iy) = v(ix,iy+1) - &
         & 0.5_num * (1.0_num + dt * v(ix,iy+1) / dy) * dv * dy
 
@@ -222,6 +258,7 @@ module advance_module
 
     print *, 'Step #2'
     print *, '*** start'
+    print *, 'Warning: experimental suppresion of boundary handling'
 
     ! calc divU at cc using the MAC velocities
     do iy = 1, ny
@@ -266,7 +303,7 @@ module advance_module
     print *, '*** complete'
 
 !    if (step /=0) call plot_divergence_now
-    !call plot_divergence_now
+!    call plot_divergence_now
   end subroutine step_2
 
   subroutine step2_gauss_seidel
@@ -335,7 +372,8 @@ module advance_module
    
       ! Apply periodic boundary conditions on phi's ghost cells
 
-      call phi_bcs  
+      !call phi_bcs ! commenting this out makes it better behaved?! 
+      ! but it most certainly DOESNT make step 5 better behaved...
  
       L2 = 0.0_num
       do iy = 1, ny  
@@ -445,6 +483,8 @@ module advance_module
     real(num) :: correction, gpsi
 
     print *,'Step #5'
+    print *, '*** start'
+!    print *, 'Warning: experimental suppresion of boundary handling'
 
     ! calc divU at cc using the star velocities which themselves are cc
     ! (this differs to step two which uses face vars to get a CC var)
@@ -459,6 +499,7 @@ module advance_module
     enddo
 
 !    if (step /=0) call plot_divergence_now
+!    call plot_divergence_now
 
     divu = divu/dt
 
@@ -483,7 +524,6 @@ module advance_module
 
     ! calculate the divergence of the updated velocity field
     call velocity_bcs
-
     do iy = 1, ny
     do ix = 1, nx
       divu(ix,iy) = (u(ix+1,iy) - u(ix-1,iy))/dx/2.0_num &
@@ -491,11 +531,11 @@ module advance_module
     enddo
     enddo
 
-!    if (step /=0) call plot_divergence_now
-
     print *, '*** max divu after cleaning',maxval(abs(divu))
    !   print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
 
+!    if (step /=0) call plot_divergence_now
+!    call plot_divergence_now
 
     ! update the pressure gradient 
   
@@ -530,7 +570,8 @@ module advance_module
     print *, '*** begining relaxation to solve for phi.'
     print *, '*** this can take a while, use VERBOSE if you want to monitor stepping'
 
-    call phi_bcs !use old phi as initial guess
+    !call phi_bcs !use old phi as initial guess
+    phi = 0.0_num
     L2_old = 1e6_num
 
     do
@@ -587,6 +628,7 @@ module advance_module
       ! Apply periodic boundary conditions on phi's ghost cells
 
       call phi_bcs  
+
  
       L2 = 0.0_num
       do iy = 1, ny  

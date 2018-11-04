@@ -93,11 +93,16 @@ module setup
 
     allocate(uxl(-2:nx+2,-1:ny+2)) ! full prediction for normal vel left state
     allocate(uxr(-2:nx+2,-1:ny+2)) ! in 1D and 3E (some aren't used in
-    allocate(vxl(-1:nx+2,-2:ny+2)) !
-    allocate(vxr(-1:nx+2,-2:ny+2)) !
+    !new - might not matter anyway since only really need 1 cell at that stage? 
+    allocate(vxl(-2:nx+2,-1:ny+2)) !
+    allocate(vxr(-2:nx+2,-1:ny+2)) !
+!    allocate(vxl(-1:nx+2,-2:ny+2)) !
+!    allocate(vxr(-1:nx+2,-2:ny+2)) !
 
-    allocate(uyl(-2:nx+2,-1:ny+2)) 
-    allocate(uyr(-2:nx+2,-1:ny+2))
+!    allocate(uyl(-2:nx+2,-1:ny+2)) 
+!    allocate(uyr(-2:nx+2,-1:ny+2))
+    allocate(uyl(-1:nx+2,-2:ny+2)) !new
+    allocate(uyr(-1:nx+2,-2:ny+2)) !new
     allocate(vyl(-1:nx+2,-2:ny+2)) 
     allocate(vyr(-1:nx+2,-2:ny+2))
 
@@ -131,7 +136,7 @@ module setup
   subroutine setup_report
 
     print *,'******************************************************************'
-    print *,' Code initialised with the following control vars'
+    print *,' Code initialised with the following control variables:'
     print *,''
     print *,'x_min =',x_min 
     print *,'x_max =',x_max
@@ -143,10 +148,15 @@ module setup
     print *,'Max no of cycles nsteps = ',nsteps
     print *,'Termination time t_end =', t_end
     print *,''
-    print *,' This gives the derived grid vars:'
+    print *,' This gives the derived grid variables:'
     print *,''
     print *,'dx =', dx
     print *,'dy =', dy
+  
+    print *,''
+    print *,'With gradient limiting options'
+    print *,''
+    print *,'use_minmod',use_minmod
  
 
   end subroutine setup_report

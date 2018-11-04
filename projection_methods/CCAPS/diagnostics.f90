@@ -87,7 +87,7 @@ module diagnostics
     !write(out_unit) phi(1:nx,1:ny)
     !close(out_unit)
 
-    call execute_command_line("python sln_plots.py")
+    call execute_command_line("python python_plotting/sln_plots.py")
 
     call execute_command_line("rm -rf *.dat")
 
@@ -143,7 +143,7 @@ module diagnostics
     write(out_unit) phi(1:nx,1:ny)
     close(out_unit)
 
-    call execute_command_line("python minion_plots.py")
+    call execute_command_line("python python_plotting/minion_plots.py")
     call execute_command_line("rm -rf *.dat")
 
   end subroutine minion_plots
@@ -187,7 +187,7 @@ module diagnostics
     write(out_unit) yc(1:ny)
     close(out_unit)
 
-    call execute_command_line("python plot_divercence_now.py")
+    call execute_command_line("python python_plotting/plot_divercence_now.py")
     call execute_command_line("rm -rf divu_rt.dat")
 
     print *,'******************************************************************'

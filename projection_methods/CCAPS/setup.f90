@@ -131,7 +131,7 @@ module setup
   subroutine setup_report
 
     print *,'******************************************************************'
-    print *,' Code initialised with the following control vars'
+    print *,' Code initialised with the following control variables:'
     print *,''
     print *,'x_min =',x_min 
     print *,'x_max =',x_max
@@ -143,10 +143,15 @@ module setup
     print *,'Max no of cycles nsteps = ',nsteps
     print *,'Termination time t_end =', t_end
     print *,''
-    print *,' This gives the derived grid vars:'
+    print *,' This gives the derived grid variables:'
     print *,''
     print *,'dx =', dx
     print *,'dy =', dy
+  
+    print *,''
+    print *,'With gradient limiting options'
+    print *,''
+    print *,'use_minmod',use_minmod
  
 
   end subroutine setup_report

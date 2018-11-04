@@ -56,8 +56,7 @@ module advance_module
       if (use_minmod) then
         du = minmod((u(ix,iy)-u(ix-1,iy))/dx,(u(ix+1,iy)-u(ix,iy))/dx)
       else
-        print *,'option to not use minmod not yet implemented. STOP'
-        STOP
+        du = ( u(ix+1,iy) - u(ix-1,iy) ) /2.0_num / dx
       endif
 
       uhxl(ix,iy) = u(ix,iy) + &
@@ -66,17 +65,16 @@ module advance_module
       if (use_minmod) then
         du = minmod((u(ix+1,iy)-u(ix,iy))/dx,(u(ix+2,iy)-u(ix+1,iy))/dx)
       else
-        print *,'option to not use minmod not yet implemented. STOP'
-        STOP
+        du= ( u(ix+2,iy)-u(ix,iy) ) / 2.0_num / dx
       endif
+
       uhxr(ix,iy) = u(ix+1,iy) - &
         0.5_num * (1.0_num + dt * u(ix+1,iy) / dx ) * du * dx
 
       if (use_minmod) then
         dv = minmod((v(ix,iy)-v(ix-1,iy))/dx, (v(ix+1,iy)-v(ix,iy))/dx) 
       else
-        print *,'option to not use minmod not yet implemented. STOP'
-        STOP
+        dv = (v(ix+1,iy) - v(ix-1,iy))/2.0_num/dx
       endif
       vhxl(ix,iy) = v(ix,iy) + & 
         & 0.5_num * (1.0_num - dt * u(ix,iy) / dx ) * dv * dx
@@ -84,8 +82,7 @@ module advance_module
       if (use_minmod) then
         dv = minmod((v(ix+1,iy)-v(ix,iy))/dx, (v(ix+2,iy)-v(ix+1,iy))/dx) 
       else
-        print *,'option to not use minmod not yet implemented. STOP'
-        STOP
+        dv = (v(ix+2,iy)-v(ix,iy)) /2.0_num/dx
       endif
       vhxr(ix,iy) = v(ix+1,iy) - & 
         & 0.5_num * (1.0_num + dt * u(ix+1,iy) / dx) * dv * dx 
@@ -99,28 +96,27 @@ module advance_module
     do ix = 1, nx
 
       if (use_minmod) then
-       du = minmod( (u(ix,iy)-u(ix,iy-1))/dy, (u(ix,iy+1)-u(ix,iy))/dy)
+        du = minmod( (u(ix,iy)-u(ix,iy-1))/dy, (u(ix,iy+1)-u(ix,iy))/dy)
       else
-        print *,'option to not use minmod not yet implemented. STOP'
-        STOP
+        du = (u(ix,iy+1) - u(ix,iy-1)) / 2.0_num / dy
       endif
+
       uhyl(ix,iy) = u(ix,iy) + &
         & 0.5_num * (1.0_num - dt * u(ix,iy) / dy) * du * dy
 
       if (use_minmod) then
         du = minmod( (u(ix,iy+1)-u(ix,iy))/dy, (u(ix,iy+2)-u(ix,iy+1))/dy)
       else
-        print *,'option to not use minmod not yet implemented. STOP'
-        STOP
+        du = (u(ix,iy+2)-u(ix,iy)) / 2.0_num/dy
       endif
+
       uhyr(ix,iy) = u(ix,iy+1) - &
         & 0.5_num * (1.0_num + dt * u(ix,iy+1) / dy) * du * dy
 
       if (use_minmod) then
         dv = minmod( (v(ix,iy)-v(ix,iy-1))/dy, (v(ix,iy+1)-v(ix,iy))/dy)
       else
-        print *,'option to not use minmod not yet implemented. STOP'
-        STOP
+        dv = (v(ix,iy+1)-v(ix,iy-1))/2.0_num/dy
       endif
       vhyl(ix,iy) = v(ix,iy) + &
         & 0.5_num * (1.0_num - dt * v(ix,iy) / dy ) * dv * dy
@@ -128,8 +124,7 @@ module advance_module
       if (use_minmod) then
         dv = minmod( (v(ix,iy+1)-v(ix,iy))/dy, (v(ix,iy+2)-v(ix,iy+1))/dy)
       else
-        print *,'option to not use minmod not yet implemented. STOP'
-        STOP
+        dv = (v(ix,iy+2)-v(ix,iy))/2.0_num/dy
       endif
       vhyr(ix,iy) = v(ix,iy+1) - &
         & 0.5_num * (1.0_num + dt * v(ix,iy+1) / dy) * dv * dy
@@ -307,7 +302,7 @@ module advance_module
     print *, '*** complete'
 
 !    if (step /=0) call plot_divergence_now
-    !call plot_divergence_now
+!    call plot_divergence_now
   end subroutine step_2
 
   subroutine step2_gauss_seidel

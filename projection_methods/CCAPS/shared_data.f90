@@ -15,7 +15,10 @@ module shared_data
   real(num) :: y_min, y_max
   real(num) :: dx, dy
 
-  logical :: use_minmod=.false. 
+  logical :: use_minmod = .false. 
+  logical :: shear_test = .false.
+  logical :: minion_test = .false.
+
 
   real(num), dimension(:), allocatable :: xc, xb, yc, yb
 

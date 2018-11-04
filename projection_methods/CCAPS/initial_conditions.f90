@@ -37,6 +37,7 @@ module initial_conditions
     enddo
     enddo
 
+    shear_test = .true.
   end subroutine shear_problem
 
 
@@ -51,6 +52,8 @@ module initial_conditions
       v(ix,iy) = 1.0_num + 2.0_num * sin(2.0_num*pi*x)*cos(2.0_num*pi*y)
     enddo
     enddo
+
+    minion_test = .true.
 
   end subroutine minion_convergence_test
 

@@ -27,7 +27,7 @@ module control
 
     ! for Minion
     CFL = 0.5_num
-    nsteps = 1000
+    nsteps = 1!000
     t_end = 0.5_num
 
     

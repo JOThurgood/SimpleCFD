@@ -93,11 +93,16 @@ module setup
 
     allocate(uxl(-2:nx+2,-1:ny+2)) ! full prediction for normal vel left state
     allocate(uxr(-2:nx+2,-1:ny+2)) ! in 1D and 3E (some aren't used in
-    allocate(vxl(-1:nx+2,-2:ny+2)) !
-    allocate(vxr(-1:nx+2,-2:ny+2)) !
+    !new - might not matter anyway since only really need 1 cell at that stage? 
+    allocate(vxl(-2:nx+2,-1:ny+2)) !
+    allocate(vxr(-2:nx+2,-1:ny+2)) !
+!    allocate(vxl(-1:nx+2,-2:ny+2)) !
+!    allocate(vxr(-1:nx+2,-2:ny+2)) !
 
-    allocate(uyl(-2:nx+2,-1:ny+2)) 
-    allocate(uyr(-2:nx+2,-1:ny+2))
+!    allocate(uyl(-2:nx+2,-1:ny+2)) 
+!    allocate(uyr(-2:nx+2,-1:ny+2))
+    allocate(uyl(-1:nx+2,-2:ny+2)) !new
+    allocate(uyr(-1:nx+2,-2:ny+2)) !new
     allocate(vyl(-1:nx+2,-2:ny+2)) 
     allocate(vyr(-1:nx+2,-2:ny+2))
 

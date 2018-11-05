@@ -69,101 +69,50 @@ module setup
  
     ! time centered left and right interface states, defined on
     ! the MAC grid
+
+!experimental stuff
+
+
+    allocate(uhxl(0:nx,1:ny)) ! uhxl - u hat xface left state
+    allocate(uhxr(0:nx,1:ny)) 
+    allocate(vhxl(0:nx,1:ny))
+    allocate(vhxr(0:nx,1:ny)) 
   
-    allocate(uhxl(0:nx,0:ny)) ! uhxl - u hat xface left state
-    allocate(uhxr(0:nx,0:ny)) 
-    allocate(vhxl(0:nx,0:ny))
-    allocate(vhxr(0:nx,0:ny)) 
-  
-    allocate(uhyl(0:nx,0:ny)) ! uhxl - u hat yface "left" state 
-    allocate(uhyr(0:nx,0:ny)) ! (aka "bottom")
-    allocate(vhyl(0:nx,0:ny)) 
-    allocate(vhyr(0:nx,0:ny)) 
+    allocate(uhyl(1:nx,0:ny)) ! uhxl - u hat yface "left" state 
+    allocate(uhyr(1:nx,0:ny)) ! (aka "bottom")
+    allocate(vhyl(1:nx,0:ny)) 
+    allocate(vhyr(1:nx,0:ny)) 
 
-    allocate(uha(0:nx,0:ny)) ! uhx - u hat advective (x face)
-    allocate(vha(0:nx,0:ny)) ! v hat advective (y face)
+    !uha,vha, uhx, vhx, uhy,vhy all need ghost filling
+    allocate(uha(-2:nx+2,-1:ny+2)) ! uhx - u hat advective (x face) 
+    allocate(vha(-1:nx+2,-2:ny+2)) ! v hat advective (y face)
 
-    allocate(uhx(0:nx,0:ny)) ! u hat x face at end of 1C 
-    allocate(vhx(0:nx,0:ny)) 
-    allocate(uhy(0:nx,0:ny)) ! y gace at end of 1C 
-    allocate(vhy(0:nx,0:ny)) 
+    allocate(uhx(-2:nx+2,-1:ny+2)) ! u hat x face at end of 1C 
+    allocate(vhx(-2:nx+2,-1:ny+2)) 
+    allocate(uhy(-1:nx+2,-2:ny+2)) ! y gace at end of 1C 
+    allocate(vhy(-1:nx+2,-2:ny+2)) 
 
 
-  
+    allocate(uxl(0:nx,1:ny)) ! full prediction for normal vel left state
+    allocate(uxr(0:nx,1:ny)) ! in 1D and 3E (some aren't used in
+    allocate(vxl(0:nx,1:ny)) !
+    allocate(vxr(0:nx,1:ny)) !
 
-    allocate(uxl(-2:nx+2,-1:ny+2)) ! full prediction for normal vel left state
-    allocate(uxr(-2:nx+2,-1:ny+2)) ! in 1D and 3E (some aren't used in
-    !new - might not matter anyway since only really need 1 cell at that stage? 
-    allocate(vxl(-2:nx+2,-1:ny+2)) !
-    allocate(vxr(-2:nx+2,-1:ny+2)) !
-!    allocate(vxl(-1:nx+2,-2:ny+2)) !
-!    allocate(vxr(-1:nx+2,-2:ny+2)) !
+    allocate(uyl(1:nx,0:ny))
+    allocate(uyr(1:nx,0:ny))
+    allocate(vyl(1:nx,0:ny)) 
+    allocate(vyr(1:nx,0:ny))
 
-!    allocate(uyl(-2:nx+2,-1:ny+2)) 
-!    allocate(uyr(-2:nx+2,-1:ny+2))
-    allocate(uyl(-1:nx+2,-2:ny+2)) !new
-    allocate(uyr(-1:nx+2,-2:ny+2)) !new
-    allocate(vyl(-1:nx+2,-2:ny+2)) 
-    allocate(vyr(-1:nx+2,-2:ny+2))
+    allocate(ua(0:nx,1:ny)) ! ua - u advective (x face)
+    allocate(va(1:nx,0:ny)) ! v  advective (y face)
 
-    allocate(ua(-2:nx+2,-1:ny+2)) ! ua - u advective (x face)
-    allocate(va(-1:nx+2,-2:ny+2)) ! v  advective (y face)
+    allocate(macu(0:nx,1:ny)) ! mac velocities on faces
+    allocate(macv(1:nx,0:ny)) 
 
-    allocate(macu(-2:nx+2,-1:ny+2)) ! mac velocities on faces
-    allocate(macv(-1:nx+2,-2:ny+2)) 
-
-    allocate(ux(-2:nx+2,-1:ny+2)) ! u on x face
-    allocate(uy(-1:nx+2,-2:ny+2)) !u on y face
-    allocate(vx(-2:nx+2,-1:ny+2))
-    allocate(vy(-1:nx+2,-2:ny+2))
-
-
-!!!!!    allocate(uhxl(-2:nx+2,-1:ny+2)) ! uhxl - u hat xface left state
-!!!!!    allocate(uhxr(-2:nx+2,-1:ny+2)) 
-!!!!!    allocate(vhxl(-2:nx+2,-1:ny+2))
-!!!!!    allocate(vhxr(-2:nx+2,-1:ny+2)) 
-!!!!!  
-!!!!!    allocate(uhyl(-1:nx+2,-2:ny+2)) ! uhxl - u hat yface "left" state 
-!!!!!    allocate(uhyr(-1:nx+2,-2:ny+2)) ! (aka "bottom")
-!!!!!    allocate(vhyl(-1:nx+2,-2:ny+2)) 
-!!!!!    allocate(vhyr(-1:nx+2,-2:ny+2)) 
-!!!!!
-!!!!!    allocate(uha(-2:nx+2,-1:ny+2)) ! uhx - u hat advective (x face)
-!!!!!    allocate(vha(-1:nx+2,-2:ny+2)) ! v hat advective (y face)
-!!!!!
-!!!!!    allocate(uhx(-2:nx+2,-1:ny+2)) ! u hat x face at end of 1C 
-!!!!!    allocate(vhx(-2:nx+2,-1:ny+2)) 
-!!!!!    allocate(uhy(-1:nx+2,-2:ny+2)) ! y gace at end of 1C 
-!!!!!    allocate(vhy(-1:nx+2,-2:ny+2)) 
-!!!!!
-!!!!!
-!!!!!  
-!!!!!
-!!!!!    allocate(uxl(-2:nx+2,-1:ny+2)) ! full prediction for normal vel left state
-!!!!!    allocate(uxr(-2:nx+2,-1:ny+2)) ! in 1D and 3E (some aren't used in
-!!!!!    !new - might not matter anyway since only really need 1 cell at that stage? 
-!!!!!    allocate(vxl(-2:nx+2,-1:ny+2)) !
-!!!!!    allocate(vxr(-2:nx+2,-1:ny+2)) !
-!!!!!!    allocate(vxl(-1:nx+2,-2:ny+2)) !
-!!!!!!    allocate(vxr(-1:nx+2,-2:ny+2)) !
-!!!!!
-!!!!!!    allocate(uyl(-2:nx+2,-1:ny+2)) 
-!!!!!!    allocate(uyr(-2:nx+2,-1:ny+2))
-!!!!!    allocate(uyl(-1:nx+2,-2:ny+2)) !new
-!!!!!    allocate(uyr(-1:nx+2,-2:ny+2)) !new
-!!!!!    allocate(vyl(-1:nx+2,-2:ny+2)) 
-!!!!!    allocate(vyr(-1:nx+2,-2:ny+2))
-!!!!!
-!!!!!    allocate(ua(-2:nx+2,-1:ny+2)) ! ua - u advective (x face)
-!!!!!    allocate(va(-1:nx+2,-2:ny+2)) ! v  advective (y face)
-!!!!!
-!!!!!    allocate(macu(-2:nx+2,-1:ny+2)) ! mac velocities on faces
-!!!!!    allocate(macv(-1:nx+2,-2:ny+2)) 
-!!!!!
-!!!!!    allocate(ux(-2:nx+2,-1:ny+2)) ! u on x face
-!!!!!    allocate(uy(-1:nx+2,-2:ny+2)) !u on y face
-!!!!!    allocate(vx(-2:nx+2,-1:ny+2))
-!!!!!    allocate(vy(-1:nx+2,-2:ny+2))
+    allocate(ux(0:nx,1:ny)) ! u on x face
+    allocate(uy(1:nx,0:ny)) !u on y face
+    allocate(vx(0:nx,1:ny))
+    allocate(vy(1:nx,0:ny))
 
     allocate(divu(1:nx,1:ny)) ! divergence of mac velocities, cell centers, no ghost
 

@@ -162,10 +162,16 @@ module advance_module
     enddo
     enddo
 
+
+
     ! 1D construct the full left and right predictions of normal
     ! velocities on the interfaces
 
     ! if you find bugs in 1D - check not also in 3D which is similar
+
+!!! origional implementation - i think this is right, bar boundary handling
+
+    call velocity_face_bcs
 
     do iy = 0, ny
     do ix = 0, ny
@@ -174,7 +180,7 @@ module advance_module
         ! left
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (uhy(ix,iy)-uhy(ix,iy-1)) / dy
-        gp = -0.5_num * dt * gradp_x(ix,iy) 
+        gp = -0.5_num * dt * gradp_x(ix,iy)
         uxl(ix,iy) = uhxl(ix,iy)  + transv + gp
         ! right
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
@@ -220,6 +226,7 @@ module advance_module
     enddo
     enddo
 
+
     ! 1E Final riemann solve + upwinding for full normal velocities 
     ! (sometimes AKA the MAC velocities)
 
@@ -251,14 +258,12 @@ module advance_module
 
   end subroutine step_1
   
-
   subroutine step_2
 
     real(num) :: correction
 
     print *, 'Step #2'
     print *, '*** start'
-    print *, 'Warning: experimental suppresion of boundary handling'
 
     ! calc divU at cc using the MAC velocities
     do iy = 1, ny
@@ -372,8 +377,7 @@ module advance_module
    
       ! Apply periodic boundary conditions on phi's ghost cells
 
-      !call phi_bcs ! commenting this out makes it better behaved?! 
-      ! but it most certainly DOESNT make step 5 better behaved...
+      call phi_bcs
  
       L2 = 0.0_num
       do iy = 1, ny  
@@ -417,7 +421,7 @@ module advance_module
     ! Because you haven't been deallocating arrays etc, you can directly
     ! skip a few of the recalculations
 
-    ! I think we only need to re-do D (extra terms) and E 
+    ! I think we only need to re-do E 
 
     ! Step 1D calculated the full tangential velocity states 
     ! in anticipation of this - only need E which differs 
@@ -523,6 +527,7 @@ module advance_module
     enddo
 
     ! calculate the divergence of the updated velocity field
+
     call velocity_bcs
     do iy = 1, ny
     do ix = 1, nx
@@ -531,12 +536,11 @@ module advance_module
     enddo
     enddo
 
-    print *, '*** max divu after cleaning',maxval(abs(divu))
-   !   print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
+!    print *, '*** max divu after cleaning',maxval(abs(divu))
+      print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
 
 !    if (step /=0) call plot_divergence_now
 !    call plot_divergence_now
-
     ! update the pressure gradient 
   
     do ix = 1, nx
@@ -570,8 +574,9 @@ module advance_module
     print *, '*** begining relaxation to solve for phi.'
     print *, '*** this can take a while, use VERBOSE if you want to monitor stepping'
 
-    !call phi_bcs !use old phi as initial guess
-    phi = 0.0_num
+!    phi = 0.0_num
+    call phi_bcs !use old phi as initial guess
+!    phi = 0.0_num
     L2_old = 1e6_num
 
     do

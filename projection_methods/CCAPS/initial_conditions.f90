@@ -55,6 +55,16 @@ module initial_conditions
 
     minion_test = .true.
 
+
+    do iy = 1, ny
+    do ix = 1, nx
+      divu(ix,iy) = (u(ix+1,iy) - u(ix-1,iy))/dx/2.0_num &
+        & + (v(ix,iy+1) - v(ix,iy-1))/dy/2.0_num
+    enddo
+    enddo
+
+    print *,'max numerical divu in ICs',maxval(abs(divu))
+
   end subroutine minion_convergence_test
 
 

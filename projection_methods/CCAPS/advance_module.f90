@@ -527,6 +527,7 @@ module advance_module
     enddo
 
     ! calculate the divergence of the updated velocity field
+
     call velocity_bcs
     do iy = 1, ny
     do ix = 1, nx
@@ -535,8 +536,8 @@ module advance_module
     enddo
     enddo
 
-    print *, '*** max divu after cleaning',maxval(abs(divu))
-   !   print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
+!    print *, '*** max divu after cleaning',maxval(abs(divu))
+      print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
 
 !    if (step /=0) call plot_divergence_now
 !    call plot_divergence_now
@@ -573,8 +574,9 @@ module advance_module
     print *, '*** begining relaxation to solve for phi.'
     print *, '*** this can take a while, use VERBOSE if you want to monitor stepping'
 
-    !call phi_bcs !use old phi as initial guess
-    phi = 0.0_num
+!    phi = 0.0_num
+    call phi_bcs !use old phi as initial guess
+!    phi = 0.0_num
     L2_old = 1e6_num
 
     do

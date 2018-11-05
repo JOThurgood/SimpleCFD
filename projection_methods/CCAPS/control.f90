@@ -17,18 +17,18 @@ module control
     y_min = x_min
     y_max = x_max
 
-    nx = 32 
+    nx = 128 
     ny = nx
   
     !for shear
-    !CFL = 0.8_num ! CFL modifier
-    !nsteps = 1 
-    !t_end = 1.0_num 
+    CFL = 0.8_num ! CFL modifier
+    t_end = 1.0_num 
 
     ! for Minion
-    CFL = 0.5_num
-    nsteps = 1!000
-    t_end = 0.5_num
+    !CFL = 0.5_num
+    !t_end = 0.5_num
+
+    nsteps = -1
 
     use_minmod = .false.    
 

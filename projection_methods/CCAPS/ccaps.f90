@@ -14,6 +14,7 @@ program ccaps
 
   call initial_setup
 
+
   do
     step = step + 1
     if ((step > nsteps .and. nsteps >= 0) .or. (time >= t_end)) exit

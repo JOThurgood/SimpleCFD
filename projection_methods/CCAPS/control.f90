@@ -28,7 +28,7 @@ module control
     CFL = 0.5_num
     t_end = 0.5_num
 
-    nsteps = -1
+    nsteps = -1 !set to <0 to run till t_end without nsteps exit criterion
 
     use_minmod = .false.    
 

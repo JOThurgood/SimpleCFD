@@ -1,0 +1,2549 @@
+[3J[H[2J ++++++++++++ooooooooooooooosssyyyyyyyyyyyyyyysssssssssyyyyyyyyyyyyyyyy
+ ooo++++++++++++++/+oooooooossssyyyyyyyyyyyyyyyyssssssyysssssyyyyyyyyyy
+ oooooo+++++/:--....-/ooosossssyyyyyyyyyyyyyyyyyyssyyso/-::/+sssssyyhhy
+ ssssooooo/:.-:///:-..:+sosssssyyyyyyyyyyyyyyyyyyyss/-...-----:::oyyhhy
+ ysssssss+--/osyys+/---:ssssoooo+++/+++//++osysysso:...-:+oso/:.-oyyhhy
+ yyyyyyso+/+shdddhyo//++yyyss/-.```````````..-/osyy+/:-/oyhhhyo:-:syyyy
+ yyyyyys+osshdmmddhyosyyyyyss+-.````````````-/oyyhyyoosyyyyddhyo::+syyy
+ hyyyyyssyhhdmNNdhhhhhhhhhys+:.````````````.-/oyyhhhyhhhyssddhys+/+osss
+ hyyyyysyhdmmmNmdddhhhhhhhys/-``````````````.:sssyyyhhhhyoshmdhhsooosss
+ yyhyyysyddmNmmhddhhhhhhhhyy+:``````````````.-+ssssssyyhhyyyhddddhsoooo
+ hhhyyys+yddmdhyhhhyhhdhhhyyo-```````.``````.:oyyyyysssyhhyyssyhdds++oo
+ hhhyyss//syssossyyhhhdhhhys/:``````...`.```-oyyhyyysssosyysoo+oyy+/+++
+ yyyyyo:---:++//osyhhhdhhhhs:-.``````....```:oyhhyyyyyysoso+//://:---:/
+ yyyyys/-.------:oyhhhddddhy+-....````````../yhhhhhyhyyss/:----......-:
+ yyyyso:-.......:oyhdddddddho-.`.`````````../sdhdhhyyyyo/-....`.......:
+ yyyys+-.......--:ohdddmdddho:`````````````.:ohdddhhhys/-.``.........-:
+ syyso/-....-----:+yhddmmmdho-.`````````````:ydddddhys/-.````........-:
+ sssso:-...-------:ohddmmmdd+..`````````````/hddddddhy:...`.......`...-
+ sss+/:...--------:+hdddddmh+...`.``````````:syhhhdddy-...............-
+ so+:-.------------/hdddmmmds...``````.````.+yydddddds-...............-
+ o+:-..--------:::--sddmddmmh...-``....````-ydddhdmdh+.....---........-
+ o+:-------::://:---smdmmNmdh-..-.......```-yhdNNmdmd+....-----........
+ o+:------:::://::--+mmddmdhd+-.........`.`:yhyhddddh+....-----.......-
+ o/:----::::-:://:-.:yddhhhhho-......````../yyssyyyy/-...-::------.....
+ o/:--::/+o+:::::::--:oyhhhhys-.....``````.osyhyhyo:...--:::::::::-....
+ +/:--:/+syys//::::--.-+shhhyo-........`..-osyhhh+-...-:////:::///:-...
+ /----:/+syhhys+++/:---:shhhy+-............+syhhs:..---/osssooo+/:--.--
+ :--::/+osyhddhyyys+:--:ohhhy+-........``../syys+--::/+syhhhhyys+/:---:
+ :-://+ossyhdmdhhhhys+/:oyso+:-....---..`.--/osyo:/+shhhhhhhhhyso+/::::
+ --::/+osyhddmmmdddhhyo++/:---...--:::-......-/+o/oshhhhhddddhyyssso+//
+ :://++osyhdmmmmmmdddddy+--..-:::++++++/:-.....-/syhhddmmmmmmddddhyso++
+ ://++osyhddmmmmNmmmmmmms:--/ossyyyssssso++:...-oddmmNNNNNmmmmmddhyysoo
+ /++osyhhdddmmNNNNNNNNNNd+:+hyyyyyyyyyyyyyyy/-:+hmNNNNNNNmmmmmmddhso++o
+ ossyhhddmmmmNNNNNNNNNNmmy/shhhyhhdddhyhddhho:ohNmmNNNNNNNNNmmddhyo+//+
+ yyhhddmmmmNNNNNNNNNNNNNNNysdmmmmmdddmNNmmmdoodmmNmNNmNNNNNNmmddhyso+/+
+ yyhdmmmNNNNNNNNNNNNMNMNNdmdddmmmmdddmmNNmdyhdmmmmNNNNNNNNNNNmmdhhyso+/
+ yhhddmmNNNNNNNMMMMMMMNNNNNNmNmmNNmmmmmmNNmdmmmNNNNNNNMMNNNNNmmddhysso+
+ yyhhdmmNNNNNMMMMMMMMMMMMNNNMNNNNNNNNNNNNNNNNNNNNNNNNMMMNNNNNmmdhhysso+
+ yyhddmmNNNNNMMMMMMMMMMMMNMMMNNNNNNNNNNNNNNNNNNMNNMMMMMMNNNNNmddhhyso++
+ syddmmmNNNNNMMMMMMMMMMMMMMMMMNNNNNNNNNNNNNNNNNNMMMMMMMMNNNNmmddddhysoo
+ hddmmmNNNNNMMMMMMMMMMMMMMMMMMNNNNNNNNNNNNNNNNNNMMMMMMMMMNNNmmmmmmdhyys
+ dmmmmNNNNMMMMMMMNNNNNNMMMNNNNNNNNNNNNNNNNNNNNNNMMMMMMMMNNNNNNmmmmmdhys
+ mmmmmNNNNNMMMMMNNNNNNNNNMNNNNNNNNNNNNNNNNNNNNNNNNMMMMMMMNNNNNNmmmmmdhy
+ mmmmNNNNNMMMMMMNNNNNNNNNNNNNNNNNNNNNNNNmmmNNNNNNNNNMMMMMMNNNNNNNmmmddh
+ mmNNNNNNMMMMMMMNNNNNNNNNNNNNNNNNNNNNNNNmmmmmmNNNNNNNMMMMMNNNNNNNmmmddh
+ mNNNNMNMMMMMMMNNNNNNNNNNNNNNNNNNNNNNNNNNNNNmmmNNNNNNNNMMMNNNNNNNmmmddd
+ NNNMMMMNMMMMMMNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNmmNNNNNNNMMMMNNNNNNmmmmddd
+ NNNNNNNNNNMMMNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNMMMMMMNNNNNmmmmddd
+ NNNNMMNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNMMMMMMMMNNNmmmmmmd
+ NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNMMMMMMMMMNNNNmmmmmm
+ NNNNNNNNNMNNNNNNNNNNNNNNNNNNNNNmmNNNNNNNNNNNNNNNNMMMMMMMMMMMMNNNNmmmmm
+ 
+ 
+ 
+ Welcome to CCAPS (Cell-centered approximate projection solver)
+ 
+ ******************************************************************
+ Launching code
+ ******************************************************************
+  Code initialised with the following control vars
+ 
+ x_min =   0.0000000000000000     
+ x_max =   1.0000000000000000     
+ y_min =   0.0000000000000000     
+ y_max =   1.0000000000000000     
+ nx =          32
+ ny =          32
+ CFL factor CFL =   0.50000000000000000     
+ Max no of cycles nsteps =         1000
+ Termination time t_end =  0.50000000000000000     
+ 
+  This gives the derived grid vars:
+ 
+ dx =   3.1250000000000000E-002
+ dy =   3.1250000000000000E-002
+ ******************************************************************
+ Cycle:            0 Time:    0.0000000000000000     
+ ******************************************************************
+ hydro dt =    5.2419072593804222E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in         853 steps
+ *** L2 norm on D(velocity_field)- L(phi)   6.9742952172138807E-003
+ *** max divu before cleaning   1.8677823082648075     
+ *** max divu after cleaning   1.3430662539040128E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        1677 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.1032849957234181E-013
+ *** max divu before cleaning   1.7147622290431883     
+ *** max divu after cleaning  0.16833492338371059     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   0.0000000000000000     
+ 
+ ******************************************************************
+ Cycle:            1 Time:    0.0000000000000000     
+ ******************************************************************
+ hydro dt =    5.2419072593804222E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        1921 steps
+ *** L2 norm on D(velocity_field)- L(phi)   6.9742952184685169E-003
+ *** max divu before cleaning   1.6275866910771928     
+ *** max divu after cleaning   1.3430662648378444E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        3205 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.9178054270348964E-014
+ *** max divu before cleaning  0.18131482749245009     
+ *** max divu after cleaning   8.2390172176546983E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   1.5452396484344558E-003
+ 
+ ******************************************************************
+ Cycle:            2 Time:    5.2419072593804222E-003
+ ******************************************************************
+ hydro dt =    5.2364591768166912E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        3000 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.7881135536521633E-003
+ *** max divu before cleaning   1.5388611786474531     
+ *** max divu after cleaning   1.1146387997737150E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        4702 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.7235664465150174E-014
+ *** max divu before cleaning  0.16719285597789835     
+ *** max divu after cleaning  0.10444932455038014     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   2.6144891063459895E-003
+ 
+ ******************************************************************
+ Cycle:            3 Time:    1.0478366436197113E-002
+ ******************************************************************
+ hydro dt =    5.2286451313538693E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        4103 steps
+ *** L2 norm on D(velocity_field)- L(phi)   8.1690339085605714E-003
+ *** max divu before cleaning   1.5231574886054133     
+ *** max divu after cleaning   1.5731415887955791E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        6197 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.2819985915147714E-014
+ *** max divu before cleaning  0.17041348661220737     
+ *** max divu after cleaning   9.5820737767585484E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.6184604163590549E-003
+ 
+ ******************************************************************
+ Cycle:            4 Time:    1.5707011567550982E-002
+ ******************************************************************
+ hydro dt =    5.2234645684067112E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        5212 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.0499287549257778E-002
+ *** max divu before cleaning   1.5430281956377456     
+ *** max divu after cleaning   2.0218872980052538E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        7675 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.1080043202316456E-014
+ *** max divu before cleaning  0.17941666999162645     
+ *** max divu after cleaning   8.2042710181827516E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.6227290098264486E-003
+ 
+ ******************************************************************
+ Cycle:            5 Time:    2.0930476135957693E-002
+ ******************************************************************
+ hydro dt =    5.2243531269281357E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        6323 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.2770002047872601E-002
+ *** max divu before cleaning   1.4837341455485600     
+ *** max divu after cleaning   2.4591673306300521E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        9162 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.5888326245594291E-014
+ *** max divu before cleaning  0.19292934624848709     
+ *** max divu after cleaning   8.7926633732275050E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.6500011968245072E-003
+ 
+ ******************************************************************
+ Cycle:            6 Time:    2.6154829262885829E-002
+ ******************************************************************
+ hydro dt =    5.2320737937041764E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        7453 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.2427397364254005E-002
+ *** max divu before cleaning   1.5378377353025048     
+ *** max divu after cleaning   2.3931906580898499E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       10677 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.0760028577054046E-014
+ *** max divu before cleaning  0.20120373321172913     
+ *** max divu after cleaning   9.4818016446490461E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   6.7054778326550747E-003
+ 
+ ******************************************************************
+ Cycle:            7 Time:    3.1386903056590004E-002
+ ******************************************************************
+ hydro dt =    5.2466998134797641E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        8581 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.4768059869393980E-002
+ *** max divu before cleaning   1.5861578889603294     
+ *** max divu after cleaning   2.8439408414556056E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       12177 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.5148371315729611E-014
+ *** max divu before cleaning  0.20210619699498267     
+ *** max divu after cleaning   9.9835499644758130E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.7876038834171083E-003
+ 
+ ******************************************************************
+ Cycle:            8 Time:    3.6633602870069767E-002
+ ******************************************************************
+ hydro dt =    5.2497811952506050E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in        9720 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.7000390777393567E-002
+ *** max divu before cleaning   1.6738942933529479     
+ *** max divu after cleaning   3.2738292017494786E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       13680 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.4783606915182307E-014
+ *** max divu before cleaning  0.19828697729762013     
+ *** max divu after cleaning  0.10094564624808733     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   8.8594442005234964E-003
+ 
+ ******************************************************************
+ Cycle:            9 Time:    4.1883384065320370E-002
+ ******************************************************************
+ hydro dt =    5.2411146444693050E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       10858 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.4275849191107555E-002
+ *** max divu before cleaning   1.6194605102541200     
+ *** max divu after cleaning   2.7491539796677955E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       15189 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.6520960422054871E-014
+ *** max divu before cleaning  0.17403651028569556     
+ *** max divu after cleaning   9.7283937601648773E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   9.8991115755173373E-003
+ 
+ ******************************************************************
+ Cycle:           10 Time:    4.7124498709789672E-002
+ ******************************************************************
+ hydro dt =    5.2360093976491599E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       11995 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.6243454764835071E-002
+ *** max divu before cleaning   1.6961270588096689     
+ *** max divu after cleaning   3.1280631864710529E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       16711 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.9087074027289315E-014
+ *** max divu before cleaning  0.15951272688811535     
+ *** max divu after cleaning   9.0493347281839220E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   1.0925754177209170E-002
+ 
+ ******************************************************************
+ Cycle:           11 Time:    5.2360508107438836E-002
+ ******************************************************************
+ hydro dt =    5.2366658919669488E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       13137 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.6620034761824009E-002
+ *** max divu before cleaning   1.7685369470660248     
+ *** max divu after cleaning   3.2005826130877324E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       18232 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.4547577418976343E-014
+ *** max divu before cleaning  0.15170409256937845     
+ *** max divu after cleaning   8.5406887769039486E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   1.1964151133387136E-002
+ 
+ ******************************************************************
+ Cycle:           12 Time:    5.7597173999405782E-002
+ ******************************************************************
+ hydro dt =    5.2437551331084671E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       14281 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.8628750332247306E-002
+ *** max divu before cleaning   1.7965019006586509     
+ *** max divu after cleaning   3.5874085265977129E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       19756 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.1939328762394310E-014
+ *** max divu before cleaning  0.16719569962608283     
+ *** max divu after cleaning   9.4088163174630424E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   1.3019086989155430E-002
+ 
+ ******************************************************************
+ Cycle:           13 Time:    6.2840929132514253E-002
+ ******************************************************************
+ hydro dt =    5.2576638132935151E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       15423 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.0558788203357894E-002
+ *** max divu before cleaning   1.8133853986780490     
+ *** max divu after cleaning   3.9590831795827341E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       21299 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.3022518624103647E-014
+ *** max divu before cleaning  0.17926222857229490     
+ *** max divu after cleaning   9.2173427530523711E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   1.4091945786353637E-002
+ 
+ ******************************************************************
+ Cycle:           14 Time:    6.8098592945807765E-002
+ ******************************************************************
+ hydro dt =    5.2591953115311120E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       16555 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.2319221702718182E-002
+ *** max divu before cleaning   2.3378970550180700     
+ *** max divu after cleaning   4.2980964806027089E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       22807 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.6679099068729155E-014
+ *** max divu before cleaning  0.16931016563306933     
+ *** max divu after cleaning   7.6187836215272142E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   1.5153768606977501E-002
+ 
+ ******************************************************************
+ Cycle:           15 Time:    7.3357788257338880E-002
+ ******************************************************************
+ hydro dt =    5.2502504790893417E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       17695 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.3878554162680230E-002
+ *** max divu before cleaning   2.3502173910948780     
+ *** max divu after cleaning   4.5983829981768309E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       24330 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.4887685244890924E-014
+ *** max divu before cleaning  0.18157816126485041     
+ *** max divu after cleaning   6.4212471958207118E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   1.6194686265563286E-002
+ 
+ ******************************************************************
+ Cycle:           16 Time:    7.8608038736428215E-002
+ ******************************************************************
+ hydro dt =    5.2449860233871820E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       18842 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.4490014169080847E-002
+ *** max divu before cleaning   2.3504130702054962     
+ *** max divu after cleaning   4.7161341518059174E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       25847 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.0226227666588836E-014
+ *** max divu before cleaning  0.17867017102264793     
+ *** max divu after cleaning   6.4693917757420394E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   1.7223540282419028E-002
+ 
+ ******************************************************************
+ Cycle:           17 Time:    8.3853024759815403E-002
+ ******************************************************************
+ hydro dt =    5.2458921051929111E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       19980 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.3248488103349747E-002
+ *** max divu before cleaning   2.2609844871397122     
+ *** max divu after cleaning   4.4770488069665326E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       27386 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.1775781812080637E-014
+ *** max divu before cleaning  0.16756230194866717     
+ *** max divu after cleaning   7.0162622562389032E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   1.8265058875787870E-002
+ 
+ ******************************************************************
+ Cycle:           18 Time:    8.9098916865008315E-002
+ ******************************************************************
+ hydro dt =    5.2540006863759526E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       21130 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.2214612486761480E-002
+ *** max divu before cleaning   1.8981687891537113     
+ *** max divu after cleaning   4.2779514905438631E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       28925 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.9420903846226421E-014
+ *** max divu before cleaning  0.18541406058486309     
+ *** max divu after cleaning   7.7980975830053367E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   1.9313910441893834E-002
+ 
+ ******************************************************************
+ Cycle:           19 Time:    9.4352917551384266E-002
+ ******************************************************************
+ hydro dt =    5.2683213004718942E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       22274 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.3529842414301807E-002
+ *** max divu before cleaning   1.8920135781927527     
+ *** max divu after cleaning   4.5312302651167258E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       30466 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.9212095727306334E-014
+ *** max divu before cleaning  0.19324610419999644     
+ *** max divu after cleaning   8.2985959975404811E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   2.0369228267138842E-002
+ 
+ ******************************************************************
+ Cycle:           20 Time:    9.9621238851856156E-002
+ ******************************************************************
+ hydro dt =    5.2624839583328134E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       23415 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.4361652783181070E-002
+ *** max divu before cleaning   1.8691100991843168     
+ *** max divu after cleaning   4.6914151168200746E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       32001 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.2470069535491191E-014
+ *** max divu before cleaning  0.19063421311651840     
+ *** max divu after cleaning   8.9091101252572358E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   2.1399760408469155E-002
+ 
+ ******************************************************************
+ Cycle:           21 Time:   0.10488372281018897     
+ ******************************************************************
+ hydro dt =    5.2535976621669667E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       24553 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.5371027859877472E-002
+ *** max divu before cleaning   1.8644807727723425     
+ *** max divu after cleaning   4.8857942722069225E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       33507 steps
+ *** L2 norm on D(velocity_field)- L(phi)   6.1669631000710973E-014
+ *** max divu before cleaning  0.17793438418617580     
+ *** max divu after cleaning   9.3419340044428978E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   2.2412077394898779E-002
+ 
+ ******************************************************************
+ Cycle:           22 Time:   0.11013732047235594     
+ ******************************************************************
+ hydro dt =    5.2500037585598777E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       25694 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.6193999972111946E-002
+ *** max divu before cleaning   2.3511254485618949     
+ *** max divu after cleaning   5.0442771076469661E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       35026 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.1889204222385832E-014
+ *** max divu before cleaning  0.17723221430831160     
+ *** max divu after cleaning   8.8373791959442727E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   2.3406191672903833E-002
+ 
+ ******************************************************************
+ Cycle:           23 Time:   0.11538732423091583     
+ ******************************************************************
+ hydro dt =    5.2539686712357201E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       26826 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.6830726778172401E-002
+ *** max divu before cleaning   2.3132828525543125     
+ *** max divu after cleaning   5.1668939837576922E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       36556 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.3926264120023387E-014
+ *** max divu before cleaning  0.16939375162488535     
+ *** max divu after cleaning   9.8332925373080471E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   2.4393551190792666E-002
+ 
+ ******************************************************************
+ Cycle:           24 Time:   0.12064129290215155     
+ ******************************************************************
+ hydro dt =    5.2661065037346152E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       27961 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.7345372381335161E-002
+ *** max divu before cleaning   2.2512063085203975     
+ *** max divu after cleaning   5.2660012234984066E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       38070 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.4886626574783223E-014
+ *** max divu before cleaning  0.17670353402161787     
+ *** max divu after cleaning   9.9290212127630895E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   2.5384300760970823E-002
+ 
+ ******************************************************************
+ Cycle:           25 Time:   0.12590739940588616     
+ ******************************************************************
+ hydro dt =    5.2802527377201680E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       29093 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.7739546298287739E-002
+ *** max divu before cleaning   2.1659754296160116     
+ *** max divu after cleaning   5.3419087774036811E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       39581 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.8946591175588679E-014
+ *** max divu before cleaning  0.18431046760999070     
+ *** max divu after cleaning  0.10000584315535122     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   2.6374775370599089E-002
+ 
+ ******************************************************************
+ Cycle:           26 Time:   0.13118765214360634     
+ ******************************************************************
+ hydro dt =    5.2784071216775705E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       30224 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.7807900506024334E-002
+ *** max divu before cleaning   2.0575549262416484     
+ *** max divu after cleaning   5.3550720042864874E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       41099 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.3405157518320033E-014
+ *** max divu before cleaning  0.19464800474695210     
+ *** max divu after cleaning   9.4097218193565979E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   2.7339326545567887E-002
+ 
+ ******************************************************************
+ Cycle:           27 Time:   0.13646605926528391     
+ ******************************************************************
+ hydro dt =    5.2735694129542243E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       31353 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.7691379312596770E-002
+ *** max divu before cleaning   1.9385132845188124     
+ *** max divu after cleaning   5.3326330797203170E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       42626 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.5903356365945424E-014
+ *** max divu before cleaning  0.20912564615563589     
+ *** max divu after cleaning   8.6319904820763682E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   2.8287747874674588E-002
+ 
+ ******************************************************************
+ Cycle:           28 Time:   0.14173962867823814     
+ ******************************************************************
+ hydro dt =    5.2751263699814524E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       32483 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.7445518672292682E-002
+ *** max divu before cleaning   1.8131166065634403     
+ *** max divu after cleaning   5.2852867713928831E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       44141 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.3679822784763087E-014
+ *** max divu before cleaning  0.21106337812871079     
+ *** max divu after cleaning   8.5315412415779335E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   2.9219152462025912E-002
+ 
+ ******************************************************************
+ Cycle:           29 Time:   0.14701475504821959     
+ ******************************************************************
+ hydro dt =    5.2840760057964124E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       33605 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.7920616225819515E-002
+ *** max divu before cleaning   1.7031137870460462     
+ *** max divu after cleaning   5.3767780942624910E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       45667 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.3872923152571440E-014
+ *** max divu before cleaning  0.19860210606371975     
+ *** max divu after cleaning   7.8853631779775668E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.0145956149860952E-002
+ 
+ ******************************************************************
+ Cycle:           30 Time:   0.15229883105401601     
+ ******************************************************************
+ hydro dt =    5.2976111561104300E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       34729 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.7955827852881639E-002
+ *** max divu before cleaning   1.6155728786811814     
+ *** max divu after cleaning   5.3835589297960951E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       47214 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.5629196825326722E-014
+ *** max divu before cleaning  0.19380427772413444     
+ *** max divu after cleaning   9.3926470688666441E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.1078316152216727E-002
+ 
+ ******************************************************************
+ Cycle:           31 Time:   0.15759644221012645     
+ ******************************************************************
+ hydro dt =    5.3016656935180968E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       35846 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.7030792146128527E-002
+ *** max divu before cleaning   1.6721668513595205     
+ *** max divu after cleaning   5.2054213239909330E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       48714 steps
+ *** L2 norm on D(velocity_field)- L(phi)   6.0538716186026822E-014
+ *** max divu before cleaning  0.20118385362924407     
+ *** max divu after cleaning  0.10144271423202511     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.2000399242214261E-002
+ 
+ ******************************************************************
+ Cycle:           32 Time:   0.16289810790364453     
+ ******************************************************************
+ hydro dt =    5.2956133598127493E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       36970 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.5775410988417201E-002
+ *** max divu before cleaning   1.4699171970552811     
+ *** max divu after cleaning   4.9636678522368527E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       50222 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.3850359141725025E-014
+ *** max divu before cleaning  0.19675638127180228     
+ *** max divu after cleaning  0.12070840341917588     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.2896000037675233E-002
+ 
+ ******************************************************************
+ Cycle:           33 Time:   0.16819372126345727     
+ ******************************************************************
+ hydro dt =    5.2930269558782508E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       38095 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.4291286700251751E-002
+ *** max divu before cleaning   1.6306020028906332     
+ *** max divu after cleaning   4.6778644553288729E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       51745 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.9863451123676304E-014
+ *** max divu before cleaning  0.20690118490565723     
+ *** max divu after cleaning  0.12763783487152125     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.3777467011405791E-002
+ 
+ ******************************************************************
+ Cycle:           34 Time:   0.17348674821933552     
+ ******************************************************************
+ hydro dt =    5.2966229919248391E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       39221 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.2735321058317475E-002
+ *** max divu before cleaning   1.6147505051069704     
+ *** max divu after cleaning   4.3782262986688636E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       53249 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.9804782110936377E-014
+ *** max divu before cleaning  0.20357550646289191     
+ *** max divu after cleaning  0.11107218485109627     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.4645673558453535E-002
+ 
+ ******************************************************************
+ Cycle:           35 Time:   0.17878337121126037     
+ ******************************************************************
+ hydro dt =    5.3069131680966355E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       40344 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.1112507958810964E-002
+ *** max divu before cleaning   1.5348539233202043     
+ *** max divu after cleaning   4.0657150756015170E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       54762 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.2481763741323330E-014
+ *** max divu before cleaning  0.18960031588472859     
+ *** max divu after cleaning  0.10520914540555282     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.5508463278417841E-002
+ 
+ ******************************************************************
+ Cycle:           36 Time:   0.18409028437935701     
+ ******************************************************************
+ hydro dt =    5.3237696409111721E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       41461 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.9424440954574861E-002
+ *** max divu before cleaning   1.6036351422853281     
+ *** max divu after cleaning   3.7406376625931159E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       56252 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.5426880655770160E-014
+ *** max divu before cleaning  0.17867371602605076     
+ *** max divu after cleaning  0.11814001248298212     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.6371692224233095E-002
+ 
+ ******************************************************************
+ Cycle:           37 Time:   0.18941405402026817     
+ ******************************************************************
+ hydro dt =    5.3321271986478853E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       42574 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.7641558142312184E-002
+ *** max divu before cleaning   1.6336877225361555     
+ *** max divu after cleaning   3.3973012127924918E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       57765 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.9270575348423002E-014
+ *** max divu before cleaning  0.18208425839336864     
+ *** max divu after cleaning  0.12091365164845413     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.7224129229442258E-002
+ 
+ ******************************************************************
+ Cycle:           38 Time:   0.19474618121891607     
+ ******************************************************************
+ hydro dt =    5.3276705814666557E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       43685 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.5743729467841881E-002
+ *** max divu before cleaning   1.4574183401186831     
+ *** max divu after cleaning   3.0318292059924090E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       59288 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.3927893634409009E-014
+ *** max divu before cleaning  0.19884296881850630     
+ *** max divu after cleaning  0.11640034611964012     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.8057234638747675E-002
+ 
+ ******************************************************************
+ Cycle:           39 Time:   0.20007385180038273     
+ ******************************************************************
+ hydro dt =    5.3266248022504192E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       44792 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.3803804920954369E-002
+ *** max divu before cleaning   1.6182478523389907     
+ *** max divu after cleaning   2.6582506386343852E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       60770 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.2482134355866736E-014
+ *** max divu before cleaning  0.20476345007889840     
+ *** max divu after cleaning   9.5482254708374015E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.8877730643835852E-002
+ 
+ ******************************************************************
+ Cycle:           40 Time:   0.20540047660263314     
+ ******************************************************************
+ hydro dt =    5.3313017067017111E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       45904 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.1840661167490012E-002
+ *** max divu before cleaning   1.4915855572345897     
+ *** max divu after cleaning   2.2802006614368153E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       62252 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.9680816374052542E-014
+ *** max divu before cleaning  0.19026069199251958     
+ *** max divu after cleaning   8.4436820492827636E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   3.9688682053289487E-002
+ 
+ ******************************************************************
+ Cycle:           41 Time:   0.21073177830933484     
+ ******************************************************************
+ hydro dt =    5.3422984324124449E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       47005 steps
+ *** L2 norm on D(velocity_field)- L(phi)   9.8547000424494564E-003
+ *** max divu before cleaning   1.6577063336097897     
+ *** max divu after cleaning   1.8977566570075766E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       63731 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.3424518523564459E-014
+ *** max divu before cleaning  0.17668377106919486     
+ *** max divu after cleaning   8.4282186404893267E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.0495680718858264E-002
+ 
+ ******************************************************************
+ Cycle:           42 Time:   0.21607407674174728     
+ ******************************************************************
+ hydro dt =    5.3512066378641112E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       48098 steps
+ *** L2 norm on D(velocity_field)- L(phi)   7.8391757372492377E-003
+ *** max divu before cleaning   1.6706663632010228     
+ *** max divu after cleaning   1.5096195598342632E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       65218 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.7569687693111636E-014
+ *** max divu before cleaning  0.18315088351749600     
+ *** max divu after cleaning   9.1767016995333961E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.1301472603110123E-002
+ 
+ ******************************************************************
+ Cycle:           43 Time:   0.22142528337961140     
+ ******************************************************************
+ hydro dt =    5.3546641042368512E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       49159 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.7965221930588347E-003
+ *** max divu before cleaning   1.7146949437801808     
+ *** max divu after cleaning   1.1162580828308677E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       66672 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.4293267720379870E-014
+ *** max divu before cleaning  0.19977789988623229     
+ *** max divu after cleaning  0.10606920450102209     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.2091425873930388E-002
+ 
+ ******************************************************************
+ Cycle:           44 Time:   0.22677994748384825     
+ ******************************************************************
+ hydro dt =    5.3499484903094295E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       50224 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.7352958021713706E-003
+ *** max divu before cleaning   1.4189869115529419     
+ *** max divu after cleaning   7.1931996333312043E-003
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       68141 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.8568859577544813E-014
+ *** max divu before cleaning  0.21299180314293764     
+ *** max divu after cleaning  0.11140198015102598     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.2872131570076112E-002
+ 
+ ******************************************************************
+ Cycle:           45 Time:   0.23212989597415767     
+ ******************************************************************
+ hydro dt =    5.3488300434795808E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       51219 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.6782463728994032E-003
+ *** max divu before cleaning   1.8019284781340472     
+ *** max divu after cleaning   3.2318621642843937E-003
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       69579 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.7404343937436981E-014
+ *** max divu before cleaning  0.21443578828338161     
+ *** max divu after cleaning  0.10447476226346097     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.3646938668099960E-002
+ 
+ ******************************************************************
+ Cycle:           46 Time:   0.23747872601763725     
+ ******************************************************************
+ hydro dt =    5.3497612506471053E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       52393 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.6479655391132747E-004
+ *** max divu before cleaning   1.4966505716890843     
+ *** max divu after cleaning   7.0250244678859985E-004
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       70981 steps
+ *** L2 norm on D(velocity_field)- L(phi)   6.0814281702908515E-014
+ *** max divu before cleaning  0.19742467260725860     
+ *** max divu after cleaning   9.0755820792065123E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.4420966709698431E-002
+ 
+ ******************************************************************
+ Cycle:           47 Time:   0.24282848726828435     
+ ******************************************************************
+ hydro dt =    5.3465365892827370E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       53535 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.3964778022258059E-003
+ *** max divu before cleaning   1.6006156358604278     
+ *** max divu after cleaning   4.6149874516245859E-003
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       72414 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.1915071028768069E-014
+ *** max divu before cleaning  0.20040537631017141     
+ *** max divu after cleaning   8.2590141253291449E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.5186669263856193E-002
+ 
+ ******************************************************************
+ Cycle:           48 Time:   0.24817502385756710     
+ ******************************************************************
+ hydro dt =    5.3493060796875082E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       54689 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.4209701005026225E-003
+ *** max divu before cleaning   1.8188865828246907     
+ *** max divu after cleaning   8.5136284251881023E-003
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       73825 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.5390843858217465E-014
+ *** max divu before cleaning  0.19072068195433012     
+ *** max divu after cleaning  0.10288034059552942     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.5948781113037636E-002
+ 
+ ******************************************************************
+ Cycle:           49 Time:   0.25352432993725460     
+ ******************************************************************
+ hydro dt =    5.3571204272468715E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       55845 steps
+ *** L2 norm on D(velocity_field)- L(phi)   6.4407361645444630E-003
+ *** max divu before cleaning   1.6608141172412410     
+ *** max divu after cleaning   1.2403167911681834E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       75264 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.6619266520461757E-014
+ *** max divu before cleaning  0.19575193605577382     
+ *** max divu after cleaning  0.10996973996976322     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.6704225865545776E-002
+ 
+ ******************************************************************
+ Cycle:           50 Time:   0.25888145036450150     
+ ******************************************************************
+ hydro dt =    5.3495754127602510E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       56970 steps
+ *** L2 norm on D(velocity_field)- L(phi)   8.4335446084828816E-003
+ *** max divu before cleaning   1.4229020750260331     
+ *** max divu after cleaning   1.6240794093679511E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       76744 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.6451467399721961E-014
+ *** max divu before cleaning  0.19618412600315693     
+ *** max divu after cleaning  0.10232432059630270     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.7458510249283908E-002
+ 
+ ******************************************************************
+ Cycle:           51 Time:   0.26423102577726176     
+ ******************************************************************
+ hydro dt =    5.3449392508281585E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       58093 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.0392926669457427E-002
+ *** max divu before cleaning   1.9503602654498255     
+ *** max divu after cleaning   2.0014049833601888E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       78216 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.6734155730732752E-014
+ *** max divu before cleaning  0.19358675970031847     
+ *** max divu after cleaning  0.10329661095694576     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.8210887291733999E-002
+ 
+ ******************************************************************
+ Cycle:           52 Time:   0.26957596502808995     
+ ******************************************************************
+ hydro dt =    5.3462079645994788E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       59204 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.2331877580318432E-002
+ *** max divu before cleaning   1.4243789923599870     
+ *** max divu after cleaning   2.3747960538170076E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       79688 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.9429696109441818E-014
+ *** max divu before cleaning  0.19410615564235559     
+ *** max divu after cleaning  0.11579655095124686     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.8963798123287591E-002
+ 
+ ******************************************************************
+ Cycle:           53 Time:   0.27492217299268945     
+ ******************************************************************
+ hydro dt =    5.3540371508837125E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       60319 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.4253387232389331E-002
+ *** max divu before cleaning   1.7249925938970101     
+ *** max divu after cleaning   2.7448283955948227E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       81203 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.4033415132167490E-014
+ *** max divu before cleaning  0.19318887914850791     
+ *** max divu after cleaning  0.12016063337490301     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   4.9712008076525850E-002
+ 
+ ******************************************************************
+ Cycle:           54 Time:   0.28027621014357318     
+ ******************************************************************
+ hydro dt =    5.3608439615657495E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       61442 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.6140428690596648E-002
+ *** max divu before cleaning   1.7528276805779806     
+ *** max divu after cleaning   3.1082230676869216E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       82716 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.7061209871483829E-014
+ *** max divu before cleaning  0.21815117346288562     
+ *** max divu after cleaning  0.11035924642118111     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.0466109708348424E-002
+ 
+ ******************************************************************
+ Cycle:           55 Time:   0.28563705410513895     
+ ******************************************************************
+ hydro dt =    5.3632024781781673E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       62571 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.7986550032949654E-002
+ *** max divu before cleaning   1.8111767688029019     
+ *** max divu after cleaning   3.4637375991156460E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       84221 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.4455498861102910E-014
+ *** max divu before cleaning  0.21869499630119993     
+ *** max divu after cleaning  0.11033504019039064     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.1220373438910949E-002
+ 
+ ******************************************************************
+ Cycle:           56 Time:   0.29100025658331713     
+ ******************************************************************
+ hydro dt =    5.3564622644732846E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       63701 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.9727589466754996E-002
+ *** max divu before cleaning   1.3391497502600824     
+ *** max divu after cleaning   3.7990161120610821E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       85714 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.3576564622630246E-014
+ *** max divu before cleaning  0.20949187962744720     
+ *** max divu after cleaning  0.10624065930132609     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.1979096109527619E-002
+ 
+ ******************************************************************
+ Cycle:           57 Time:   0.29635671884779041     
+ ******************************************************************
+ hydro dt =    5.3529702942680130E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       64831 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.1393184773125878E-002
+ *** max divu before cleaning   1.9998495091284383     
+ *** max divu after cleaning   4.1197660656070667E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       87216 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.1078210957123064E-014
+ *** max divu before cleaning  0.20223145517377009     
+ *** max divu after cleaning   9.7765968046896745E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.2739461897479287E-002
+ 
+ ******************************************************************
+ Cycle:           58 Time:   0.30170968914205842     
+ ******************************************************************
+ hydro dt =    5.3552625526756452E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       65957 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.2997545505512532E-002
+ *** max divu before cleaning   1.4424064087973960     
+ *** max divu after cleaning   4.4287238468315948E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       88701 steps
+ *** L2 norm on D(velocity_field)- L(phi)   6.8769933587662423E-014
+ *** max divu before cleaning  0.19983008370133429     
+ *** max divu after cleaning   8.6595196260452312E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.3505724153121242E-002
+ 
+ ******************************************************************
+ Cycle:           59 Time:   0.30706495169473408     
+ ******************************************************************
+ hydro dt =    5.3638365110266649E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       67086 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.4539621182229812E-002
+ *** max divu before cleaning   1.6299302048718278     
+ *** max divu after cleaning   4.7256871607030959E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       90216 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.8422163633384952E-014
+ *** max divu before cleaning  0.21776259450023083     
+ *** max divu after cleaning   9.6422820045642510E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.4274493943261733E-002
+ 
+ ******************************************************************
+ Cycle:           60 Time:   0.31242878820576075     
+ ******************************************************************
+ hydro dt =    5.3786299256400622E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       68209 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.6029040644564284E-002
+ *** max divu before cleaning   1.9011396545561312     
+ *** max divu after cleaning   5.0125102691586321E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       91742 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.0501723364668905E-014
+ *** max divu before cleaning  0.23082343348039469     
+ *** max divu after cleaning  0.11420102836378021     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.5056079149476821E-002
+ 
+ ******************************************************************
+ Cycle:           61 Time:   0.31780741813140084     
+ ******************************************************************
+ hydro dt =    5.3760612014556409E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       69335 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.7345765569598297E-002
+ *** max divu before cleaning   1.7656402631169099     
+ *** max divu after cleaning   5.2660769410774577E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       93273 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.9663995861854443E-014
+ *** max divu before cleaning  0.20864170146136551     
+ *** max divu after cleaning  0.10632667155592213     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.5841761307049625E-002
+ 
+ ******************************************************************
+ Cycle:           62 Time:   0.32318347933285646     
+ ******************************************************************
+ hydro dt =    5.3703233239892787E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       70461 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.8532818776200331E-002
+ *** max divu before cleaning   1.7487816306162927     
+ *** max divu after cleaning   5.4946722423526495E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       94799 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.5005779619010410E-014
+ *** max divu before cleaning  0.20467501645204858     
+ *** max divu after cleaning  0.10020755433892869     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.6634419567486036E-002
+ 
+ ******************************************************************
+ Cycle:           63 Time:   0.32855380265684575     
+ ******************************************************************
+ hydro dt =    5.3692882034237950E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       71584 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.9588855137929894E-002
+ *** max divu before cleaning   2.1218351930750163     
+ *** max divu after cleaning   5.6980371369451888E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       96320 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.9767057359775129E-014
+ *** max divu before cleaning  0.19851347108522521     
+ *** max divu after cleaning   9.8883755269600471E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.7430346589998724E-002
+ 
+ ******************************************************************
+ Cycle:           64 Time:   0.33392309086026956     
+ ******************************************************************
+ hydro dt =    5.3743512125385773E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       72709 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.0541945416379924E-002
+ *** max divu before cleaning   1.8831007885859918     
+ *** max divu after cleaning   5.8815773171010832E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       97837 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.4503469509623230E-014
+ *** max divu before cleaning  0.20238324067844091     
+ *** max divu after cleaning  0.10380477324231308     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.8237120710104069E-002
+ 
+ ******************************************************************
+ Cycle:           65 Time:   0.33929744207280815     
+ ******************************************************************
+ hydro dt =    5.3855910373374668E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       73843 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.1415094597017169E-002
+ *** max divu before cleaning   1.8844495933863428     
+ *** max divu after cleaning   6.0497229394204766E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       99356 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.4862504940352671E-014
+ *** max divu before cleaning  0.19384282158136479     
+ *** max divu after cleaning   9.1537879824887369E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.9050808987468513E-002
+ 
+ ******************************************************************
+ Cycle:           66 Time:   0.34468303311014564     
+ ******************************************************************
+ hydro dt =    5.3979916432371558E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       74986 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.1779141688041281E-002
+ *** max divu before cleaning   2.0326566214091457     
+ *** max divu after cleaning   6.1198288573136139E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      100906 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.8944234309629297E-014
+ *** max divu before cleaning  0.20169305740090238     
+ *** max divu after cleaning  0.10280016720053364     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   5.9870708697520314E-002
+ 
+ ******************************************************************
+ Cycle:           67 Time:   0.35008102475338282     
+ ******************************************************************
+ hydro dt =    5.3940412948536220E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       76138 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.1041038814105887E-002
+ *** max divu before cleaning   2.0089993709939407     
+ *** max divu after cleaning   5.9776896104787980E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      102434 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.1616307877623661E-014
+ *** max divu before cleaning  0.20382335520752193     
+ *** max divu after cleaning  0.10549468925824002     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   6.0692628645361520E-002
+ 
+ ******************************************************************
+ Cycle:           68 Time:   0.35547506604823642     
+ ******************************************************************
+ hydro dt =    5.3891407114708889E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       77292 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.0501559962154735E-002
+ *** max divu before cleaning   2.0997542646033054     
+ *** max divu after cleaning   5.8738001386577920E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      103962 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.2117416029916327E-014
+ *** max divu before cleaning  0.21105510448541942     
+ *** max divu after cleaning   9.7460398120446712E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   6.1523635903924054E-002
+ 
+ ******************************************************************
+ Cycle:           69 Time:   0.36086420675970732     
+ ******************************************************************
+ hydro dt =    5.3893506063020929E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       78453 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.0077203563348618E-002
+ *** max divu before cleaning   2.1205136311521287     
+ *** max divu after cleaning   5.7920802307082297E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      105518 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.5736325204358450E-014
+ *** max divu before cleaning  0.20155137649377153     
+ *** max divu after cleaning   9.0564491858613039E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   6.2358854298069671E-002
+ 
+ ******************************************************************
+ Cycle:           70 Time:   0.36625355736600940     
+ ******************************************************************
+ hydro dt =    5.3958904009756802E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       79619 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.9431373653491140E-002
+ *** max divu before cleaning   2.1102411015683948     
+ *** max divu after cleaning   5.6677103356028269E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      107058 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.3661155010828934E-014
+ *** max divu before cleaning  0.19931871795933187     
+ *** max divu after cleaning   9.3469819836414558E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   6.3203573576973537E-002
+ 
+ ******************************************************************
+ Cycle:           71 Time:   0.37164944776698505     
+ ******************************************************************
+ hydro dt =    5.4088940350053996E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       80793 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.8667742127596176E-002
+ *** max divu before cleaning   2.1254995525657918     
+ *** max divu after cleaning   5.5206549401965788E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      108598 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.3028566650571948E-014
+ *** max divu before cleaning  0.20127135452296052     
+ *** max divu after cleaning   9.6467476368335525E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   6.4057090750730142E-002
+ 
+ ******************************************************************
+ Cycle:           72 Time:   0.37705834180199044     
+ ******************************************************************
+ hydro dt =    5.4182499238115012E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       81970 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.7569177717861094E-002
+ *** max divu before cleaning   2.1968257394786050     
+ *** max divu after cleaning   5.3091002594106484E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      110168 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.2374087447482202E-014
+ *** max divu before cleaning  0.20908368526629850     
+ *** max divu after cleaning  0.10413321873510117     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   6.4918300862100806E-002
+ 
+ ******************************************************************
+ Cycle:           73 Time:   0.38247659172580195     
+ ******************************************************************
+ hydro dt =    5.4127375765557562E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       83148 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.6273756545115063E-002
+ *** max divu before cleaning   2.1315755645280774     
+ *** max divu after cleaning   5.0596361312474691E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      111720 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.6820819189449641E-014
+ *** max divu before cleaning  0.20690542648611296     
+ *** max divu after cleaning  0.10745675759232842     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   6.5777696741025432E-002
+ 
+ ******************************************************************
+ Cycle:           74 Time:   0.38788932930235770     
+ ******************************************************************
+ hydro dt =    5.4094643159439057E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       84335 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.4903114043327620E-002
+ *** max divu before cleaning   2.1878630546352689     
+ *** max divu after cleaning   4.7956863487880419E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      113237 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.9046067698491644E-014
+ *** max divu before cleaning  0.20489797852842173     
+ *** max divu after cleaning   9.6232115209080149E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   6.6638833942069514E-002
+ 
+ ******************************************************************
+ Cycle:           75 Time:   0.39329879361830161     
+ ******************************************************************
+ hydro dt =    5.4116645692838562E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       85522 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.3355617822175132E-002
+ *** max divu before cleaning   2.1838032667901217     
+ *** max divu after cleaning   4.4976791803319038E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      114759 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.3976468292789473E-014
+ *** max divu before cleaning  0.19421987463608656     
+ *** max divu after cleaning   8.2644532906865464E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   6.7501338318190940E-002
+ 
+ ******************************************************************
+ Cycle:           76 Time:   0.39871045818758549     
+ ******************************************************************
+ hydro dt =    5.4203810272481874E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       86719 steps
+ *** L2 norm on D(velocity_field)- L(phi)   2.1651477247742846E-002
+ *** max divu before cleaning   2.1284953690843658     
+ *** max divu after cleaning   4.1695064195042875E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      116277 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.8669578237200722E-014
+ *** max divu before cleaning  0.21865054995989563     
+ *** max divu after cleaning   8.2613842717124797E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   6.8368932969390617E-002
+ 
+ ******************************************************************
+ Cycle:           77 Time:   0.40413083921483367     
+ ******************************************************************
+ hydro dt =    5.4343637626735677E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       87919 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.9948863062509922E-002
+ *** max divu before cleaning   2.1243818050115628     
+ *** max divu after cleaning   3.8416276011865591E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      117784 steps
+ *** L2 norm on D(velocity_field)- L(phi)   6.4185943964668687E-014
+ *** max divu before cleaning  0.21524818265093604     
+ *** max divu after cleaning   9.4483522462082803E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   6.9241909025585066E-002
+ 
+ ******************************************************************
+ Cycle:           78 Time:   0.40956520297750726     
+ ******************************************************************
+ hydro dt =    5.4320102084007890E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       89110 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.9074466001732533E-002
+ *** max divu before cleaning   2.1047707018442168     
+ *** max divu after cleaning   3.6732416699625681E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      119295 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.9410627681846525E-014
+ *** max divu before cleaning  0.20822948440419434     
+ *** max divu after cleaning   8.5940019003213131E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.0115970515256143E-002
+ 
+ ******************************************************************
+ Cycle:           79 Time:   0.41499721318590804     
+ ******************************************************************
+ hydro dt =    5.4258037517354359E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       90300 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.7964869187415876E-002
+ *** max divu before cleaning   2.0373962424495708     
+ *** max divu after cleaning   3.4595624374681222E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      120805 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.4970282869490471E-014
+ *** max divu before cleaning  0.22893166555515873     
+ *** max divu after cleaning  0.10497961307530534     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.0987350847415323E-002
+ 
+ ******************************************************************
+ Cycle:           80 Time:   0.42042301693764350     
+ ******************************************************************
+ hydro dt =    5.4239565795885236E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       91487 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.6744674369514927E-002
+ *** max divu before cleaning   2.0106337892348023     
+ *** max divu after cleaning   3.2245849313934372E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      122321 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.0166668261423944E-014
+ *** max divu before cleaning  0.24000692404799115     
+ *** max divu after cleaning  0.11072157830715845     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.1859787799122540E-002
+ 
+ ******************************************************************
+ Cycle:           81 Time:   0.42584697351723200     
+ ******************************************************************
+ hydro dt =    5.4283740135050527E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       92677 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.5247645353912771E-002
+ *** max divu before cleaning   1.9475118607448607     
+ *** max divu after cleaning   2.9362964225206234E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      123854 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.7199701236804311E-014
+ *** max divu before cleaning  0.24383558940614591     
+ *** max divu after cleaning  0.10737232860548884     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.2737100929178525E-002
+ 
+ ******************************************************************
+ Cycle:           82 Time:   0.43127534753073704     
+ ******************************************************************
+ hydro dt =    5.4391869440790610E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       93868 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.2962079378394989E-002
+ *** max divu before cleaning   1.8235825159717578     
+ *** max divu after cleaning   2.4961563850602886E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      125381 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.9946800560403624E-014
+ *** max divu before cleaning  0.26983695481319447     
+ *** max divu after cleaning  0.11291014123005372     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.3619977304066581E-002
+ 
+ ******************************************************************
+ Cycle:           83 Time:   0.43671453447481612     
+ ******************************************************************
+ hydro dt =    5.4517137320357423E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       95060 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.1548264632556426E-002
+ *** max divu before cleaning   1.8897713396341516     
+ *** max divu after cleaning   2.2238927611593517E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      126875 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.7020393106476815E-014
+ *** max divu before cleaning  0.26767188243310436     
+ *** max divu after cleaning  0.13004909103535311     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.4507666062094566E-002
+ 
+ ******************************************************************
+ Cycle:           84 Time:   0.44216624820685185     
+ ******************************************************************
+ hydro dt =    5.4513857656069966E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       96248 steps
+ *** L2 norm on D(velocity_field)- L(phi)   9.7155928173568076E-003
+ *** max divu before cleaning   1.7734365045553275     
+ *** max divu after cleaning   1.8709682557902063E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      128365 steps
+ *** L2 norm on D(velocity_field)- L(phi)   6.4691264061344121E-014
+ *** max divu before cleaning  0.27719363174020017     
+ *** max divu after cleaning  0.15254132819030986     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.5395720337684921E-002
+ 
+ ******************************************************************
+ Cycle:           85 Time:   0.44761763397245885     
+ ******************************************************************
+ hydro dt =    5.4465118170942042E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       97448 steps
+ *** L2 norm on D(velocity_field)- L(phi)   8.0560608928856529E-003
+ *** max divu before cleaning   1.7040868040377433     
+ *** max divu after cleaning   1.5513859505039918E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      129871 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.5473630687121341E-014
+ *** max divu before cleaning  0.26231726112169973     
+ *** max divu after cleaning  0.14641189214196260     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.6280077087648390E-002
+ 
+ ******************************************************************
+ Cycle:           86 Time:   0.45306414578955306     
+ ******************************************************************
+ hydro dt =    5.4458202412173504E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       98661 steps
+ *** L2 norm on D(velocity_field)- L(phi)   6.4053075806340789E-003
+ *** max divu before cleaning   1.9419099376828211     
+ *** max divu after cleaning   1.2334941755662854E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      131386 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.8046015155501143E-014
+ *** max divu before cleaning  0.21856224293586554     
+ *** max divu after cleaning  0.11730788485273003     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.7164502160057574E-002
+ 
+ ******************************************************************
+ Cycle:           87 Time:   0.45850996603077043     
+ ******************************************************************
+ hydro dt =    5.4512609464187223E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in       99843 steps
+ *** L2 norm on D(velocity_field)- L(phi)   6.5338883497409583E-003
+ *** max divu before cleaning   1.6019414787935133     
+ *** max divu after cleaning   1.2582554578978389E-002
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      132871 steps
+ *** L2 norm on D(velocity_field)- L(phi)   5.2225772807287490E-014
+ *** max divu before cleaning  0.20685205111324123     
+ *** max divu after cleaning  0.10624134505978322     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.8053935121500731E-002
+ 
+ ******************************************************************
+ Cycle:           88 Time:   0.46396122697718917     
+ ******************************************************************
+ hydro dt =    5.4632217557516530E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      101032 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.7375204887352938E-003
+ *** max divu before cleaning   1.6280035837564730     
+ *** max divu after cleaning   9.1232214155212432E-003
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      134361 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.9245881081357989E-014
+ *** max divu before cleaning  0.21274956822246519     
+ *** max divu after cleaning   9.3255888723467795E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.8949811777185228E-002
+ 
+ ******************************************************************
+ Cycle:           89 Time:   0.46942444873294081     
+ ******************************************************************
+ hydro dt =    5.4727583989601508E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      102230 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.9241690117502088E-003
+ *** max divu before cleaning   1.9815063344404478     
+ *** max divu after cleaning   3.7054446472364333E-003
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      135828 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.5515620871565970E-014
+ *** max divu before cleaning  0.22773328688325556     
+ *** max divu after cleaning   7.9857006176437650E-002
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   7.9849709292242860E-002
+ 
+ ******************************************************************
+ Cycle:           90 Time:   0.47489720713190098     
+ ******************************************************************
+ hydro dt =    5.4665334246706320E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      103460 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.6773839928934346E-004
+ *** max divu before cleaning   1.6746883209892047     
+ *** max divu after cleaning   3.2302014568585946E-004
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      137323 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.3064945326413402E-014
+ *** max divu before cleaning  0.24029196825327578     
+ *** max divu after cleaning  0.10247766312276241     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   8.0748409875916374E-002
+ 
+ ******************************************************************
+ Cycle:           91 Time:   0.48036374055657161     
+ ******************************************************************
+ hydro dt =    5.4622024145631921E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      104716 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.9679764374884930E-004
+ *** max divu before cleaning   1.5571900998417085     
+ *** max divu after cleaning   3.7898062496566354E-004
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      138838 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.2819057517639317E-014
+ *** max divu before cleaning  0.23165270348125766     
+ *** max divu after cleaning  0.11399251908042629     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   8.1645583786896986E-002
+ 
+ ******************************************************************
+ Cycle:           92 Time:   0.48582594297113479     
+ ******************************************************************
+ hydro dt =    5.4631854012329511E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      105837 steps
+ *** L2 norm on D(velocity_field)- L(phi)   1.1467991288384364E-003
+ *** max divu before cleaning   2.1883386531416020     
+ *** max divu after cleaning   2.2084342216643904E-003
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      140296 steps
+ *** L2 norm on D(velocity_field)- L(phi)   6.9185675286355040E-014
+ *** max divu before cleaning  0.22062692631602587     
+ *** max divu after cleaning  0.11585170318510474     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   8.2547925271260092E-002
+ 
+ ******************************************************************
+ Cycle:           93 Time:   0.49128912837236777     
+ ******************************************************************
+ hydro dt =    5.4704762084030554E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      106919 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.2294106379697472E-003
+ *** max divu before cleaning   1.6701512395819540     
+ *** max divu after cleaning   6.2189975447530799E-003
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      141796 steps
+ *** L2 norm on D(velocity_field)- L(phi)   3.4229159723326351E-014
+ *** max divu before cleaning  0.22049390472195984     
+ *** max divu after cleaning  0.12080863244866369     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   8.3450125503600078E-002
+ 
+ ******************************************************************
+ Cycle:           94 Time:   0.49675960458077084     
+ ******************************************************************
+ hydro dt =    5.4800096835087575E-003
+ Step #1 completed normally
+ Step #2
+ *** start
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      107853 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.3852273586025324E-003
+ *** max divu before cleaning   1.6108810971363434     
+ *** max divu after cleaning   8.4447972649250858E-003
+ *** complete
+ Step #3 completed normally
+ Step #4 completed normally
+ Step #5
+ *** begining relaxation to solve for phi.
+ *** this can take a while, use VERBOSE if you want to monitor stepping
+ *** Gauss Seidel relaxation completed in      143274 steps
+ *** L2 norm on D(velocity_field)- L(phi)   4.7667635444470213E-014
+ *** max divu before cleaning  0.23114000614531882     
+ *** max divu after cleaning  0.10858308400541961     
+ 
+  Morrisons Convergence test: - L2 of velocity vs analytic sln:   8.4356404381543709E-002
+ 
+ ******************************************************************
+ Drawing plots
+ ******************************************************************
+ CCAPS Terminated Normally

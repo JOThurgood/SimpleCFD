@@ -44,4 +44,4 @@ all: $(PROGRAMS)
 cleanmods:
 	rm -rf *.o *.mod *.MOD *.dSYM
 clean:  cleanmods
-	rm -f *~ $(PROGRAMS) *.png *.dat  
+	rm -f *~ $(PROGRAMS) *.dat  

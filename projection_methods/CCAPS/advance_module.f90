@@ -102,7 +102,6 @@ module advance_module
       endif
 
       uhyl(ix,iy) = u(ix,iy) + &
-!        & 0.5_num * (1.0_num - dt * u(ix,iy) / dy) * du * dy
         & 0.5_num * (1.0_num - dt * v(ix,iy) / dy) * du * dy
 
       if (use_minmod) then
@@ -112,7 +111,6 @@ module advance_module
       endif
 
       uhyr(ix,iy) = u(ix,iy+1) - &
-!        & 0.5_num * (1.0_num + dt * u(ix,iy+1) / dy) * du * dy
         & 0.5_num * (1.0_num + dt * v(ix,iy+1) / dy) * du * dy
 
       if (use_minmod) then

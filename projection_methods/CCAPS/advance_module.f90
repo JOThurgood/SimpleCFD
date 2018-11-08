@@ -22,8 +22,7 @@ module advance_module
 
     call step_2 ! Step 2 : MAC Projection 
 
-    call step_3 ! Step 3: Reconstruct interface states consistent with MAC-projected
-    ! velocities 
+    call step_3 ! Step 3: Reconstruct interface states consistent with constraint
 
     call step_4 ! Step 4: Provisional update for full dt (star state)
 
@@ -168,9 +167,7 @@ module advance_module
     ! 1D construct the full left and right predictions of normal
     ! velocities on the interfaces
 
-    ! if you find bugs in 1D - check not also in 3D which is similar
-
-!!! origional implementation - i think this is right, bar boundary handling
+    ! (actually get them on all interfaces, as needed later steps)
 
     call velocity_face_bcs
 
@@ -318,13 +315,10 @@ module advance_module
     ! for consistency
     ! (redo some of step 1 but use mac velocities  for upwinding)
 
-    ! Because you haven't been deallocating arrays etc, you can directly
-    ! skip a few of the recalculations
+    ! Because you haven't been overwriting or deallocating 
+    ! such arrays, most of it doesnt have to be recalculated
 
-    ! I think we only need to re-do E 
-
-    ! Step 1D calculated the full tangential velocity states 
-    ! in anticipation of this - only need E which differs 
+    ! We only need to re-do E
 
     ! Step 3E Upwind face components based upon MAC vels
     
@@ -341,25 +335,6 @@ module advance_module
       endif
     enddo
     enddo
-
-!!!    ! If you uncommment the following, it suggests that step_3 does nothing for
-!!!    ! the test IC...
-!!!    ! might just be that you're divergence cleaning adjustment was consistent 
-!!!    ! with the initial upwinding.... Not 100% happy with this yet
-!!! 
-!!!
-!!!   ! check the equivalent to the macu and macv (ux and vy) still has
-!!!   ! small divergence?
-!!!
-!!!     do iy = 1, ny
-!!!     do ix = 1, nx
-!!!       divu(ix,iy) = (ux(ix,iy) - ux(ix-1,iy) ) /dx &
-!!!         & + (vy(ix,iy) - vy(ix,iy-1))/dy
-!!!     enddo
-!!!     enddo
-!!!  
-!!!     print *, 'max divu after 3E',maxval(abs(divu))
-!!!  
 
     print *, 'Step #3 completed normally'
   end subroutine step_3

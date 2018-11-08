@@ -3,6 +3,7 @@ module advance_module
   use shared_data
   use boundary_conditions
   use diagnostics
+  use gauss_seidel
 
   implicit none
 
@@ -21,8 +22,7 @@ module advance_module
 
     call step_2 ! Step 2 : MAC Projection 
 
-    call step_3 ! Step 3: Reconstruct interface states consistent with MAC-projected
-    ! velocities 
+    call step_3 ! Step 3: Reconstruct interface states consistent with constraint
 
     call step_4 ! Step 4: Provisional update for full dt (star state)
 
@@ -167,9 +167,7 @@ module advance_module
     ! 1D construct the full left and right predictions of normal
     ! velocities on the interfaces
 
-    ! if you find bugs in 1D - check not also in 3D which is similar
-
-!!! origional implementation - i think this is right, bar boundary handling
+    ! (actually get them on all interfaces, as needed later steps)
 
     call velocity_face_bcs
 
@@ -276,7 +274,7 @@ module advance_module
 !    call plot_divergence_now
 !    if (step /=0) call plot_divergence_now
 
-    call step2_gauss_seidel
+    call solve_gs(use_old_phi=.false.,tol=1e-18_num)
 
     print *, '*** max divu before cleaning',maxval(abs(divu))
 
@@ -311,120 +309,16 @@ module advance_module
 !    call plot_divergence_now
   end subroutine step_2
 
-  subroutine step2_gauss_seidel
-
-    logical :: gsrb=.true. !should move to control eventually
-
-    real(num) :: tol = 1e-18_num
-    real(num) :: L2, L2_old !norms
-    real(num) :: L_phi !lagrangian of phi
-    integer :: maxir = 100000000
-    integer :: ir = 0 
-    logical :: verbose=.false. 
-
- 
-    print *, '*** begining relaxation to solve for phi.'
-    print *, '*** this can take a while, use VERBOSE if you want to monitor stepping'
-
-    phi = 0.0_num
-    L2_old = 1e6_num
-
-    do
-      ir = ir + 1 
-   
-!      do iy = 1, ny  
-!      do ix = 1, nx  
-!        !is this the appropriate form of GS for these equations!!!!
-!        phi(ix,iy) = 0.25_num * ( & 
-!          & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
-!          - dx**2 * divu(ix,iy) ) 
-!   
-!      end do
-!      end do 
-
-      ! if not using redblack order
-      if (.not. gsrb) then 
-        do iy = 1, ny  
-        do ix = 1, nx  
-          phi(ix,iy) = 0.25_num * ( & 
-            & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
-            - dx**2 * divu(ix,iy) ) 
-        end do
-        end do 
-      else !use red black
-        ! odd iteration
-        do iy = 1, ny  
-        do ix = 1, nx  
-          if (modulo(ix+iy,2) == 1) then
-            phi(ix,iy) = 0.25_num * ( & 
-              & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
-              - dx**2 * divu(ix,iy) ) 
-          endif
-        end do
-        end do 
-        ! even iteration
-        do iy = 1, ny  
-        do ix = 1, nx  
-          if (modulo(ix+iy,2) == 0) then
-            phi(ix,iy) = 0.25_num * ( & 
-              & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
-              - dx**2 * divu(ix,iy) ) 
-          endif
-        end do
-        end do 
-   
-      endif
-   
-      ! Apply periodic boundary conditions on phi's ghost cells
-
-      call phi_bcs
- 
-      L2 = 0.0_num
-      do iy = 1, ny  
-      do ix = 1, nx  
-        L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) &
-          & / dx**2 + & 
-          & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
-   
-        L2 = L2 + abs(divu(ix,iy)-L_phi)**2
-      end do
-      end do 
-      L2 = sqrt( L2 / REAL(nx*ny,num))
-   
-   
-      if (verbose) &
-        & print *, 'GS-Step2-iteration',ir,'complete. L2 is',L2,'|L2-L2_old| is',abs(L2-L2_old),'tol is',tol
-   
-     !exit conditions 
-     !if ((step >= nsteps .and. nsteps >= 0) .or. (L2 <= tol)) exit
-     ! alt, exit if the difference between L2 and L2 prev is small - might
-     ! indicate convergence
-      if ((ir >= maxir .and. maxir >= 0) .or. (abs(L2-L2_old) <= tol)) exit
-      L2_old = L2
-    end do
-
-
-
-  print *, '*** Gauss Seidel relaxation completed in',ir,'steps'
-  print *, '*** L2 norm on D(velocity_field)- L(phi)',L2
- 
-
-  end subroutine step2_gauss_seidel
-
-
   subroutine step_3
 
     ! reconstruct the interface states using the MAC velocities
     ! for consistency
     ! (redo some of step 1 but use mac velocities  for upwinding)
 
-    ! Because you haven't been deallocating arrays etc, you can directly
-    ! skip a few of the recalculations
+    ! Because you haven't been overwriting or deallocating 
+    ! such arrays, most of it doesnt have to be recalculated
 
-    ! I think we only need to re-do E 
-
-    ! Step 1D calculated the full tangential velocity states 
-    ! in anticipation of this - only need E which differs 
+    ! We only need to re-do E
 
     ! Step 3E Upwind face components based upon MAC vels
     
@@ -441,25 +335,6 @@ module advance_module
       endif
     enddo
     enddo
-
-!!!    ! If you uncommment the following, it suggests that step_3 does nothing for
-!!!    ! the test IC...
-!!!    ! might just be that you're divergence cleaning adjustment was consistent 
-!!!    ! with the initial upwinding.... Not 100% happy with this yet
-!!! 
-!!!
-!!!   ! check the equivalent to the macu and macv (ux and vy) still has
-!!!   ! small divergence?
-!!!
-!!!     do iy = 1, ny
-!!!     do ix = 1, nx
-!!!       divu(ix,iy) = (ux(ix,iy) - ux(ix-1,iy) ) /dx &
-!!!         & + (vy(ix,iy) - vy(ix,iy-1))/dy
-!!!     enddo
-!!!     enddo
-!!!  
-!!!     print *, 'max divu after 3E',maxval(abs(divu))
-!!!  
 
     print *, 'Step #3 completed normally'
   end subroutine step_3
@@ -507,7 +382,7 @@ module advance_module
 
     divu = divu/dt
 
-    call step5_gauss_seidel
+    call solve_gs(use_old_phi = .true., tol=1e-16_num)
 
     print *, '*** max divu before cleaning',maxval(abs(divu)*dt)
 !    print *, '*** max divu/dt before cleaning',maxval(abs(divu))
@@ -536,8 +411,8 @@ module advance_module
     enddo
     enddo
 
-!    print *, '*** max divu after cleaning',maxval(abs(divu))
-      print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
+    print *, '*** max divu after cleaning',maxval(abs(divu))
+!      print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
 
 !    if (step /=0) call plot_divergence_now
 !    call plot_divergence_now
@@ -558,114 +433,6 @@ module advance_module
     call gradp_bcs
 
   end subroutine step_5
-
-  subroutine step5_gauss_seidel
-
-    logical :: gsrb=.true. !should move to control eventually
-
-    real(num) :: tol = 1e-16_num
-    real(num) :: L2, L2_old !norms
-    real(num) :: L_phi !lagrangian of phi
-    integer :: maxir = 10000000
-    integer :: ir = 0 
-    logical :: verbose=.false. 
-
- 
-    print *, '*** begining relaxation to solve for phi.'
-    print *, '*** this can take a while, use VERBOSE if you want to monitor stepping'
-
-!    phi = 0.0_num
-    call phi_bcs !use old phi as initial guess
-!    phi = 0.0_num
-    L2_old = 1e6_num
-
-    do
-      ir = ir + 1 
-   
-!      do iy = 1, ny  
-!      do ix = 1, nx  
-!        !is this the appropriate form of GS for these equations!!!!
-!        phi(ix,iy) = 0.25_num * ( & 
-!          & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
-!          - dx**2 * divu(ix,iy) ) 
-!   
-!      end do
-!      end do 
-
-
-      ! if not using redblack order
-      if (.not. gsrb) then 
-        do iy = 1, ny  
-        do ix = 1, nx  
-          phi(ix,iy) = 0.25_num * ( & 
-            & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
-            - dx**2 * divu(ix,iy) ) 
-        end do
-        end do 
-     
-      else !use red black
-   
-        ! odd iteration
-        do iy = 1, ny  
-        do ix = 1, nx  
-          if (modulo(ix+iy,2) == 1) then
-            phi(ix,iy) = 0.25_num * ( & 
-              & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
-              - dx**2 * divu(ix,iy) ) 
-          endif
-        end do
-        end do 
-   
-        ! even iteration
-   
-        do iy = 1, ny  
-        do ix = 1, nx  
-          if (modulo(ix+iy,2) == 0) then
-            phi(ix,iy) = 0.25_num * ( & 
-              & phi(ix+1,iy) + phi(ix-1,iy) + phi(ix,iy+1) + phi(ix,iy-1) &
-              - dx**2 * divu(ix,iy) ) 
-          endif
-        end do
-        end do 
-   
-      endif
-
-      ! Apply periodic boundary conditions on phi's ghost cells
-
-      call phi_bcs  
-
- 
-      L2 = 0.0_num
-      do iy = 1, ny  
-      do ix = 1, nx  
-        L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) &
-          & / dx**2 + & 
-          & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
-   
-        L2 = L2 + abs(divu(ix,iy)-L_phi)**2
-      end do
-      end do 
-      L2 = sqrt( L2 / REAL(nx*ny,num))
-   
-   
-      if (verbose) &
-        & print *, 'GS-Step5-iteration',ir,'complete. L2 is',L2,'|L2-L2_old| is',abs(L2-L2_old),'tol is',tol
-   
-     !exit conditions 
-     !if ((step >= nsteps .and. nsteps >= 0) .or. (L2 <= tol)) exit
-     ! alt, exit if the difference between L2 and L2 prev is small - might
-     ! indicate convergence
-      if ((ir >= maxir .and. maxir >= 0) .or. (abs(L2-L2_old) <= tol)) exit
-      L2_old = L2
-    end do
-
-
-
-    print *, '*** Gauss Seidel relaxation completed in',ir,'steps'
-    print *, '*** L2 norm on D(velocity_field)- L(phi)',L2
- 
-
-  end subroutine step5_gauss_seidel
 
   subroutine set_dt
 

@@ -19,12 +19,12 @@ PROGRAMS = ccaps
 all: $(PROGRAMS)
 
 boundary_conditions.o: shared_data.o
-advance_module.o: boundary_conditions.o diagnostics.o
+advance_module.o: boundary_conditions.o diagnostics.o gauss_seidel.o
 setup.o: control.o initial_conditions.o
 ccaps.o: shared_data.o advance_module.o setup.o control.o initial_conditions.o \
   boundary_conditions.o diagnostics.o welcome.o
 ccaps: shared_data.o  advance_module.o setup.o control.o initial_conditions.o \
-  boundary_conditions.o diagnostics.o welcome.o
+  boundary_conditions.o diagnostics.o welcome.o gauss_seidel.o
 
 
 # ======================================================================

@@ -21,13 +21,14 @@ program implicit1
   real(num) :: t_end = 0.02_num
 
   real(num) :: k = 1.0_num
-  real(num) :: amp = 1.0_num
-  real(num) :: fwtm =0.1_num !full width tenth maximum
+  real(num) :: phi2 = 2.0_num !max val
+  real(num) :: phi1 = 1.0_num !baseline
 
   real(num) :: CFL = 1.0_num
 
   real(num) :: tol = 1e-12_num
 
+  integer :: tstep = 0
   integer :: rstep = 0
   integer :: ix, iy
   real(num) :: dx, dy
@@ -35,7 +36,7 @@ program implicit1
 
   real(num) :: dt
   real(num), dimension(:), allocatable :: x, y
-  real(num), dimension(:,:), allocatable :: phi, f
+  real(num), dimension(:,:), allocatable :: phi, phi_an, f
 
   real(num) :: L_phi
   real(num) :: alpha, beta
@@ -66,13 +67,15 @@ program implicit1
    
 
   allocate(phi(0:nx+1,0:ny+1))
+  allocate(phi_an(0:nx+1,0:ny+1))
 
   do ix = 0, nx + 1
   do iy = 0, ny + 1
     xx = x(ix) - 0.5_num
     yy = y(iy) - 0.5_num
     r = sqrt(xx**2 + yy**2)
-    phi(ix,iy) = 1.0_num + amp * exp(-r**2/ (2.0_num *(fwtm/4.29193_num)**2))
+    phi(ix,iy) = (phi2-phi1) * exp(-0.25_num * r**2 / k / 0.001_num) + phi1
+! 1.0_num + amp * exp(-r**2/ (2.0_num *(fwtm/4.29193_num)**2))
   enddo
   enddo
 
@@ -107,12 +110,12 @@ program implicit1
     enddo
 
     !forget initial phi ?
-    phi = 0.0_num
+    !phi = 0.0_num
 
     !GS relaxation loop
 
-    rstep = 0
     do
+      tstep = tstep + 1
       rstep = rstep + 1      
        
       ! odd iteration
@@ -177,15 +180,43 @@ program implicit1
       end do 
       L2 = sqrt( L2 / REAL(nx*ny,num))
  
-      print *,'time',time,'rstep',rstep,'L2',L2
+!      print *,'time',time,'rstep',rstep,'L2',L2
    
       if (L2 <= tol) exit
     enddo
+
+    print *,'time', time,'tstep',tstep
+    print *,'took', rstep,'iterations to converge to (residual) L2=',L2
+
 
     time = time + dt
   enddo
 
 
+
+  !the analytical solution
+  do ix = 1,nx
+  do iy = 1,ny
+    xx = x(ix) - 0.5_num
+    yy = y(iy) - 0.5_num
+    r = sqrt(xx**2 + yy**2)
+    phi_an(ix,iy) = (phi2-phi1) * (0.001_num / (time+0.001_num)) &
+      & * exp(-0.25_num * r**2 / k / (0.001_num + time)) + phi1
+  enddo
+  enddo
+
+  !calculate the L2 norm against the analytical solution
+
+  L2 = 0.0_num
+
+  do ix = 1, nx
+  do iy = 1, ny
+    L2 = L2 + abs(phi_an(ix,iy)-phi(ix,iy))**2 
+  enddo
+  enddo
+  L2 = sqrt( L2 / REAL(nx*ny,num))
+
+  print *,'L2 error norm agains analtical solution is',L2
 
 1 CONTINUE
 
@@ -204,6 +235,17 @@ program implicit1
   write(out_unit) phi(1:nx,1:ny)
   close(out_unit)
 
+  open(out_unit, file="phi_an.dat", access="stream")
+  write(out_unit) phi_an(1:nx,1:ny)
+  close(out_unit)
+
+  !calculate the difference of phi from the analytical solution
+  ! (just call the difference phi to avoid allocating a new array)
+!  do ix = 1, nx
+!  do iy = 1, ny
+!    phi(ix,iy) = phi(ix,iy) - 
+!  enddo
+!  enddo
 
   call execute_command_line("python plot.py")
   call execute_command_line("rm -rf *.dat")

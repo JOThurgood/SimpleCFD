@@ -24,7 +24,7 @@ program implicit1
   real(num) :: phi2 = 2.0_num !max val
   real(num) :: phi1 = 1.0_num !baseline
 
-  real(num) :: CFL = 1.0_num
+  real(num) :: CFL = 2.0_num
 
   real(num) :: tol = 1e-12_num
 
@@ -88,6 +88,7 @@ program implicit1
   time = 0.0_num
 
   do
+    tstep = tstep + 1
     if (time > t_end) exit
 
     dt = CFL * dx**2 / k
@@ -115,7 +116,6 @@ program implicit1
     !GS relaxation loop
 
     do
-      tstep = tstep + 1
       rstep = rstep + 1      
        
       ! odd iteration
@@ -187,7 +187,6 @@ program implicit1
 
     print *,'time', time,'tstep',tstep
     print *,'took', rstep,'iterations to converge to (residual) L2=',L2
-
 
     time = time + dt
   enddo

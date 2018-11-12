@@ -1,10 +1,11 @@
 module shared_data
 
   implicit none
-
   integer :: out_unit = 10
-
   integer, parameter :: num=selected_real_kind(p=15) 
+
+  ! core solver
+
   integer :: nx, ny
   integer :: ix, iy
   integer :: step, nsteps
@@ -47,5 +48,11 @@ module shared_data
 
 
   real(num), dimension(:,:), allocatable :: gradp_x, gradp_y ! pressure gradient, cc
+
+  !viscosity
+
+  logical :: use_viscosity = .false.
+  real(num) :: visc = 0.0_num
+
 
 end module shared_data

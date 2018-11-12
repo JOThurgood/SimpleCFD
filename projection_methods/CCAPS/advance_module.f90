@@ -37,6 +37,7 @@ module advance_module
     real(num) :: gp
     real(num) :: du, dv
     real(num) :: transv
+    real(num) :: LU_l, LU_r ! vector laplacian of U left/right - for viscous forcing 
 
     ! 1 - Calculate the advective velocities
 
@@ -224,6 +225,73 @@ module advance_module
     enddo
     enddo
 
+    ! also include viscous forcing if using viscosity
+
+    if (use_viscosity) then
+
+      do ix = 0, nx
+      do iy = 0, ny
+        if (iy /=0 ) then ! x faces
+
+          ! vector laplacian in cartesians L(U) = (L u_x, L u_y, L u_z)
+          ! x component, in cell centers to left and right of interface
+!!!          LU_l = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
+!!!            & (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
+!!!          LU_r = (u(ix+2,iy) - 2.0_num*u(ix+1,iy) + u(ix,iy)) / dx**2 + & 
+!!!            & (u(ix+1,iy+1) - 2.0_num*u(ix+1,iy) + u(ix+1,iy-1)) / dy**2 
+
+          LU_l = get_LU_cc(ix,iy,0)
+          LU_r = get_LU_cc(ix+1,iy,0) 
+  
+          uxl(ix,iy) = uxl(ix,iy) + 0.5_num * dt * visc * LU_l 
+          uxr(ix,iy) = uxr(ix,iy) + 0.5_num * dt * visc * LU_r 
+  
+          ! vector laplacian of y component
+  
+!!!          LU_l = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
+!!!            & (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
+!!!          LU_r = (v(ix+2,iy) - 2.0_num*v(ix+1,iy) + v(ix,iy)) / dx**2 + & 
+!!!            & (v(ix+1,iy+1) - 2.0_num*v(ix+1,iy) + v(ix+1,iy-1)) / dy**2 
+
+          LU_l = get_LU_cc(ix,iy,1)
+          LU_r = get_LU_cc(ix+1,iy,1)
+
+
+          vxl(ix,iy) = vxl(ix,iy) + 0.5_num * dt * visc * LU_l
+          vxr(ix,iy) = vxr(ix,iy) + 0.5_num * dt * visc * LU_r
+  
+  
+        endif
+        if (ix /=0) then ! yfaces
+
+          !_l and _r is now vector laplacian at cc "below" and "above" y face
+!!!          LU_l = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
+!!!            & (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
+!!!          LU_r = (u(ix+1,iy+1) - 2.0_num*u(ix,iy+1) + u(ix-1,iy+1)) / dx**2 + & 
+!!!            & (u(ix,iy+2) - 2.0_num*u(ix,iy+1) + u(ix,iy)) / dy**2 
+  
+          LU_l = get_LU_cc(ix,iy,0)
+          LU_r = get_LU_cc(ix,iy+1,0) 
+
+          uyl(ix,iy) = uyl(ix,iy) + 0.5_num * dt * visc * LU_l
+          uyr(ix,iy) = uyr(ix,iy) + 0.5_num * dt * visc * LU_r
+
+!!!          LU_l = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
+!!!            & (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
+!!!          LU_r = (v(ix+1,iy+1) - 2.0_num*v(ix,iy+1) + v(ix-1,iy+1)) / dx**2 + & 
+!!!            & (v(ix,iy+2) - 2.0_num*v(ix,iy+1) + v(ix,iy)) / dy**2 
+  
+          LU_l = get_LU_cc(ix,iy,1)
+          LU_r = get_LU_cc(ix,iy+1,1)
+
+          vyl(ix,iy) = vyl(ix,iy) + 0.5_num * dt * visc * LU_l
+          vyr(ix,iy) = vyr(ix,iy) + 0.5_num * dt * visc * LU_r
+
+        endif
+      enddo
+      enddo
+    endif
+
 
     ! 1E Final riemann solve + upwinding for full normal velocities 
     ! (sometimes AKA the MAC velocities)
@@ -255,6 +323,29 @@ module advance_module
     print *, 'Step #1 completed normally'
 
   end subroutine step_1
+
+  real(num) function get_LU_cc(ix,iy,dimen) ! calculate vector laplacian at a coordinate
+    integer, intent(in) :: ix, iy, dimen
+
+    if (dimen == 0) then
+
+      get_LU_cc = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
+         (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
+
+    else if (dimen == 1) then
+
+      get_LU_cc = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
+         (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
+    else 
+
+      print *,'error: get_LU_cc (calc vector laplacian) not given valid dimension'
+      print *,'dimen = 0 (x) or =1 (y)'
+      print *,'Terminating early'
+      STOP
+
+    endif
+
+  endfunction get_LU_cc
   
   subroutine step_2
 
@@ -274,7 +365,9 @@ module advance_module
 !    call plot_divergence_now
 !    if (step /=0) call plot_divergence_now
 
-    call solve_gs(use_old_phi=.false.,tol=1e-18_num)
+    call solve_gs(phigs = phi, f = divu(1:nx,1:ny), &
+      & alpha = 0.0_num, beta = -1.0_num, &
+      & use_old_phi = .false., tol = 1e-18_num) 
 
     print *, '*** max divu before cleaning',maxval(abs(divu))
 
@@ -339,23 +432,80 @@ module advance_module
     print *, 'Step #3 completed normally'
   end subroutine step_3
 
+  real(num) function get_Au(ix,iy) 
+
+    integer, intent(in) :: ix,iy 
+    get_Au = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (ux(ix,iy)-ux(ix-1,iy))/dx &
+       &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (uy(ix,iy)-uy(ix,iy-1))/dy 
+
+  endfunction get_Au
+
+  real(num) function get_Av(ix,iy) 
+
+    integer, intent(in) :: ix,iy 
+    get_Av = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (vx(ix,iy)-vx(ix-1,iy))/dx &
+     &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (vy(ix,iy)-vy(ix,iy-1))/dy 
+
+  endfunction get_Av
+
   subroutine step_4
 
     real(num) :: Au, Av ! evaluation of advection term
 
+    real(num),dimension(1:nx,1:ny) :: f !viscous only
+
+    ! do inviscid calculation first since the terms
+    ! used to evaluate ustar are used in the "f" term
+  
     do iy = 1, ny
     do ix = 1, nx
-      Au = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (ux(ix,iy)-ux(ix-1,iy))/dx &
-        &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (uy(ix,iy)-uy(ix,iy-1))/dy 
-      Av = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (vx(ix,iy)-vx(ix-1,iy))/dx &
-        &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (vy(ix,iy)-vy(ix,iy-1))/dy 
+      Au = get_Au(ix,iy)
+      Av = get_Av(ix,iy) 
       ustar(ix,iy) = u(ix,iy) - dt * Au - dt * gradp_x(ix,iy)
       vstar(ix,iy) = v(ix,iy) - dt * Av - dt * gradp_y(ix,iy)
+
+      if (use_viscosity) then
+        !calc the vector laplacian of U here
+!        f(ix,iy) = ustar(ix,iy) + !the laplacian term
+      endif
+
     enddo
     enddo
+  
+    if (use_viscosity) then
+      print *,'Step #4 explicit viscosity on '
+      print *,'*** begin implicit solve for ustar'
+
+      do ix = 1, nx
+      do iy = 1, ny
+        f(ix,iy) = ustar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,0)
+      enddo
+      enddo    
+
+      call solve_gs(phigs = ustar, f = f, &
+        alpha = 1.0_num, beta = dt*visc/2.0_num, &
+        & use_old_phi = .true., tol = 1e-16_num) 
+
+
+      ! do stuff
+      print *,'*** begin implicit solve for vstar' 
+
+      do ix = 1, nx
+      do iy = 1, ny
+        f(ix,iy) = vstar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,1)
+      enddo
+      enddo    
+
+      call solve_gs(phigs = vstar, f = f, &
+        alpha = 1.0_num, beta = dt*visc/2.0_num, &
+        & use_old_phi = .true., tol = 1e-16_num) 
+
+      ! do stuff
+    endif
 
     print *, 'Step #4 completed normally'
   end subroutine step_4
+
 
   subroutine step_5
 
@@ -382,10 +532,15 @@ module advance_module
 
     divu = divu/dt
 
-    call solve_gs(use_old_phi = .true., tol=1e-16_num)
+    call solve_gs(phigs = phi, f = divu(1:nx,1:ny), &
+      alpha = 0.0_num, beta = -1.0_num, &
+      & use_old_phi = .true., tol = 1e-16_num) 
 
     print *, '*** max divu before cleaning',maxval(abs(divu)*dt)
 !    print *, '*** max divu/dt before cleaning',maxval(abs(divu))
+
+
+    call phi_bcs !new, needed now phi and phigs can be different 
 
     do iy = 1, ny
     do ix = 1, nx

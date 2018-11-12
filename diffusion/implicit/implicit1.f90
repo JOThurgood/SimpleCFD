@@ -99,7 +99,7 @@ program implicit1
     do ix = 1, nx
     do iy = 1, ny
 
-      ! function based on lagrangian of phi at the previous time level
+      ! function based on laplacian of phi at the previous time level
       ! - dont update during relaxation
 
       L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) / dx**2 + &
@@ -168,7 +168,7 @@ program implicit1
       do iy = 1, ny 
       do ix = 1, nx 
 
-        !Lagrangian of phi at new time level / this relaxaed state
+        !Laplacian of phi at new time level / this relaxaed state
 
         L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) / dx**2 + &
           & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 

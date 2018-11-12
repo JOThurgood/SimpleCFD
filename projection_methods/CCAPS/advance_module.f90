@@ -401,19 +401,33 @@ module advance_module
 
     real(num) :: Au, Av ! evaluation of advection term
 
-    do iy = 1, ny
-    do ix = 1, nx
-      Au = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (ux(ix,iy)-ux(ix-1,iy))/dx &
-        &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (uy(ix,iy)-uy(ix,iy-1))/dy 
-      Av = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (vx(ix,iy)-vx(ix-1,iy))/dx &
-        &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (vy(ix,iy)-vy(ix,iy-1))/dy 
-      ustar(ix,iy) = u(ix,iy) - dt * Au - dt * gradp_x(ix,iy)
-      vstar(ix,iy) = v(ix,iy) - dt * Av - dt * gradp_y(ix,iy)
-    enddo
-    enddo
+    if (use_viscosity) then
+
+      print ***,'explicit viscosity on'
+
+      print ***,'begin implicit solve for ustar'
+
+      print ***,'begin implicit solve for vstar'
+
+
+    else ! inviscid -> direct flux update
+  
+      do iy = 1, ny
+      do ix = 1, nx
+        Au = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (ux(ix,iy)-ux(ix-1,iy))/dx &
+          &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (uy(ix,iy)-uy(ix,iy-1))/dy 
+        Av = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (vx(ix,iy)-vx(ix-1,iy))/dx &
+          &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (vy(ix,iy)-vy(ix,iy-1))/dy 
+        ustar(ix,iy) = u(ix,iy) - dt * Au - dt * gradp_x(ix,iy)
+        vstar(ix,iy) = v(ix,iy) - dt * Av - dt * gradp_y(ix,iy)
+      enddo
+      enddo
+  
+    endif
 
     print *, 'Step #4 completed normally'
   end subroutine step_4
+
 
   subroutine step_5
 

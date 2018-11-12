@@ -163,8 +163,6 @@ module advance_module
     enddo
     enddo
 
-
-
     ! 1D construct the full left and right predictions of normal
     ! velocities on the interfaces
 
@@ -306,29 +304,6 @@ module advance_module
 
   end subroutine step_1
 
-  real(num) function get_LU_cc(ix,iy,dimen) ! calculate vector laplacian at a coordinate
-    integer, intent(in) :: ix, iy, dimen
-
-    if (dimen == 0) then
-
-      get_LU_cc = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
-         (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
-
-    else if (dimen == 1) then
-
-      get_LU_cc = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
-         (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
-    else 
-
-      print *,'error: get_LU_cc (calc vector laplacian) not given valid dimension'
-      print *,'dimen = 0 (x) or =1 (y)'
-      print *,'Terminating early'
-      STOP
-
-    endif
-
-  endfunction get_LU_cc
-  
   subroutine step_2
 
     real(num) :: correction
@@ -414,21 +389,6 @@ module advance_module
     print *, 'Step #3 completed normally'
   end subroutine step_3
 
-  real(num) function get_Au(ix,iy) 
-
-    integer, intent(in) :: ix,iy 
-    get_Au = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (ux(ix,iy)-ux(ix-1,iy))/dx &
-       &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (uy(ix,iy)-uy(ix,iy-1))/dy 
-
-  endfunction get_Au
-
-  real(num) function get_Av(ix,iy) 
-
-    integer, intent(in) :: ix,iy 
-    get_Av = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (vx(ix,iy)-vx(ix-1,iy))/dx &
-     &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (vy(ix,iy)-vy(ix,iy-1))/dy 
-
-  endfunction get_Av
 
   subroutine step_4
 
@@ -447,29 +407,21 @@ module advance_module
       vstar(ix,iy) = v(ix,iy) - dt * Av - dt * gradp_y(ix,iy)
 
       if (use_viscosity) then
-        !calc the vector laplacian of U here
-!        f(ix,iy) = ustar(ix,iy) + !the laplacian term
+        f(ix,iy) = ustar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,0)
       endif
 
     enddo
     enddo
   
     if (use_viscosity) then
+
       print *,'Step #4 explicit viscosity on '
       print *,'*** begin implicit solve for ustar'
-
-      do ix = 1, nx
-      do iy = 1, ny
-        f(ix,iy) = ustar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,0)
-      enddo
-      enddo    
 
       call solve_gs(phigs = ustar, f = f, &
         alpha = 1.0_num, beta = dt*visc/2.0_num, &
         & use_old_phi = .true., tol = 1e-16_num) 
 
-
-      ! do stuff
       print *,'*** begin implicit solve for vstar' 
 
       do ix = 1, nx
@@ -482,12 +434,10 @@ module advance_module
         alpha = 1.0_num, beta = dt*visc/2.0_num, &
         & use_old_phi = .true., tol = 1e-16_num) 
 
-      ! do stuff
     endif
 
     print *, 'Step #4 completed normally'
   end subroutine step_4
-
 
   subroutine step_5
 
@@ -495,7 +445,6 @@ module advance_module
 
     print *,'Step #5'
     print *, '*** start'
-!    print *, 'Warning: experimental suppresion of boundary handling'
 
     ! calc divU at cc using the star velocities which themselves are cc
     ! (this differs to step two which uses face vars to get a CC var)
@@ -522,7 +471,7 @@ module advance_module
 !    print *, '*** max divu/dt before cleaning',maxval(abs(divu))
 
 
-    call phi_bcs !new, needed now phi and phigs can be different 
+    call phi_bcs
 
     do iy = 1, ny
     do ix = 1, nx
@@ -541,6 +490,7 @@ module advance_module
     ! calculate the divergence of the updated velocity field
 
     call velocity_bcs
+
     do iy = 1, ny
     do ix = 1, nx
       divu(ix,iy) = (u(ix+1,iy) - u(ix-1,iy))/dx/2.0_num &
@@ -615,6 +565,45 @@ module advance_module
       upwind = 0.5_num * (a + b)
     endif
   end function upwind
+
+  real(num) function get_LU_cc(ix,iy,dimen) ! calculate vector laplacian at a coordinate
+    integer, intent(in) :: ix, iy, dimen
+
+    if (dimen == 0) then
+
+      get_LU_cc = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
+         (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
+
+    else if (dimen == 1) then
+
+      get_LU_cc = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
+         (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
+    else 
+
+      print *,'error: get_LU_cc (calc vector laplacian) not given valid dimension'
+      print *,'dimen = 0 (x) or =1 (y)'
+      print *,'Terminating early'
+      STOP
+
+    endif
+
+  endfunction get_LU_cc
+
+  real(num) function get_Au(ix,iy) 
+
+    integer, intent(in) :: ix,iy 
+    get_Au = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (ux(ix,iy)-ux(ix-1,iy))/dx &
+       &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (uy(ix,iy)-uy(ix,iy-1))/dy 
+
+  endfunction get_Au
+
+  real(num) function get_Av(ix,iy) 
+
+    integer, intent(in) :: ix,iy 
+    get_Av = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (vx(ix,iy)-vx(ix-1,iy))/dx &
+     &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (vy(ix,iy)-vy(ix,iy-1))/dy 
+
+  endfunction get_Av
 
 end module advance_module
 

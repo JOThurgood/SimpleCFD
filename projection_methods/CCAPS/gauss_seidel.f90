@@ -22,7 +22,7 @@ module gauss_seidel
     logical :: gsrb=.true. !hidden option
 
     real(num) :: L2, L2_old !norms
-    real(num) :: L_phi !lagrangian of phi
+    real(num) :: L_phi !laplacian of phi
     integer :: maxir = 100000000
     integer :: ir = 0 
     logical :: verbose=.false. 

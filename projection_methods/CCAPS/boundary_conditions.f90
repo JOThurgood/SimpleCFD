@@ -14,41 +14,49 @@ module boundary_conditions
     ! Currently hard-coded as doubly-periodic
     ! (this is suitable for the test problems)
 
-    u(0,:) = u(nx,:)
-    u(-1,:) = u(nx-1,:)
-    u(nx+1,:) = u(1,:)
-    u(nx+2,:) = u(2,:)
-    u(:,0) = u(:,ny)
-    u(:,-1) = u(:,ny-1)
-    u(:,ny+1) = u(:,1)
-    u(:,ny+2) = u(:,2)
+    if (bc_xmin == periodic) then
+      u(0,:) = u(nx,:)
+      u(-1,:) = u(nx-1,:)
+      v(0,:) = v(nx,:)
+      v(-1,:) = v(nx-1,:)
+      ustar(0,:) = ustar(nx,:)
+      ustar(-1,:) = ustar(nx-1,:)
+      vstar(0,:) = vstar(nx,:)
+      vstar(-1,:) = vstar(nx-1,:)
+    endif 
 
-    v(0,:) = v(nx,:)
-    v(-1,:) = v(nx-1,:)
-    v(nx+1,:) = v(1,:)
-    v(nx+2,:) = v(2,:)
-    v(:,0) = v(:,ny)
-    v(:,-1) = v(:,ny-1)
-    v(:,ny+1) = v(:,1)
-    v(:,ny+2) = v(:,2)
+    if (bc_xmax == periodic) then
+      u(nx+1,:) = u(1,:)
+      u(nx+2,:) = u(2,:)
+      v(nx+1,:) = v(1,:)
+      v(nx+2,:) = v(2,:)
+      ustar(nx+1,:) = ustar(1,:)
+      ustar(nx+2,:) = ustar(2,:)
+      vstar(nx+1,:) = vstar(1,:)
+      vstar(nx+2,:) = vstar(2,:)
+    endif
 
-    ustar(0,:) = ustar(nx,:)
-    ustar(-1,:) = ustar(nx-1,:)
-    ustar(nx+1,:) = ustar(1,:)
-    ustar(nx+2,:) = ustar(2,:)
-    ustar(:,0) = ustar(:,ny)
-    ustar(:,-1) = ustar(:,ny-1)
-    ustar(:,ny+1) = ustar(:,1)
-    ustar(:,ny+2) = ustar(:,2)
+    if (bc_ymin == periodic) then 
+      u(:,0) = u(:,ny)
+      u(:,-1) = u(:,ny-1)
+      v(:,0) = v(:,ny)
+      v(:,-1) = v(:,ny-1)
+      ustar(:,0) = ustar(:,ny)
+      ustar(:,-1) = ustar(:,ny-1)
+      vstar(:,0) = vstar(:,ny)
+      vstar(:,-1) = vstar(:,ny-1)
+    endif
 
-    vstar(0,:) = vstar(nx,:)
-    vstar(-1,:) = vstar(nx-1,:)
-    vstar(nx+1,:) = vstar(1,:)
-    vstar(nx+2,:) = vstar(2,:)
-    vstar(:,0) = vstar(:,ny)
-    vstar(:,-1) = vstar(:,ny-1)
-    vstar(:,ny+1) = vstar(:,1)
-    vstar(:,ny+2) = vstar(:,2)
+    if (bc_ymax == periodic) then
+      u(:,ny+1) = u(:,1)
+      u(:,ny+2) = u(:,2)
+      v(:,ny+1) = v(:,1)
+      v(:,ny+2) = v(:,2)
+      ustar(:,ny+1) = ustar(:,1)
+      ustar(:,ny+2) = ustar(:,2)
+      vstar(:,ny+1) = vstar(:,1)
+      vstar(:,ny+2) = vstar(:,2)
+    endif 
 
   end subroutine velocity_bcs
 

@@ -15,7 +15,6 @@ module advance_module
 
   subroutine advance_dt 
 
-
     call set_dt 
 
     call step_1 ! Calculate time-centered normal velocities on the interfaces
@@ -405,11 +404,6 @@ module advance_module
       Av = get_Av(ix,iy) 
       ustar(ix,iy) = u(ix,iy) - dt * Au - dt * gradp_x(ix,iy)
       vstar(ix,iy) = v(ix,iy) - dt * Av - dt * gradp_y(ix,iy)
-
-      if (use_viscosity) then
-        f(ix,iy) = ustar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,0)
-      endif
-
     enddo
     enddo
   
@@ -417,6 +411,12 @@ module advance_module
 
       print *,'Step #4 explicit viscosity on '
       print *,'*** begin implicit solve for ustar'
+
+      do ix = 1, nx
+      do iy = 1, ny
+        f(ix,iy) = ustar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,0)
+      enddo
+      enddo    
 
       call solve_gs(phigs = ustar, f = f, &
         alpha = 1.0_num, beta = dt*visc/2.0_num, &

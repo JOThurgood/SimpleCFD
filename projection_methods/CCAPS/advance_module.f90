@@ -274,7 +274,10 @@ module advance_module
 !    call plot_divergence_now
 !    if (step /=0) call plot_divergence_now
 
-    call solve_gs(use_old_phi=.false.,tol=1e-18_num)
+! old call 
+!    call solve_gs(use_old_phi=.false.,tol=1e-18_num)
+    call solve_gs(f = divu(1:nx,1:ny), alpha = 0.0_num, beta = -1.0_num, &
+      & use_old_phi = .false., tol = 1e-18_num) 
 
     print *, '*** max divu before cleaning',maxval(abs(divu))
 
@@ -382,7 +385,10 @@ module advance_module
 
     divu = divu/dt
 
-    call solve_gs(use_old_phi = .true., tol=1e-16_num)
+    call solve_gs(f = divu(1:nx,1:ny), alpha = 0.0_num, beta = -1.0_num, &
+      & use_old_phi = .true., tol = 1e-16_num) 
+! old 
+!    call solve_gs(use_old_phi = .true., tol=1e-16_num)
 
     print *, '*** max divu before cleaning',maxval(abs(divu)*dt)
 !    print *, '*** max divu/dt before cleaning',maxval(abs(divu))

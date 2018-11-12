@@ -329,9 +329,8 @@ module advance_module
 !    call plot_divergence_now
 !    if (step /=0) call plot_divergence_now
 
-! old call 
-!    call solve_gs(use_old_phi=.false.,tol=1e-18_num)
-    call solve_gs(f = divu(1:nx,1:ny), alpha = 0.0_num, beta = -1.0_num, &
+    call solve_gs(phigs = phi, f = divu(1:nx,1:ny), &
+      & alpha = 0.0_num, beta = -1.0_num, &
       & use_old_phi = .false., tol = 1e-18_num) 
 
     print *, '*** max divu before cleaning',maxval(abs(divu))
@@ -432,7 +431,7 @@ module advance_module
 
       if (use_viscosity) then
         !calc the vector laplacian of U here
-        f(ix,iy) = ustar(ix,iy) + !the laplacian term
+!        f(ix,iy) = ustar(ix,iy) + !the laplacian term
       endif
 
     enddo
@@ -475,13 +474,15 @@ module advance_module
 
     divu = divu/dt
 
-    call solve_gs(f = divu(1:nx,1:ny), alpha = 0.0_num, beta = -1.0_num, &
+    call solve_gs(phigs = phi, f = divu(1:nx,1:ny), &
+      alpha = 0.0_num, beta = -1.0_num, &
       & use_old_phi = .true., tol = 1e-16_num) 
-! old 
-!    call solve_gs(use_old_phi = .true., tol=1e-16_num)
 
     print *, '*** max divu before cleaning',maxval(abs(divu)*dt)
 !    print *, '*** max divu/dt before cleaning',maxval(abs(divu))
+
+
+    call phi_bcs !new, needed now phi and phigs can be different 
 
     do iy = 1, ny
     do ix = 1, nx

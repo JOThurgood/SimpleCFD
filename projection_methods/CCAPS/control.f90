@@ -32,6 +32,10 @@ module control
 
     use_minmod = .false.    
 
+    use_viscosity = .false.
+
+    visc = 0.0_num
+
   end subroutine user_control
 
 

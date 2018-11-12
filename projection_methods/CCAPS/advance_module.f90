@@ -397,27 +397,61 @@ module advance_module
     print *, 'Step #3 completed normally'
   end subroutine step_3
 
+  real(num) function get_Au(ix,iy) 
+
+    integer, intent(in) :: ix,iy 
+    get_Au = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (ux(ix,iy)-ux(ix-1,iy))/dx &
+       &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (uy(ix,iy)-uy(ix,iy-1))/dy 
+
+  endfunction get_Au
+
+  real(num) function get_Av(ix,iy) 
+
+    integer, intent(in) :: ix,iy 
+    get_Av = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (vx(ix,iy)-vx(ix-1,iy))/dx &
+     &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (vy(ix,iy)-vy(ix,iy-1))/dy 
+
+  endfunction get_Av
+
   subroutine step_4
 
     real(num) :: Au, Av ! evaluation of advection term
 
+    real(num) :: LU
+    real(num),dimension(1:nx,1:ny) :: f !viscous only
+
     if (use_viscosity) then
 
-      print ***,'explicit viscosity on'
+      print *, '*** explicit viscosity on'
 
-      print ***,'begin implicit solve for ustar'
+      print *,'*** begin implicit solve for ustar'
 
-      print ***,'begin implicit solve for vstar'
+      do ix = 1, nx
+      do iy = 1, ny
+!        f(ix,iy) = u(ix,iy) + 0.5_num * dt * visc * LU + 
+      enddo
+      enddo
+
+
+!      call solve_gs(f = f, 
+!        & alpha = 1.0_num, beta = dt * visc / 2.0_num, &
+!        & use_old_phi = .true., tol = 1e-16_num) 
+
+
+      print *,'*** begin implicit solve for vstar'
 
 
     else ! inviscid -> direct flux update
   
       do iy = 1, ny
       do ix = 1, nx
-        Au = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (ux(ix,iy)-ux(ix-1,iy))/dx &
-          &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (uy(ix,iy)-uy(ix,iy-1))/dy 
-        Av = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (vx(ix,iy)-vx(ix-1,iy))/dx &
-          &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (vy(ix,iy)-vy(ix,iy-1))/dy 
+
+        Au = get_Au(ix,iy)
+        Av = get_Av(ix,iy) 
+!        Au = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (ux(ix,iy)-ux(ix-1,iy))/dx &
+!          &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (uy(ix,iy)-uy(ix,iy-1))/dy 
+!        Av = 0.5_num * (macu(ix-1,iy)+macu(ix,iy)) * (vx(ix,iy)-vx(ix-1,iy))/dx &
+!          &+ 0.5_num * (macv(ix,iy-1)+macv(ix,iy)) * (vy(ix,iy)-vy(ix,iy-1))/dy 
         ustar(ix,iy) = u(ix,iy) - dt * Au - dt * gradp_x(ix,iy)
         vstar(ix,iy) = v(ix,iy) - dt * Av - dt * gradp_y(ix,iy)
       enddo

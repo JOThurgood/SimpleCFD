@@ -430,12 +430,20 @@ module advance_module
       ustar(ix,iy) = u(ix,iy) - dt * Au - dt * gradp_x(ix,iy)
       vstar(ix,iy) = v(ix,iy) - dt * Av - dt * gradp_y(ix,iy)
 
-
+      if (use_viscosity) then
+        !calc the vector laplacian of U here
+        f(ix,iy) = ustar(ix,iy) + !the laplacian term
+      endif
 
     enddo
     enddo
   
     if (use_viscosity) then
+      print *,'*** explicit viscosity on'
+      print *,'*** begin implicit solve for ustar'
+      ! do stuff
+      print *,'*** begin implicit solve for vstar' 
+      ! do stuff
     endif
 
     print *, 'Step #4 completed normally'

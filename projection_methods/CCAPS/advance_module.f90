@@ -37,6 +37,7 @@ module advance_module
     real(num) :: gp
     real(num) :: du, dv
     real(num) :: transv
+    real(num) :: LU_l, LU_r ! vector laplacian of U left/right - for viscous forcing 
 
     ! 1 - Calculate the advective velocities
 
@@ -223,6 +224,60 @@ module advance_module
      endif
     enddo
     enddo
+
+    ! also include viscous forcing if using viscosity
+
+    if (use_viscosity) then
+
+      do ix = 0, nx
+      do iy = 0, ny
+        if (iy /=0 ) then ! x faces
+
+          ! vector laplacian in cartesians L(U) = (L u_x, L u_y, L u_z)
+          ! x component, in cell centers to left and right of interface
+          LU_l = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
+            & (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
+          LU_r = (u(ix+2,iy) - 2.0_num*u(ix+1,iy) + u(ix,iy)) / dx**2 + & 
+            & (u(ix+1,iy+1) - 2.0_num*u(ix+1,iy) + u(ix+1,iy-1)) / dy**2 
+  
+          uxl(ix,iy) = uxl(ix,iy) + 0.5_num * dt * visc * LU_l 
+          uxr(ix,iy) = uxr(ix,iy) + 0.5_num * dt * visc * LU_r 
+  
+          ! vector laplacian of y component
+  
+          LU_l = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
+            & (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
+          LU_r = (v(ix+2,iy) - 2.0_num*v(ix+1,iy) + v(ix,iy)) / dx**2 + & 
+            & (v(ix+1,iy+1) - 2.0_num*v(ix+1,iy) + v(ix+1,iy-1)) / dy**2 
+
+          vxl(ix,iy) = vxl(ix,iy) + 0.5_num * dt * visc * LU_l
+          vxr(ix,iy) = vxr(ix,iy) + 0.5_num * dt * visc * LU_r
+  
+  
+        endif
+        if (ix /=0) then ! yfaces
+
+          !_l and _r is now vector laplacian at cc "below" and "above" y face
+          LU_l = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
+            & (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
+          LU_r = (u(ix+1,iy+1) - 2.0_num*u(ix,iy+1) + u(ix-1,iy+1)) / dx**2 + & 
+            & (u(ix,iy+2) - 2.0_num*u(ix,iy+1) + u(ix,iy)) / dy**2 
+  
+          uyl(ix,iy) = uyl(ix,iy) + 0.5_num * dt * visc * LU_l
+          uyr(ix,iy) = uyr(ix,iy) + 0.5_num * dt * visc * LU_r
+
+          LU_l = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
+            & (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
+          LU_r = (v(ix+1,iy+1) - 2.0_num*v(ix,iy+1) + v(ix-1,iy+1)) / dx**2 + & 
+            & (v(ix,iy+2) - 2.0_num*v(ix,iy+1) + v(ix,iy)) / dy**2 
+  
+          vyl(ix,iy) = vyl(ix,iy) + 0.5_num * dt * visc * LU_l
+          vyr(ix,iy) = vyr(ix,iy) + 0.5_num * dt * visc * LU_r
+
+        endif
+      enddo
+      enddo
+    endif
 
 
     ! 1E Final riemann solve + upwinding for full normal velocities 

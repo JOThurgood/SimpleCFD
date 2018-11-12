@@ -235,20 +235,27 @@ module advance_module
 
           ! vector laplacian in cartesians L(U) = (L u_x, L u_y, L u_z)
           ! x component, in cell centers to left and right of interface
-          LU_l = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
-            & (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
-          LU_r = (u(ix+2,iy) - 2.0_num*u(ix+1,iy) + u(ix,iy)) / dx**2 + & 
-            & (u(ix+1,iy+1) - 2.0_num*u(ix+1,iy) + u(ix+1,iy-1)) / dy**2 
+!!!          LU_l = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
+!!!            & (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
+!!!          LU_r = (u(ix+2,iy) - 2.0_num*u(ix+1,iy) + u(ix,iy)) / dx**2 + & 
+!!!            & (u(ix+1,iy+1) - 2.0_num*u(ix+1,iy) + u(ix+1,iy-1)) / dy**2 
+
+          LU_l = get_LU_cc(ix,iy,0)
+          LU_r = get_LU_cc(ix+1,iy,0) 
   
           uxl(ix,iy) = uxl(ix,iy) + 0.5_num * dt * visc * LU_l 
           uxr(ix,iy) = uxr(ix,iy) + 0.5_num * dt * visc * LU_r 
   
           ! vector laplacian of y component
   
-          LU_l = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
-            & (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
-          LU_r = (v(ix+2,iy) - 2.0_num*v(ix+1,iy) + v(ix,iy)) / dx**2 + & 
-            & (v(ix+1,iy+1) - 2.0_num*v(ix+1,iy) + v(ix+1,iy-1)) / dy**2 
+!!!          LU_l = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
+!!!            & (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
+!!!          LU_r = (v(ix+2,iy) - 2.0_num*v(ix+1,iy) + v(ix,iy)) / dx**2 + & 
+!!!            & (v(ix+1,iy+1) - 2.0_num*v(ix+1,iy) + v(ix+1,iy-1)) / dy**2 
+
+          LU_l = get_LU_cc(ix,iy,1)
+          LU_r = get_LU_cc(ix+1,iy,1)
+
 
           vxl(ix,iy) = vxl(ix,iy) + 0.5_num * dt * visc * LU_l
           vxr(ix,iy) = vxr(ix,iy) + 0.5_num * dt * visc * LU_r
@@ -258,19 +265,25 @@ module advance_module
         if (ix /=0) then ! yfaces
 
           !_l and _r is now vector laplacian at cc "below" and "above" y face
-          LU_l = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
-            & (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
-          LU_r = (u(ix+1,iy+1) - 2.0_num*u(ix,iy+1) + u(ix-1,iy+1)) / dx**2 + & 
-            & (u(ix,iy+2) - 2.0_num*u(ix,iy+1) + u(ix,iy)) / dy**2 
+!!!          LU_l = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
+!!!            & (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
+!!!          LU_r = (u(ix+1,iy+1) - 2.0_num*u(ix,iy+1) + u(ix-1,iy+1)) / dx**2 + & 
+!!!            & (u(ix,iy+2) - 2.0_num*u(ix,iy+1) + u(ix,iy)) / dy**2 
   
+          LU_l = get_LU_cc(ix,iy,0)
+          LU_r = get_LU_cc(ix,iy+1,0) 
+
           uyl(ix,iy) = uyl(ix,iy) + 0.5_num * dt * visc * LU_l
           uyr(ix,iy) = uyr(ix,iy) + 0.5_num * dt * visc * LU_r
 
-          LU_l = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
-            & (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
-          LU_r = (v(ix+1,iy+1) - 2.0_num*v(ix,iy+1) + v(ix-1,iy+1)) / dx**2 + & 
-            & (v(ix,iy+2) - 2.0_num*v(ix,iy+1) + v(ix,iy)) / dy**2 
+!!!          LU_l = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
+!!!            & (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
+!!!          LU_r = (v(ix+1,iy+1) - 2.0_num*v(ix,iy+1) + v(ix-1,iy+1)) / dx**2 + & 
+!!!            & (v(ix,iy+2) - 2.0_num*v(ix,iy+1) + v(ix,iy)) / dy**2 
   
+          LU_l = get_LU_cc(ix,iy,1)
+          LU_r = get_LU_cc(ix,iy+1,1)
+
           vyl(ix,iy) = vyl(ix,iy) + 0.5_num * dt * visc * LU_l
           vyr(ix,iy) = vyr(ix,iy) + 0.5_num * dt * visc * LU_r
 
@@ -310,6 +323,29 @@ module advance_module
     print *, 'Step #1 completed normally'
 
   end subroutine step_1
+
+  real(num) function get_LU_cc(ix,iy,dimen) ! calculate vector laplacian at a coordinate
+    integer, intent(in) :: ix, iy, dimen
+
+    if (dimen == 0) then
+
+      get_LU_cc = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
+         (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
+
+    else if (dimen == 1) then
+
+      get_LU_cc = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
+         (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
+    else 
+
+      print *,'error: get_LU_cc (calc vector laplacian) not given valid dimension'
+      print *,'dimen = 0 (x) or =1 (y)'
+      print *,'Terminating early'
+      STOP
+
+    endif
+
+  endfunction get_LU_cc
   
   subroutine step_2
 
@@ -416,7 +452,6 @@ module advance_module
 
     real(num) :: Au, Av ! evaluation of advection term
 
-    real(num) :: LU
     real(num),dimension(1:nx,1:ny) :: f !viscous only
 
     ! do inviscid calculation first since the terms
@@ -438,10 +473,33 @@ module advance_module
     enddo
   
     if (use_viscosity) then
-      print *,'*** explicit viscosity on'
+      print *,'Step #4 explicit viscosity on '
       print *,'*** begin implicit solve for ustar'
+
+      do ix = 1, nx
+      do iy = 1, ny
+        f(ix,iy) = ustar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,0)
+      enddo
+      enddo    
+
+      call solve_gs(phigs = ustar, f = f, &
+        alpha = 1.0_num, beta = dt*visc/2.0_num, &
+        & use_old_phi = .true., tol = 1e-16_num) 
+
+
       ! do stuff
       print *,'*** begin implicit solve for vstar' 
+
+      do ix = 1, nx
+      do iy = 1, ny
+        f(ix,iy) = vstar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,1)
+      enddo
+      enddo    
+
+      call solve_gs(phigs = vstar, f = f, &
+        alpha = 1.0_num, beta = dt*visc/2.0_num, &
+        & use_old_phi = .true., tol = 1e-16_num) 
+
       ! do stuff
     endif
 

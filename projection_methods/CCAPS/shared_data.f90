@@ -49,7 +49,14 @@ module shared_data
 
   real(num), dimension(:,:), allocatable :: gradp_x, gradp_y ! pressure gradient, cc
 
-  !viscosity
+  ! boundaries
+
+  integer, parameter :: periodic = 0
+  integer, parameter :: noslip = 1
+
+  integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
+
+  ! viscosity
 
   logical :: use_viscosity = .false.
   real(num) :: visc = 0.0_num

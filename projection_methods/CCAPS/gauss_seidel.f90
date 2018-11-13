@@ -149,6 +149,24 @@ module gauss_seidel
       phigs(:,ny+2) = phigs(:,2)
     endif
 
+    ! Zero gradient
+
+    if (bc_xmin == zero_gradient) then
+      phigs(0,:) = phigs(1,:)
+      phigs(-1,:) = phigs(2,:)
+    endif
+    if (bc_xmax == zero_gradient) then
+      phigs(nx+1,:) = phigs(nx,:)
+      phigs(nx+2,:) = phigs(nx-1,:)
+    endif
+    if (bc_ymin == zero_gradient) then
+      phigs(:,0) = phigs(:,1)
+      phigs(:,-1) = phigs(:,2)
+    endif
+    if (bc_ymax == zero_gradient) then
+      phigs(:,ny+1) = phigs(:,ny)
+      phigs(:,ny+2) = phigs(:,ny-1)
+    endif
   end subroutine phigs_bcs
 
 end module gauss_seidel

@@ -129,14 +129,22 @@ module boundary_conditions
 
   subroutine phi_bcs
 
-    phi(0,:) = phi(nx,:)
-    phi(-1,:) = phi(nx-1,:)
-    phi(nx+1,:) = phi(1,:)
-    phi(nx+2,:) = phi(2,:)
-    phi(:,0) = phi(:,ny)
-    phi(:,-1) = phi(:,ny-1)
-    phi(:,ny+1) = phi(:,1)
-    phi(:,ny+2) = phi(:,2)
+    if (bc_xmin == periodic) then
+      phi(0,:) = phi(nx,:)
+      phi(-1,:) = phi(nx-1,:)
+    endif
+    if (bc_xmax == periodic) then
+      phi(nx+1,:) = phi(1,:)
+      phi(nx+2,:) = phi(2,:)
+    endif
+    if (bc_ymin == periodic) then
+      phi(:,0) = phi(:,ny)
+      phi(:,-1) = phi(:,ny-1)
+    endif
+    if (bc_ymax == periodic) then
+      phi(:,ny+1) = phi(:,1)
+      phi(:,ny+2) = phi(:,2)
+    endif
 
   end subroutine phi_bcs
 

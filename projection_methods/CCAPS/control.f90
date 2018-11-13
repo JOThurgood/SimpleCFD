@@ -36,6 +36,11 @@ module control
 
     visc = 0.0_num
 
+    bc_xmin = periodic
+    bc_xmax = periodic
+    bc_ymin = periodic
+    bc_ymax = periodic
+
   end subroutine user_control
 
 

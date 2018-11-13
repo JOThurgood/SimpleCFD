@@ -11,8 +11,8 @@ module boundary_conditions
   contains
 
   subroutine velocity_bcs
-    ! Currently hard-coded as doubly-periodic
-    ! (this is suitable for the test problems)
+
+    ! Periodic
 
     if (bc_xmin == periodic) then
       u(0,:) = u(nx,:)
@@ -57,6 +57,29 @@ module boundary_conditions
       vstar(:,ny+1) = vstar(:,1)
       vstar(:,ny+2) = vstar(:,2)
     endif 
+
+    ! Zero gradient
+    if (bc_xmin == zero_gradient) then
+      u(0,:) = u(1,:) 
+      u(-1,:) = u(2,:)
+      v(0,:) = v(1,:)
+      v(-1,:) = v(2,:)
+      ustar(0,:) = ustar(1,:)
+      ustar(-1,:) = ustar(2,:)
+      vstar(0,:) = vstar(1,:)
+      vstar(-1,:) = vstar(2,:)
+    endif
+    if (bc_xmax == zero_gradient) then
+
+    endif
+    if (bc_ymin == zero_gradient) then
+
+    endif
+    if (bc_ymax == zero_gradient) then
+
+    endif
+
+    ! No slip (u = v = 0 on the face) 
 
   end subroutine velocity_bcs
 

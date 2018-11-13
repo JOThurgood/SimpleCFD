@@ -69,9 +69,18 @@ module boundary_conditions
       vstar(0,:) = vstar(1,:)
       vstar(-1,:) = vstar(2,:)
     endif
-    if (bc_xmax == zero_gradient) then
 
+    if (bc_xmax == zero_gradient) then
+      u(nx+1,:) = u(nx,:)
+      u(nx+2,:) = u(nx-1,:)
+      v(nx+1,:) = v(nx,:)
+      v(nx+2,:) = v(nx-1,:)
+      ustar(nx+1,:) = ustar(nx,:)
+      ustar(nx+2,:) = ustar(nx-1,:)
+      vstar(nx+1,:) = vstar(nx,:)
+      vstar(nx+2,:) = vstar(nx-1,:)
     endif
+
     if (bc_ymin == zero_gradient) then
 
     endif

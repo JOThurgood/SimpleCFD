@@ -150,24 +150,33 @@ module boundary_conditions
 
   subroutine gradp_bcs
 
-    gradp_x(0,:) = gradp_x(nx,:)
-    gradp_x(-1,:) = gradp_x(nx-1,:)
-    gradp_x(nx+1,:) = gradp_x(1,:)
-    gradp_x(nx+2,:) = gradp_x(2,:)
-    gradp_x(:,0) = gradp_x(:,ny)
-    gradp_x(:,-1) = gradp_x(:,ny-1)
-    gradp_x(:,ny+1) = gradp_x(:,1)
-    gradp_x(:,ny+2) = gradp_x(:,2)
+    if (bc_xmin == periodic) then
+      gradp_x(0,:) = gradp_x(nx,:)
+      gradp_x(-1,:) = gradp_x(nx-1,:)
+      gradp_y(0,:) = gradp_y(nx,:)
+      gradp_y(-1,:) = gradp_y(nx-1,:)
+    endif
 
-    gradp_y(0,:) = gradp_y(nx,:)
-    gradp_y(-1,:) = gradp_y(nx-1,:)
-    gradp_y(nx+1,:) = gradp_y(1,:)
-    gradp_y(nx+2,:) = gradp_y(2,:)
-    gradp_y(:,0) = gradp_y(:,ny)
-    gradp_y(:,-1) = gradp_y(:,ny-1)
-    gradp_y(:,ny+1) = gradp_y(:,1)
-    gradp_y(:,ny+2) = gradp_y(:,2)
+    if (bc_xmax == periodic) then
+      gradp_x(nx+1,:) = gradp_x(1,:)
+      gradp_x(nx+2,:) = gradp_x(2,:)
+      gradp_y(nx+1,:) = gradp_y(1,:)
+      gradp_y(nx+2,:) = gradp_y(2,:)
+    endif
 
+    if (bc_ymin == periodic) then
+      gradp_x(:,0) = gradp_x(:,ny)
+      gradp_x(:,-1) = gradp_x(:,ny-1)
+      gradp_y(:,0) = gradp_y(:,ny)
+      gradp_y(:,-1) = gradp_y(:,ny-1)
+    endif
+
+    if (bc_ymin == periodic) then
+      gradp_x(:,ny+1) = gradp_x(:,1)
+      gradp_x(:,ny+2) = gradp_x(:,2)
+      gradp_y(:,ny+1) = gradp_y(:,1)
+      gradp_y(:,ny+2) = gradp_y(:,2)
+    endif
   end subroutine gradp_bcs
 
 

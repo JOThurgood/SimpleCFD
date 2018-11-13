@@ -160,18 +160,18 @@ module boundary_conditions
     endif
 
     if (bc_ymax == periodic) then
-      uha(:,nx+1) = uha(:,1)
-      uha(:,nx+2) = uha(:,2)
-      vha(:,nx+1) = vha(:,1)
-      vha(:,nx+2) = vha(:,2)
-      uhx(:,nx+1) = uhx(:,1)
-      uhx(:,nx+2) = uhx(:,2)
-      vhx(:,nx+1) = vhx(:,1)
-      vhx(:,nx+2) = vhx(:,2)
-      uhy(:,nx+1) = uhy(:,1)
-      uhy(:,nx+2) = uhy(:,2)
-      vhy(:,nx+1) = vhy(:,1)
-      vhy(:,nx+2) = vhy(:,2)
+      uha(:,ny+1) = uha(:,1)
+      uha(:,ny+2) = uha(:,2)
+      vha(:,ny+1) = vha(:,1)
+      vha(:,ny+2) = vha(:,2)
+      uhx(:,ny+1) = uhx(:,1)
+      uhx(:,ny+2) = uhx(:,2)
+      vhx(:,ny+1) = vhx(:,1)
+      vhx(:,ny+2) = vhx(:,2)
+      uhy(:,ny+1) = uhy(:,1)
+      uhy(:,ny+2) = uhy(:,2)
+      vhy(:,ny+1) = vhy(:,1)
+      vhy(:,ny+2) = vhy(:,2)
     endif
 
     ! Zero gradient 

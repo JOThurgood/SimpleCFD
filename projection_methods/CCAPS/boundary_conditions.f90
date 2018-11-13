@@ -176,6 +176,8 @@ module boundary_conditions
 
   subroutine phi_bcs
 
+    !Periodic 
+
     if (bc_xmin == periodic) then
       phi(0,:) = phi(nx,:)
       phi(-1,:) = phi(nx-1,:)
@@ -191,6 +193,25 @@ module boundary_conditions
     if (bc_ymax == periodic) then
       phi(:,ny+1) = phi(:,1)
       phi(:,ny+2) = phi(:,2)
+    endif
+
+    ! Zero gradient
+
+    if (bc_xmin == zero_gradient) then
+      phi(0,:) = phi(1,:)
+      phi(-1,:) = phi(2,:)
+    endif
+    if (bc_xmax == zero_gradient) then
+      phi(nx+1,:) = phi(nx,:)
+      phi(nx+2,:) = phi(nx-1,:)
+    endif
+    if (bc_ymin == zero_gradient) then
+      phi(:,0) = phi(:,1)
+      phi(:,-1) = phi(:,2)
+    endif
+    if (bc_ymax == zero_gradient) then
+      phi(:,ny+1) = phi(:,ny)
+      phi(:,ny+2) = phi(:,ny-1)
     endif
 
   end subroutine phi_bcs

@@ -105,12 +105,58 @@ module boundary_conditions
 
     ! No slip (u = v = 0 on the face) 
 
+    if (bc_xmin == no_slip) then
+      u(0,:) = -u(1,:) 
+      u(-1,:) = -u(2,:)
+      v(0,:) = -v(1,:)
+      v(-1,:) = -v(2,:)
+      ustar(0,:) = -ustar(1,:)
+      ustar(-1,:) =- ustar(2,:)
+      vstar(0,:) = -vstar(1,:)
+      vstar(-1,:) = -vstar(2,:)
+    endif
+
+    if (bc_xmax == no_slip) then
+      u(nx+1,:) = -u(nx,:)
+      u(nx+2,:) = -u(nx-1,:)
+      v(nx+1,:) = -v(nx,:)
+      v(nx+2,:) = -v(nx-1,:)
+      ustar(nx+1,:) = -ustar(nx,:)
+      ustar(nx+2,:) = -ustar(nx-1,:)
+      vstar(nx+1,:) = -vstar(nx,:)
+      vstar(nx+2,:) = -vstar(nx-1,:)
+    endif
+
+    if (bc_ymin == no_slip) then
+      u(:,0) = -u(:,1)
+      u(:,-1) = -u(:,2)
+      v(:,0) = -v(:,1)
+      v(:,-1) = -v(:,2)
+      ustar(:,0) = -ustar(:,1)
+      ustar(:,-1) = -ustar(:,2)
+      vstar(:,0) = -vstar(:,1)
+      vstar(:,-1) = -vstar(:,2)
+    endif
+
+    if (bc_ymax == no_slip) then
+      u(:,ny+1) = -u(:,ny)
+      u(:,ny+2) = -u(:,ny-1)
+      v(:,ny+1) = -v(:,ny)
+      v(:,ny+2) = -v(:,ny-1)
+      ustar(:,ny+1) = -ustar(:,ny)
+      ustar(:,ny+2) = -ustar(:,ny-1)
+      vstar(:,ny+1) = -vstar(:,ny)
+      vstar(:,ny+2) = -vstar(:,ny-1)
+    endif
+
   end subroutine velocity_bcs
 
   subroutine velocity_face_bcs 
 
     ! uha is x faced
     ! vha is yfaced
+    ! i.e. depending on the centered-ness relative to a 
+    ! given boundary, different relationships must be used
 
     ! Periodic
 

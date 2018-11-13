@@ -4,20 +4,16 @@ module initial_conditions
   
   implicit none
 
-  private 
-
-  public :: set_ic
-
   contains
 
   subroutine set_ic ! NB: nx, t_end etc is set in control.f90
 
-    !call shear_problem
-    call minion_convergence_test
+    u = 0.0_num
+    v = 0.0_num
 
   end subroutine set_ic
 
-  subroutine shear_problem
+  subroutine shear_test_ic
 
     real(num) :: x,y, rho_s, delta_s
 
@@ -37,11 +33,11 @@ module initial_conditions
     enddo
     enddo
 
-    shear_test = .true.
-  end subroutine shear_problem
+  end subroutine shear_test_ic
 
 
-  subroutine minion_convergence_test
+  subroutine minion_test_ic
+
     real(num) :: x,y
 
     do iy = -1,ny+1
@@ -53,8 +49,6 @@ module initial_conditions
     enddo
     enddo
 
-    minion_test = .true.
-
 
     do iy = 1, ny
     do ix = 1, nx
@@ -65,8 +59,7 @@ module initial_conditions
 
     print *,'max numerical divu in ICs',maxval(abs(divu))
 
-  end subroutine minion_convergence_test
-
+  end subroutine minion_test_ic
 
   ! Helper subroutines may go here! 
 

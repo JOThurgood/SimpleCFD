@@ -323,6 +323,25 @@ module boundary_conditions
       phi(:,ny+2) = phi(:,ny-1)
     endif
 
+    ! No slip (no actually sure what is appropriate for phi at this stage?)
+
+    if (bc_xmin == no_slip) then
+      phi(0,:) = -phi(1,:)
+      phi(-1,:) = -phi(2,:)
+    endif
+    if (bc_xmax == no_slip) then
+      phi(nx+1,:) = -phi(nx,:)
+      phi(nx+2,:) = -phi(nx-1,:)
+    endif
+    if (bc_ymin == no_slip) then
+      phi(:,0) = -phi(:,1)
+      phi(:,-1) = -phi(:,2)
+    endif
+    if (bc_ymax == no_slip) then
+      phi(:,ny+1) = -phi(:,ny)
+      phi(:,ny+2) = -phi(:,ny-1)
+    endif
+
   end subroutine phi_bcs
 
   subroutine gradp_bcs

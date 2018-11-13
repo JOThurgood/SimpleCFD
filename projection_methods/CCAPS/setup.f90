@@ -18,12 +18,15 @@ module setup
 
     if (shear_test) call shear_test_control
     if (minion_test) call minion_test_control 
+    if (vortex1_test) call vortex1_test_control
 
     call allocate_global_arrays
 
     call set_ic 
     if (shear_test) call shear_test_ic
     if (minion_test) call minion_test_ic
+    if (vortex1_test) call vortex1_test_ic
+
 
 
     step = -1 !so that the bootstrap can be in the main loop (+1)
@@ -38,6 +41,7 @@ module setup
     call set_ic 
     if (shear_test) call shear_test_ic
     if (minion_test) call minion_test_ic
+    if (vortex1_test) call vortex1_test_ic
     time = 0.0_num !reset to zero important
 
   endsubroutine bootstrap

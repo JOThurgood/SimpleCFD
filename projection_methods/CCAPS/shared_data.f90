@@ -19,6 +19,7 @@ module shared_data
   logical :: use_minmod = .false. 
   logical :: shear_test = .false.
   logical :: minion_test = .false.
+  logical :: vortex1_test = .false.
 
 
   real(num), dimension(:), allocatable :: xc, xb, yc, yb

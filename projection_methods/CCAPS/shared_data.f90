@@ -52,7 +52,8 @@ module shared_data
   ! boundaries
 
   integer, parameter :: periodic = 0
-  integer, parameter :: noslip = 1
+  integer, parameter :: zero_gradient = 1
+  integer, parameter :: no_slip = 2
 
   integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
 

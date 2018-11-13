@@ -78,9 +78,22 @@ module boundary_conditions
     endif 
 
     !uha is x faced
-
+    if (bc_xmax == periodic) then
     uha(nx+1,:) = uha(1,:)
     uha(nx+2,:) = uha(2,:)
+    vha(nx+1,:) = vha(1,:)
+    vha(nx+2,:) = vha(2,:)
+    uhx(nx+1,:) = uhx(1,:)
+    uhx(nx+2,:) = uhx(2,:)
+    vhx(nx+1,:) = vhx(1,:)
+    vhx(nx+2,:) = vhx(2,:)
+    uhy(nx+1,:) = uhy(1,:)
+    uhy(nx+2,:) = uhy(2,:)
+    vhy(nx+1,:) = vhy(1,:)
+    vhy(nx+2,:) = vhy(2,:)
+
+    endif 
+
 
     uha(:,  -1) = uha(:,nx-1)
     uha(:,   0) = uha(:,nx)
@@ -88,8 +101,6 @@ module boundary_conditions
     uha(:,nx+2) = uha(:,2)
 
     ! vha is yfaced
-    vha(nx+1,:) = vha(1,:)
-    vha(nx+2,:) = vha(2,:)
 
     vha(:,nx+1) = vha(:,1)
     vha(:,nx+2) = vha(:,2)
@@ -98,16 +109,12 @@ module boundary_conditions
 
     ! other x faced vel vars
 
-    uhx(nx+1,:) = uhx(1,:)
-    uhx(nx+2,:) = uhx(2,:)
 
     uhx(:,  -1) = uhx(:,nx-1)
     uhx(:,   0) = uhx(:,nx)
     uhx(:,nx+1) = uhx(:,1)
     uhx(:,nx+2) = uhx(:,2)
 
-    vhx(nx+1,:) = vhx(1,:)
-    vhx(nx+2,:) = vhx(2,:)
 
     vhx(:,  -1) = vhx(:,nx-1)
     vhx(:,   0) = vhx(:,nx)
@@ -117,16 +124,12 @@ module boundary_conditions
 
     ! other y faced velocity vars
 
-    uhy(nx+1,:) = uhy(1,:)
-    uhy(nx+2,:) = uhy(2,:)
 
     uhy(:,nx+1) = uhy(:,1)
     uhy(:,nx+2) = uhy(:,2)
     uhy(:,  -1) = uhy(:,nx-1)
     uhy(:,  -2) = uhy(:,nx-2)
 
-    vhy(nx+1,:) = vhy(1,:)
-    vhy(nx+2,:) = vhy(2,:)
 
     vhy(:,nx+1) = vhy(:,1)
     vhy(:,nx+2) = vhy(:,2)

@@ -132,14 +132,22 @@ module gauss_seidel
 
     real(num), dimension(-1:nx+2,-1:ny+2), intent(inout) :: phigs
 
-    phigs(0,:) = phigs(nx,:)
-    phigs(-1,:) = phigs(nx-1,:)
-    phigs(nx+1,:) = phigs(1,:)
-    phigs(nx+2,:) = phigs(2,:)
-    phigs(:,0) = phigs(:,ny)
-    phigs(:,-1) = phigs(:,ny-1)
-    phigs(:,ny+1) = phigs(:,1)
-    phigs(:,ny+2) = phigs(:,2)
+    if (bc_xmin == periodic) then
+      phigs(0,:) = phigs(nx,:)
+      phigs(-1,:) = phigs(nx-1,:)
+    endif
+    if (bc_xmax == periodic) then
+      phigs(nx+1,:) = phigs(1,:)
+      phigs(nx+2,:) = phigs(2,:)
+    endif
+    if (bc_ymin == periodic) then
+      phigs(:,0) = phigs(:,ny)
+      phigs(:,-1) = phigs(:,ny-1)
+    endif
+    if (bc_ymax == periodic) then
+      phigs(:,ny+1) = phigs(:,1)
+      phigs(:,ny+2) = phigs(:,2)
+    endif
 
   end subroutine phigs_bcs
 

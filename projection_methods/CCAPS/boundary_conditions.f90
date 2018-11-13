@@ -177,6 +177,7 @@ module boundary_conditions
       gradp_y(:,ny+1) = gradp_y(:,1)
       gradp_y(:,ny+2) = gradp_y(:,2)
     endif
+
   end subroutine gradp_bcs
 
 

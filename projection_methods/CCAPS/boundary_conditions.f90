@@ -154,8 +154,8 @@ module boundary_conditions
     if (bc_ymax == driven) then
       u(:,ny+1) = 2.0_num * 1.0_num - u(:,ny)
       u(:,ny+2) = 2.0_num * 1.0_num - u(:,ny-1)
-      ustar(:,ny+1) = -ustar(:,ny)
-      ustar(:,ny+2) = -ustar(:,ny-1)
+      ustar(:,ny+1) = 2.0_num * 1.0_num - ustar(:,ny)
+      ustar(:,ny+2) = 2.0_num * 1.0_num - ustar(:,ny-1)
       !v should be as no slip
       v(:,ny+1) = -v(:,ny)
       v(:,ny+2) = -v(:,ny-1)

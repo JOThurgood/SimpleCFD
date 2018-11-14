@@ -51,5 +51,7 @@ ccaps: shared_data.o  advance_module.o setup.o control.o initial_conditions.o \
 
 cleanmods:
 	rm -rf *.o *.mod *.MOD *.dSYM *.dat
-clean:  cleanmods
-	rm -f *~ $(PROGRAMS) *.png
+cleanout: 
+	rm -rf output
+clean:  cleanmods 
+	rm -f *~ $(PROGRAMS) *.png output/*png

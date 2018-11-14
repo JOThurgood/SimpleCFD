@@ -38,9 +38,10 @@ module control
     ! This will also cause any nitial_condition set to be ignored in
     ! favour of the specific problems
 
-    shear_test = .false.
-    minion_test = .false. 
-    vortex1_test = .true.
+!    shear_test = .false.
+!    minion_test = .false. 
+!    vortex1_test = .true.
+    drivenlid_test = .true.
     ! DONT set more than one of the above true
 
   end subroutine user_control
@@ -104,6 +105,25 @@ module control
     bc_ymin = no_slip
     bc_ymax = no_slip
   end subroutine vortex1_test_control
+
+  subroutine driven_lid_control
+    x_min = 0.0_num
+    x_max = 1.0_num
+    y_min = x_min
+    y_max = x_max
+    nx = 32 
+    ny = nx
+    CFL = 1.0_num
+    t_end = 100.0_num  
+    nsteps = -1
+    use_minmod = .false.    
+    use_viscosity = .true.
+    visc = 1e-3_num
+    bc_xmin = no_slip
+    bc_xmax = no_slip
+    bc_ymin = no_slip
+    bc_ymax = driven
+  end subroutine driven_lid_control
 
 
 end module control 

@@ -103,5 +103,13 @@ module initial_conditions
   end subroutine vortex1_test_ic
   ! Helper subroutines may go here! 
 
+  subroutine driven_lid_ic
+
+    u = 0.0_num
+    v = 0.0_num
+
+  end subroutine driven_lid_ic
+
+
 end module initial_conditions
 

@@ -25,9 +25,11 @@ program ccaps
     call advance_dt
     if ( step ==0 ) call bootstrap 
 
-    !special diagnostics
+    ! special diagnostics
     if (minion_test) call test_minion
 
+    ! periodic dumps 
+    if (modulo(step,25) == 0) call sln_plots
   
   enddo 
 

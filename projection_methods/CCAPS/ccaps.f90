@@ -30,7 +30,7 @@ program ccaps
     if (drivenlid_test) call test_steady
 
     ! periodic dumps 
-    if (modulo(step,100) == 0) call sln_plots
+    if (modulo(step,dumpfreq) == 0) call sln_plots
   
   enddo 
 

@@ -9,6 +9,7 @@ module shared_data
   integer :: nx, ny
   integer :: ix, iy
   integer :: step, nsteps
+  integer :: dumpfreq
 
   real(num) :: time = 0.0_num, t_end, dt 
   real(num) :: CFL
@@ -20,7 +21,7 @@ module shared_data
   logical :: shear_test = .false.
   logical :: minion_test = .false.
   logical :: vortex1_test = .false.
-  logical :: drivenlid_test = .true.
+  logical :: drivenlid_test = .false. 
 
   real(num), dimension(:), allocatable :: xc, xb, yc, yb
 

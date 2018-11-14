@@ -10,9 +10,44 @@ module diagnostics
   private
 
   public :: test_minion, minion_plots, sln_plots, &
-    & plot_divergence_now
+    & plot_divergence_now, test_steady
 
   contains
+
+  subroutine test_steady
+    ! try to assess if solution has converged to a steady state.
+    ! Involves keeping a copy of the previous solution
+    ! which would be quite wasteful at scale
+
+    logical :: first_call = .true.
+    real(num), dimension(1:nx,1:ny) :: uold, vold
+    real(num) :: L2 
+
+    if (first_call) then
+      uold = u(1:nx,1:ny)
+      vold = v(1:nx,1:ny)
+      first_call = .false.
+    else
+    
+      L2 = 0.0_num
+      do ix = 1, nx
+      do iy = 1, ny
+        L2 = L2 + abs(u(ix,iy)-uold(ix,iy))**2 + abs(v(ix,iy)-vold(ix,iy))**2
+      enddo
+      enddo
+      L2 = sqrt( L2 / real(2*nx*ny,num))
+
+      uold = u(1:nx,1:ny)
+      vold = v(1:nx,1:ny)
+
+    endif
+
+    print *,''
+    print *,' L2 of velocity vs previous step:',L2
+    print *,''
+
+  end subroutine test_steady
+
 
   subroutine test_minion
 

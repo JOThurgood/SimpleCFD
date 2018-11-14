@@ -27,9 +27,10 @@ program ccaps
 
     ! special diagnostics
     if (minion_test) call test_minion
+    if (drivenlid_test) call test_steady
 
     ! periodic dumps 
-    if (modulo(step,25) == 0) call sln_plots
+    if (modulo(step,100) == 0) call sln_plots
   
   enddo 
 

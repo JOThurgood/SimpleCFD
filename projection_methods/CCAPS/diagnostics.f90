@@ -128,9 +128,9 @@ module diagnostics
 
     call execute_command_line("python python_plotting/sln_plots.py")
 
-    call execute_command_line("rm -rf *.dat")
+    if (drivenlid_test) call execute_command_line("python python_plotting/ghia.py")
 
-!    call execute_command_line("rm -rf xc.dat yc.dat u.dat v.dat utest.dat vtest.dat udiff.dat vdiff.dat")
+!    call execute_command_line("rm -rf *.dat")
 
   end subroutine sln_plots
 

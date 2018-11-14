@@ -20,7 +20,7 @@ module shared_data
   logical :: shear_test = .false.
   logical :: minion_test = .false.
   logical :: vortex1_test = .false.
-
+  logical :: drivenlid_test = .true.
 
   real(num), dimension(:), allocatable :: xc, xb, yc, yb
 
@@ -55,6 +55,8 @@ module shared_data
   integer, parameter :: periodic = 0
   integer, parameter :: zero_gradient = 1
   integer, parameter :: no_slip = 2
+  integer, parameter :: driven = 3
+  
 
   integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
 

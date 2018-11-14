@@ -532,6 +532,8 @@ module advance_module
 
     real(num) :: dtx, dty 
 
+    call velocity_bcs ! needed for driven if u=v=0 in domain, so dt/=inf
+
     dtx = CFL * dx / maxval(abs(u))
     dty = CFL * dy / maxval(abs(v))
     dt = MIN(dtx,dty)

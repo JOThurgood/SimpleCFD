@@ -149,6 +149,21 @@ module boundary_conditions
       vstar(:,ny+2) = -vstar(:,ny-1)
     endif
 
+    ! Driven !ymax only atm
+
+    if (bc_ymax == driven) then
+      u(:,ny+1) = 2.0_num * 1.0_num - u(:,ny)
+      u(:,ny+2) = 2.0_num * 1.0_num - u(:,ny-1)
+      ustar(:,ny+1) = -ustar(:,ny)
+      ustar(:,ny+2) = -ustar(:,ny-1)
+      !v should be as no slip
+      v(:,ny+1) = -v(:,ny)
+      v(:,ny+2) = -v(:,ny-1)
+      vstar(:,ny+1) = -vstar(:,ny)
+      vstar(:,ny+2) = -vstar(:,ny-1)
+    endif
+
+
   end subroutine velocity_bcs
 
   subroutine velocity_face_bcs 
@@ -343,6 +358,25 @@ module boundary_conditions
       vhy(:,ny+1) = -vhy(:,ny-1)
       vhy(:,ny+2) = -vhy(:,ny-2)
     endif
+  
+    ! driven 
+
+    if (bc_ymax == driven) then
+      uha(:,ny+1) = 2.0_num -uha(:,ny)
+      uha(:,ny+2) = 2.0_num -uha(:,ny-1)
+      vha(:,ny+1) = -vha(:,ny-1)
+      vha(:,ny+2) = -vha(:,ny-2)
+      uhx(:,ny+1) = 2.0_num -uhx(:,ny)
+      uhx(:,ny+2) = 2.0_num -uhx(:,ny-1)
+      vhx(:,ny+1) = -vhx(:,ny)
+      vhx(:,ny+2) = -vhx(:,ny-1)
+      uhy(:,ny+1) = 2.0_num-uhy(:,ny-1)
+      uhy(:,ny+2) = 2.0_num-uhy(:,ny-2)
+      vhy(:,ny+1) = -vhy(:,ny-1)
+      vhy(:,ny+2) = -vhy(:,ny-2)
+    endif
+
+
 
   end subroutine velocity_face_bcs 
 
@@ -418,6 +452,12 @@ module boundary_conditions
       phi(:,-1) = phi(:,2)
     endif
     if (bc_ymax == no_slip) then
+      phi(:,ny+1) = phi(:,ny)
+      phi(:,ny+2) = phi(:,ny-1)
+    endif
+
+    !duplicate of no-slip on phi for driven
+    if (bc_ymax == driven) then
       phi(:,ny+1) = phi(:,ny)
       phi(:,ny+2) = phi(:,ny-1)
     endif

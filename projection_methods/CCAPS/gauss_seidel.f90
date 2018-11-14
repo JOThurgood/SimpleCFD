@@ -203,6 +203,13 @@ module gauss_seidel
       phigs(:,ny+2) = phigs(:,ny-1)
     endif
 
+    !duplicate of no_slip for driven
+    if (bc_ymax == driven) then
+      phigs(:,ny+1) = phigs(:,ny)
+      phigs(:,ny+2) = phigs(:,ny-1)
+    endif
+
+
   end subroutine phigs_bcs
 
 end module gauss_seidel

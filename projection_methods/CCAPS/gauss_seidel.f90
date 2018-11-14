@@ -170,21 +170,37 @@ module gauss_seidel
 
     ! No slip
 
+!!    if (bc_xmin == no_slip) then
+!!      phigs(0,:) = -phigs(1,:)
+!!      phigs(-1,:) = -phigs(2,:)
+!!    endif
+!!    if (bc_xmax == no_slip) then
+!!      phigs(nx+1,:) = -phigs(nx,:)
+!!      phigs(nx+2,:) = -phigs(nx-1,:)
+!!    endif
+!!    if (bc_ymin == no_slip) then
+!!      phigs(:,0) = -phigs(:,1)
+!!      phigs(:,-1) = -phigs(:,2)
+!!    endif
+!!    if (bc_ymax == no_slip) then
+!!      phigs(:,ny+1) = -phigs(:,ny)
+!!      phigs(:,ny+2) = -phigs(:,ny-1)
+!!    endif
     if (bc_xmin == no_slip) then
-      phigs(0,:) = -phigs(1,:)
-      phigs(-1,:) = -phigs(2,:)
+      phigs(0,:) = phigs(1,:)
+      phigs(-1,:) = phigs(2,:)
     endif
     if (bc_xmax == no_slip) then
-      phigs(nx+1,:) = -phigs(nx,:)
-      phigs(nx+2,:) = -phigs(nx-1,:)
+      phigs(nx+1,:) = phigs(nx,:)
+      phigs(nx+2,:) = phigs(nx-1,:)
     endif
     if (bc_ymin == no_slip) then
-      phigs(:,0) = -phigs(:,1)
-      phigs(:,-1) = -phigs(:,2)
+      phigs(:,0) = phigs(:,1)
+      phigs(:,-1) = phigs(:,2)
     endif
     if (bc_ymax == no_slip) then
-      phigs(:,ny+1) = -phigs(:,ny)
-      phigs(:,ny+2) = -phigs(:,ny-1)
+      phigs(:,ny+1) = phigs(:,ny)
+      phigs(:,ny+2) = phigs(:,ny-1)
     endif
 
   end subroutine phigs_bcs

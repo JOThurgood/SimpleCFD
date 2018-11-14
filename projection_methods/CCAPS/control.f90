@@ -39,7 +39,7 @@ module control
     ! favour of the specific problems
 
     shear_test = .false.
-    minion_test = .false.
+    minion_test = .false. 
     vortex1_test = .true.
     ! DONT set more than one of the above true
 
@@ -94,7 +94,7 @@ module control
     ! user control. Dont change it here in practice.
     ny = nx !but do force nx=ny
     CFL = 0.8_num
-    t_end = 1.0_num 
+    t_end = 40.0_num 
     nsteps = -1
     use_minmod = .false.    
     use_viscosity = .true.

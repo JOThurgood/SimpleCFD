@@ -34,7 +34,7 @@ if not os.path.exists("output"):
 # Stream plot with abs(vel)
 
 plt.streamplot(xc,yc,u,v)
-plt.contourf(xc,yc,abs(u**2+v**2),255)
+plt.contourf(xc,yc,abs(u**2+v**2),255, cmap=plt.cm.Greys)
 plt.colorbar()
 plt.xlabel('x')
 plt.ylabel('y') 

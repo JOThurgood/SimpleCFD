@@ -116,7 +116,7 @@ module control
     nx = 32 
     ny = nx
     CFL = 1.0_num
-    t_end = 100.0_num  
+    t_end = 10.0_num  
     nsteps = -1
     use_minmod = .false.    
     use_viscosity = .true.

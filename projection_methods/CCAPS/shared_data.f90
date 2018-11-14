@@ -9,6 +9,7 @@ module shared_data
   integer :: nx, ny
   integer :: ix, iy
   integer :: step, nsteps
+  integer :: dumpfreq
 
   real(num) :: time = 0.0_num, t_end, dt 
   real(num) :: CFL

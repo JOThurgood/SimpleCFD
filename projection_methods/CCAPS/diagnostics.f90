@@ -56,6 +56,10 @@ module diagnostics
 
     call execute_command_line("rm -rf *.dat *.png")
 
+    open(out_unit, file="time.dat", access="stream")
+    write(out_unit) time
+    close(out_unit)
+
     open(out_unit, file="xc.dat", access="stream")
     write(out_unit) xc(1:nx)
     close(out_unit)

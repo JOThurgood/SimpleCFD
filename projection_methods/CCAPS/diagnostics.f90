@@ -128,8 +128,10 @@ module diagnostics
 
     call execute_command_line("python python_plotting/sln_plots.py")
 
-    if (drivenlid_test) call execute_command_line("python python_plotting/ghia.py")
-
+    if (drivenlid_test) then
+      if (visc == 1e-3_num) call execute_command_line("python python_plotting/ghia_re1e3.py")
+      if (visc == 1e-2_num) call execute_command_line("python python_plotting/ghia_re1e2.py")
+    endif 
 !    call execute_command_line("rm -rf *.dat")
 
   end subroutine sln_plots

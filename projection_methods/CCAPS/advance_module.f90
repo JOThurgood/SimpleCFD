@@ -505,8 +505,10 @@ module advance_module
 !    call plot_divergence_now
     ! update the pressure gradient 
   
-    do ix = 1, nx
-    do iy = 1, ny
+!    do ix = 1, nx * see note below
+!    do iy = 1, ny
+    do ix = 0, nx+1 
+    do iy = 0, ny+1 
 
       gpsi = (phi(ix+1,iy) - phi(ix-1,iy))/dx/2.0_num
       gradp_x(ix,iy) = gradp_x(ix,iy) + gpsi
@@ -517,7 +519,12 @@ module advance_module
     enddo
     enddo
 
-    call gradp_bcs
+    ! No longer calc gradp in real domain (1:nx,1:ny) and apply bc to it
+    ! Its only needed in (0:nx+1,0:ny+1) so just calculate it direct
+    ! from phi + phi's BCs. Enforces consistency and is one less
+    ! of bc's to worry about coding up
+
+    !call gradp_bcs
 
   end subroutine step_5
 

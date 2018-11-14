@@ -16,6 +16,13 @@ curlu = curlu.reshape(yc.size, xc.size)
 #phi = phi.reshape(yc.size, xc.size)
 
 
+plt.streamplot(xc,yc,u,v)
+plt.xlabel('x')
+plt.ylabel('y') 
+plt.savefig('streamlines.png')
+
+
+
 plt.clf()
 plt.contourf(xc, yc, u, 255, cmap=plt.cm.RdBu_r)
 #plt.grid(True)

@@ -29,7 +29,7 @@ while (os.path.exists(filename+str(filenum)+".png")):
 filename = "{}{}.png".format(filename,filenum)
 
 plt.streamplot(xc,yc,u,v)
-plt.contourf(xc,yc,abs(u**2+v**2))
+plt.contourf(xc,yc,abs(u**2+v**2),255)
 plt.colorbar()
 plt.xlabel('x')
 plt.ylabel('y') 

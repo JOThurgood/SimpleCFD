@@ -70,7 +70,9 @@ module shared_data
   real(num), dimension(:,:), allocatable :: rhohxl, rhohxr !rho-hat-x-left / right
   real(num), dimension(:,:), allocatable :: rhohyl, rhohyr
   real(num), dimension(:,:), allocatable :: rhohx, rhohy ! upwinded rhohats on x and y face
-
+  real(num), dimension(:,:), allocatable :: rhoxl, rhoxr ! full states on left and right
+  real(num), dimension(:,:), allocatable :: rhoyl, rhoyr ! full states on left and right
+  real(num), dimension(:,:), allocatable :: rhox, rhoy !resolved full states on faces
 
 
   ! boundary conditions 

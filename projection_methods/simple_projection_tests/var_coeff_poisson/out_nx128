@@ -1,0 +1,7 @@
+ nx=         128 ny=         128
+ exit tolerance on L2(residual) - L2(residual)_old =   9.9999999999999998E-017
+ begining relaxation to solve for phi.
+ this can take a while, use VERBOSE if you want to monitor stepping
+ Relaxation completed in                12536 steps
+ residual (numerical) L2 norm on f-Lphi   1.2358709655378016E-011
+ L2 norm of analytical differences   6.8978156932572747E-005

@@ -23,6 +23,8 @@ module advance_module
 
     call step_3 ! Step 3: Reconstruct interface states consistent with constraint
 
+    if (use_vardens) call advect_dens ! consv. update of density based on mac vels
+
     call step_4 ! Step 4: Provisional update for full dt (star state)
 
     call step_5 ! Step 5: Project provisional field to constraint
@@ -548,6 +550,110 @@ module advance_module
     !call gradp_bcs
 
   end subroutine step_5
+
+  subroutine advect_dens
+
+    real(num) :: drho
+
+    if (.not. use_vardens) then !this is probabally unnecessary
+      print *,'why have you called advect_dens without use_vardens=.true.'
+      STOP
+    endif
+
+    call rho_bcs
+
+    ! calculate rhohat states on faces 
+
+    do ix = 0, nx
+    do iy = 0, ny
+      if (iy /= 0) then ! xface vars
+      
+        if (use_minmod) then
+          drho = minmod((rho(ix,iy)-rho(ix-1,iy))/dx,(rho(ix+1,iy)-rho(ix,iy))/dx)
+        else
+          drho = ( rho(ix+1,iy) - rho(ix-1,iy) ) /2.0_num / dx
+        endif
+
+        rhohxl(ix,iy) = rho(ix,iy) + &
+          & 0.5_num * (1.0_num - dt * macu(ix,iy) / dx ) * drho * dx 
+
+        if (use_minmod) then
+          drho = minmod((rho(ix+1,iy)-rho(ix,iy))/dx,(rho(ix+2,iy)-rho(ix+1,iy))/dx)
+        else
+          drho= ( rho(ix+2,iy)-rho(ix,iy) ) / 2.0_num / dx
+        endif
+
+        rhohxr(ix,iy) = rho(ix+1,iy) - &
+          & 0.5_num * (1.0_num + dt * macu(ix,iy) / dx) * drho * dx
+
+                      !^ didn't go through the theory carefully here
+              ! so if there are issues would be somewhere good to look
+
+      endif
+      if (ix /= 0) then !y face vars
+
+        if (use_minmod) then
+          drho = minmod( (rho(ix,iy)-rho(ix,iy-1))/dy, (rho(ix,iy+1)-rho(ix,iy))/dy)
+        else
+          drho = (rho(ix,iy+1) - rho(ix,iy-1)) / 2.0_num / dy
+        endif
+
+        rhohyl(ix,iy) = rho(ix,iy) + &
+          & 0.5_num * (1.0_num - dt * macv(ix,iy) / dy ) * drho * dy 
+          
+
+        if (use_minmod) then
+          drho = minmod( (rho(ix,iy+1)-rho(ix,iy))/dy, (rho(ix,iy+2)-rho(ix,iy+1))/dy)
+        else
+          drho = (rho(ix,iy+2)-rho(ix,iy)) / 2.0_num/dy
+        endif
+
+
+        rhohyr(ix,iy) = rho(ix,iy) - &
+          & 0.5_num * (1.0_num + dt * macv(ix,iy) / dy) * drho * dy
+
+      endif
+    enddo
+    enddo
+
+    ! upwind using the MAC velocities
+
+    do ix = 0, nx
+    do iy = 0, ny
+      if (iy /= 0) then ! xface vars
+        rhohx(ix,iy) = upwind(macu(ix,iy),rhohxl(ix,iy),rhohxr(ix,iy))
+      endif
+      if (ix /= 0) then !y face vars
+        rhohy(ix,iy) = upwind(macv(ix,iy),rhohyl(ix,iy),rhohyr(ix,iy))
+      endif
+    enddo
+    enddo
+
+    ! calculate full states with transverse terms
+
+
+    do ix = 0, nx
+    do iy = 0, ny
+      if (iy /= 0) then ! xface vars
+! was loosing concentration around here with subscripts - come back later. 
+
+!        rhoxl(ix,iy) = rhohxl(ix,iy) &
+!          & - 0.5_num * dt * rho(ix,iy) * (macu(ix,iy) - macu(ix-1,iy)) / dx &
+!          & - 0.5_num * dt * ( rhohy(ix,iy)*macv(ix,iy) - & 
+!          &                           rhohy(ix,iy)*macv(ix,iy) ) / dy
+      endif
+      if (ix /= 0) then !y face vars
+      endif
+    enddo
+    enddo
+
+    ! resolve states
+
+    ! simple conservative update to new time level
+
+  end subroutine advect_dens
+  
+
 
   subroutine set_dt
 

@@ -1,12 +1,16 @@
 module boundary_conditions
 
+  ! all boundary conditions except those for the elliptic solvers
+  ! to be kept here
+
   use shared_data
 
   implicit none
 
   private
 
-  public :: velocity_bcs, phi_bcs, gradp_bcs, velocity_face_bcs
+  public :: velocity_bcs, phi_bcs, velocity_face_bcs
+  public :: rho_bcs
 
   contains
 
@@ -464,128 +468,134 @@ module boundary_conditions
 
   end subroutine phi_bcs
 
-  subroutine gradp_bcs
+  subroutine rho_bcs
+    ! stub
+    print *,'call to rho_bcs - warning - its only a stub at the moment'
+  end subroutine rho_bcs
 
-    ! THIS IS NOW REDUNDANT AND SHOULD NOT NEED TO BE CALLED !!!!
 
-    ! Periodic 
-
-    if (bc_xmin == periodic) then
-      gradp_x(0,:) = gradp_x(nx,:)
-      gradp_x(-1,:) = gradp_x(nx-1,:)
-      gradp_y(0,:) = gradp_y(nx,:)
-      gradp_y(-1,:) = gradp_y(nx-1,:)
-    endif
-
-    if (bc_xmax == periodic) then
-      gradp_x(nx+1,:) = gradp_x(1,:)
-      gradp_x(nx+2,:) = gradp_x(2,:)
-      gradp_y(nx+1,:) = gradp_y(1,:)
-      gradp_y(nx+2,:) = gradp_y(2,:)
-    endif
-
-    if (bc_ymin == periodic) then
-      gradp_x(:,0) = gradp_x(:,ny)
-      gradp_x(:,-1) = gradp_x(:,ny-1)
-      gradp_y(:,0) = gradp_y(:,ny)
-      gradp_y(:,-1) = gradp_y(:,ny-1)
-    endif
-
-    if (bc_ymin == periodic) then
-      gradp_x(:,ny+1) = gradp_x(:,1)
-      gradp_x(:,ny+2) = gradp_x(:,2)
-      gradp_y(:,ny+1) = gradp_y(:,1)
-      gradp_y(:,ny+2) = gradp_y(:,2)
-    endif
-
-    ! Zero Gradient
-    if (bc_xmin == zero_gradient) then
-      gradp_x(0,:) = gradp_x(1,:)
-      gradp_x(-1,:) = gradp_x(2,:)
-      gradp_y(0,:) = gradp_y(1,:)
-      gradp_y(-1,:) = gradp_y(2,:)
-    endif
-
-    if (bc_xmax == zero_gradient) then
-      gradp_x(nx+1,:) = gradp_x(nx,:)
-      gradp_x(nx+2,:) = gradp_x(nx-1,:)
-      gradp_y(nx+1,:) = gradp_y(nx,:)
-      gradp_y(nx+2,:) = gradp_y(nx-1,:)
-    endif
-
-    if (bc_ymin == zero_gradient) then
-      gradp_x(:,0) = gradp_x(:,1)
-      gradp_x(:,-1) = gradp_x(:,2)
-      gradp_y(:,0) = gradp_y(:,1)
-      gradp_y(:,-1) = gradp_y(:,2)
-    endif
-
-    if (bc_ymax == zero_gradient) then
-      gradp_x(:,ny+1) = gradp_x(:,ny)
-      gradp_x(:,ny+2) = gradp_x(:,ny-1)
-      gradp_y(:,ny+1) = gradp_y(:,ny)
-      gradp_y(:,ny+2) = gradp_y(:,ny-1)
-    endif
-
-    ! No slip - similarly unsure of gradp conditions at this stage
-
-    if (bc_xmin == no_slip) then
-      gradp_x(0,:) = -gradp_x(1,:)
-      gradp_x(-1,:) = -gradp_x(2,:)
-      gradp_y(0,:) = -gradp_y(1,:)
-      gradp_y(-1,:) = -gradp_y(2,:)
-    endif
-
-    if (bc_xmax == no_slip) then
-      gradp_x(nx+1,:) = -gradp_x(nx,:)
-      gradp_x(nx+2,:) = -gradp_x(nx-1,:)
-      gradp_y(nx+1,:) = -gradp_y(nx,:)
-      gradp_y(nx+2,:) = -gradp_y(nx-1,:)
-    endif
-
-    if (bc_ymin == no_slip) then
-      gradp_x(:,0) = -gradp_x(:,1)
-      gradp_x(:,-1) = -gradp_x(:,2)
-      gradp_y(:,0) = -gradp_y(:,1)
-      gradp_y(:,-1) = -gradp_y(:,2)
-    endif
-
-    if (bc_ymin == no_slip) then
-      gradp_x(:,ny+1) = -gradp_x(:,ny)
-      gradp_x(:,ny+2) = -gradp_x(:,ny-1)
-      gradp_y(:,ny+1) = -gradp_y(:,ny)
-      gradp_y(:,ny+2) = -gradp_y(:,ny-1)
-    endif
-
-!!    if (bc_xmin == no_slip) then
-!!      gradp_x(0,:) = gradp_x(1,:)
-!!      gradp_x(-1,:) = gradp_x(2,:)
-!!      gradp_y(0,:) = gradp_y(1,:)
-!!      gradp_y(-1,:) = gradp_y(2,:)
-!!    endif
-!!
-!!    if (bc_xmax == no_slip) then
-!!      gradp_x(nx+1,:) = gradp_x(nx,:)
-!!      gradp_x(nx+2,:) = gradp_x(nx-1,:)
-!!      gradp_y(nx+1,:) = gradp_y(nx,:)
-!!      gradp_y(nx+2,:) = gradp_y(nx-1,:)
-!!    endif
-!!
-!!    if (bc_ymin == no_slip) then
-!!      gradp_x(:,0) = gradp_x(:,1)
-!!      gradp_x(:,-1) = gradp_x(:,2)
-!!      gradp_y(:,0) = gradp_y(:,1)
-!!      gradp_y(:,-1) = gradp_y(:,2)
-!!    endif
-!!
-!!    if (bc_ymax == no_slip) then
-!!      gradp_x(:,ny+1) = gradp_x(:,ny)
-!!      gradp_x(:,ny+2) = gradp_x(:,ny-1)
-!!      gradp_y(:,ny+1) = gradp_y(:,ny)
-!!      gradp_y(:,ny+2) = gradp_y(:,ny-1)
-!!    endif
-
-  end subroutine gradp_bcs
+!!!!  subroutine gradp_bcs
+!!!!
+!!!!    ! THIS IS NOW REDUNDANT AND SHOULD NOT NEED TO BE CALLED !!!!
+!!!!
+!!!!    ! Periodic 
+!!!!
+!!!!    if (bc_xmin == periodic) then
+!!!!      gradp_x(0,:) = gradp_x(nx,:)
+!!!!      gradp_x(-1,:) = gradp_x(nx-1,:)
+!!!!      gradp_y(0,:) = gradp_y(nx,:)
+!!!!      gradp_y(-1,:) = gradp_y(nx-1,:)
+!!!!    endif
+!!!!
+!!!!    if (bc_xmax == periodic) then
+!!!!      gradp_x(nx+1,:) = gradp_x(1,:)
+!!!!      gradp_x(nx+2,:) = gradp_x(2,:)
+!!!!      gradp_y(nx+1,:) = gradp_y(1,:)
+!!!!      gradp_y(nx+2,:) = gradp_y(2,:)
+!!!!    endif
+!!!!
+!!!!    if (bc_ymin == periodic) then
+!!!!      gradp_x(:,0) = gradp_x(:,ny)
+!!!!      gradp_x(:,-1) = gradp_x(:,ny-1)
+!!!!      gradp_y(:,0) = gradp_y(:,ny)
+!!!!      gradp_y(:,-1) = gradp_y(:,ny-1)
+!!!!    endif
+!!!!
+!!!!    if (bc_ymin == periodic) then
+!!!!      gradp_x(:,ny+1) = gradp_x(:,1)
+!!!!      gradp_x(:,ny+2) = gradp_x(:,2)
+!!!!      gradp_y(:,ny+1) = gradp_y(:,1)
+!!!!      gradp_y(:,ny+2) = gradp_y(:,2)
+!!!!    endif
+!!!!
+!!!!    ! Zero Gradient
+!!!!    if (bc_xmin == zero_gradient) then
+!!!!      gradp_x(0,:) = gradp_x(1,:)
+!!!!      gradp_x(-1,:) = gradp_x(2,:)
+!!!!      gradp_y(0,:) = gradp_y(1,:)
+!!!!      gradp_y(-1,:) = gradp_y(2,:)
+!!!!    endif
+!!!!
+!!!!    if (bc_xmax == zero_gradient) then
+!!!!      gradp_x(nx+1,:) = gradp_x(nx,:)
+!!!!      gradp_x(nx+2,:) = gradp_x(nx-1,:)
+!!!!      gradp_y(nx+1,:) = gradp_y(nx,:)
+!!!!      gradp_y(nx+2,:) = gradp_y(nx-1,:)
+!!!!    endif
+!!!!
+!!!!    if (bc_ymin == zero_gradient) then
+!!!!      gradp_x(:,0) = gradp_x(:,1)
+!!!!      gradp_x(:,-1) = gradp_x(:,2)
+!!!!      gradp_y(:,0) = gradp_y(:,1)
+!!!!      gradp_y(:,-1) = gradp_y(:,2)
+!!!!    endif
+!!!!
+!!!!    if (bc_ymax == zero_gradient) then
+!!!!      gradp_x(:,ny+1) = gradp_x(:,ny)
+!!!!      gradp_x(:,ny+2) = gradp_x(:,ny-1)
+!!!!      gradp_y(:,ny+1) = gradp_y(:,ny)
+!!!!      gradp_y(:,ny+2) = gradp_y(:,ny-1)
+!!!!    endif
+!!!!
+!!!!    ! No slip - similarly unsure of gradp conditions at this stage
+!!!!
+!!!!    if (bc_xmin == no_slip) then
+!!!!      gradp_x(0,:) = -gradp_x(1,:)
+!!!!      gradp_x(-1,:) = -gradp_x(2,:)
+!!!!      gradp_y(0,:) = -gradp_y(1,:)
+!!!!      gradp_y(-1,:) = -gradp_y(2,:)
+!!!!    endif
+!!!!
+!!!!    if (bc_xmax == no_slip) then
+!!!!      gradp_x(nx+1,:) = -gradp_x(nx,:)
+!!!!      gradp_x(nx+2,:) = -gradp_x(nx-1,:)
+!!!!      gradp_y(nx+1,:) = -gradp_y(nx,:)
+!!!!      gradp_y(nx+2,:) = -gradp_y(nx-1,:)
+!!!!    endif
+!!!!
+!!!!    if (bc_ymin == no_slip) then
+!!!!      gradp_x(:,0) = -gradp_x(:,1)
+!!!!      gradp_x(:,-1) = -gradp_x(:,2)
+!!!!      gradp_y(:,0) = -gradp_y(:,1)
+!!!!      gradp_y(:,-1) = -gradp_y(:,2)
+!!!!    endif
+!!!!
+!!!!    if (bc_ymin == no_slip) then
+!!!!      gradp_x(:,ny+1) = -gradp_x(:,ny)
+!!!!      gradp_x(:,ny+2) = -gradp_x(:,ny-1)
+!!!!      gradp_y(:,ny+1) = -gradp_y(:,ny)
+!!!!      gradp_y(:,ny+2) = -gradp_y(:,ny-1)
+!!!!    endif
+!!!!
+!!!!!!    if (bc_xmin == no_slip) then
+!!!!!!      gradp_x(0,:) = gradp_x(1,:)
+!!!!!!      gradp_x(-1,:) = gradp_x(2,:)
+!!!!!!      gradp_y(0,:) = gradp_y(1,:)
+!!!!!!      gradp_y(-1,:) = gradp_y(2,:)
+!!!!!!    endif
+!!!!!!
+!!!!!!    if (bc_xmax == no_slip) then
+!!!!!!      gradp_x(nx+1,:) = gradp_x(nx,:)
+!!!!!!      gradp_x(nx+2,:) = gradp_x(nx-1,:)
+!!!!!!      gradp_y(nx+1,:) = gradp_y(nx,:)
+!!!!!!      gradp_y(nx+2,:) = gradp_y(nx-1,:)
+!!!!!!    endif
+!!!!!!
+!!!!!!    if (bc_ymin == no_slip) then
+!!!!!!      gradp_x(:,0) = gradp_x(:,1)
+!!!!!!      gradp_x(:,-1) = gradp_x(:,2)
+!!!!!!      gradp_y(:,0) = gradp_y(:,1)
+!!!!!!      gradp_y(:,-1) = gradp_y(:,2)
+!!!!!!    endif
+!!!!!!
+!!!!!!    if (bc_ymax == no_slip) then
+!!!!!!      gradp_x(:,ny+1) = gradp_x(:,ny)
+!!!!!!      gradp_x(:,ny+2) = gradp_x(:,ny-1)
+!!!!!!      gradp_y(:,ny+1) = gradp_y(:,ny)
+!!!!!!      gradp_y(:,ny+2) = gradp_y(:,ny-1)
+!!!!!!    endif
+!!!!
+!!!!  end subroutine gradp_bcs
 
 
 

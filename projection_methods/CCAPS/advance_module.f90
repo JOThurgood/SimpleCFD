@@ -628,7 +628,20 @@ module advance_module
 
     ! calculate full states with transverse terms
 
-    ! you probabally need some boundary calls here !!!!!!!
+    print *, 'STOP'
+    STOP 
+
+    ! As is you'd have to call bcs for rhohx and rhohy in +-1 ghost here
+    ! and also macu
+
+    ! I think if limits had been handled properly earlier, all of this 
+    ! info should be available from the main boundaries. 
+
+    ! fix it for the core solver (i.e., in step 1), verify it, and then
+    ! extend the approach here
+
+    ! call rho_bcs
+    ! call macu_bcs
 
     do ix = 0, nx
     do iy = 0, ny

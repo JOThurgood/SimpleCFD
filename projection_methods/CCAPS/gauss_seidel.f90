@@ -14,6 +14,13 @@ module gauss_seidel
  
   subroutine solve_gs(phigs,f,alpha,beta,use_old_phi,tol)
 
+    ! Solves the constand co-efficient Helmholtz equation
+    ! (alpha - beta del**2) phi = f
+    !
+    ! For somple Poisson set alpha = 0 and beta = -1 
+    ! 
+    ! Variable coefficients are handled separately 
+
     real(num), dimension(-1:nx+2,-1:ny+2), intent(inout) :: phigs
     real(num), dimension(1:nx,1:ny), intent(in) :: f
     real(num), intent(in) :: alpha, beta

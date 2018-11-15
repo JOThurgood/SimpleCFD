@@ -321,7 +321,7 @@ module advance_module
 !    call plot_divergence_now
 !    if (step /=0) call plot_divergence_now
 
-    call solve_gs(phigs = phi, f = divu(1:nx,1:ny), &
+    call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
       & alpha = 0.0_num, beta = -1.0_num, &
       & use_old_phi = .false., tol = 1e-18_num) 
 
@@ -418,7 +418,7 @@ module advance_module
       enddo
       enddo    
 
-      call solve_gs(phigs = ustar, f = f, &
+      call solve_const_Helmholtz(phigs = ustar, f = f, &
         alpha = 1.0_num, beta = dt*visc/2.0_num, &
         & use_old_phi = .true., tol = 1e-16_num) 
 
@@ -430,7 +430,7 @@ module advance_module
       enddo
       enddo    
 
-      call solve_gs(phigs = vstar, f = f, &
+      call solve_const_Helmholtz(phigs = vstar, f = f, &
         alpha = 1.0_num, beta = dt*visc/2.0_num, &
         & use_old_phi = .true., tol = 1e-16_num) 
 
@@ -463,7 +463,7 @@ module advance_module
 
     divu = divu/dt
 
-    call solve_gs(phigs = phi, f = divu(1:nx,1:ny), &
+    call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
       alpha = 0.0_num, beta = -1.0_num, &
       & use_old_phi = .true., tol = 1e-16_num) 
 

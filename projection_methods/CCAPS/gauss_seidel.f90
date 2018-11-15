@@ -8,11 +8,11 @@ module gauss_seidel
  
   private 
  
-  public :: solve_gs 
+  public :: solve_const_Helmholtz 
  
   contains
  
-  subroutine solve_gs(phigs,f,alpha,beta,use_old_phi,tol)
+  subroutine solve_const_Helmholtz(phigs,f,alpha,beta,use_old_phi,tol)
 
     ! Solves the constand co-efficient Helmholtz equation
     ! (alpha - beta del**2) phi = f
@@ -133,7 +133,7 @@ module gauss_seidel
     print *, '*** Gauss Seidel relaxation completed in',ir,'steps'
     print *, '*** L2 norm on numerical residuals',L2       
 
-  end subroutine solve_gs 
+  end subroutine solve_const_Helmholtz
 
   subroutine phigs_bcs(phigs) 
 

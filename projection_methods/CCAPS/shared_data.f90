@@ -66,6 +66,7 @@ module shared_data
   ! variable density
 
   logical :: use_vardens = .false.
+  real(num), dimension(:,:), allocatable :: rho
 
   ! boundary conditions 
 

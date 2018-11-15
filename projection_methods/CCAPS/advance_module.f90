@@ -586,10 +586,8 @@ module advance_module
         rhohxr(ix,iy) = rho(ix+1,iy) - &
           & 0.5_num * (1.0_num + dt * macu(ix,iy) / dx) * drho * dx
 
-                      !^ didn't go through the theory carefully here
-              ! so if there are issues would be somewhere good to look
-
       endif
+
       if (ix /= 0) then !y face vars
 
         if (use_minmod) then
@@ -608,8 +606,7 @@ module advance_module
           drho = (rho(ix,iy+2)-rho(ix,iy)) / 2.0_num/dy
         endif
 
-
-        rhohyr(ix,iy) = rho(ix,iy) - &
+        rhohyr(ix,iy) = rho(ix,iy+1) - &
           & 0.5_num * (1.0_num + dt * macv(ix,iy) / dy) * drho * dy
 
       endif
@@ -631,25 +628,56 @@ module advance_module
 
     ! calculate full states with transverse terms
 
+    ! you probabally need some boundary calls here !!!!!!!
 
     do ix = 0, nx
     do iy = 0, ny
       if (iy /= 0) then ! xface vars
-! was loosing concentration around here with subscripts - come back later. 
+        rhoxl(ix,iy) = rhohxl(ix,iy) &
+          & - 0.5_num * dt * rho(ix,iy) * (macu(ix,iy) - macu(ix-1,iy)) / dx &
+          & - 0.5_num * dt / dy * ( rhohy(ix,iy)*macv(ix,iy) - &
+                                      & rhohy(ix,iy-1)*macv(ix,iy-1) )
+        rhoxr(ix,iy) = rhohxr(ix,iy) &
+          & - 0.5_num * dt * rho(ix+1,iy) * (macu(ix+1,iy) - macu(ix,iy)) / dx &
+          & - 0.5_num * dt / dy * ( rhohy(ix+1,iy)*macv(ix+1,iy) - &
+                                    & rhohy(ix+1,iy-1)*macv(ix+1,iy-1) )
+      endif
+      if (ix /= 0) then ! yface vars
+         rhoyl(ix,iy) = rhohyl(ix,iy) &
+          & - 0.5_num * dt * rho(ix,iy) * (macv(ix,iy) - macv(ix,iy-1)) / dy &
+          & - 0.5_num * dt / dx * ( rhohx(ix,iy)*macu(ix,iy) - &
+                                      & rhohx(ix-1,iy)*macu(ix-1,iy) )
+        rhoyr(ix,iy) = rhohyr(ix,iy) &
+          & - 0.5_num * dt * rho(ix,iy+1) * (macv(ix,iy+1) - macv(ix,iy)) / dy &
+          & - 0.5_num * dt / dx * ( rhohx(ix,iy+1)*macu(ix,iy+1) - &
+                                    & rhohx(ix-1,iy+1)*macu(ix-1,iy+1) )
+      endif
+    enddo
+    enddo
 
-!        rhoxl(ix,iy) = rhohxl(ix,iy) &
-!          & - 0.5_num * dt * rho(ix,iy) * (macu(ix,iy) - macu(ix-1,iy)) / dx &
-!          & - 0.5_num * dt * ( rhohy(ix,iy)*macv(ix,iy) - & 
-!          &                           rhohy(ix,iy)*macv(ix,iy) ) / dy
+    ! resolve states via upwind
+
+    do ix = 0, nx
+    do iy = 0, ny
+      if (iy /= 0) then ! xface vars
+        rhox(ix,iy) = upwind(macu(ix,iy),rhoxl(ix,iy),rhoxr(ix,iy))
       endif
       if (ix /= 0) then !y face vars
+        rhoy(ix,iy) = upwind(macv(ix,iy),rhoyl(ix,iy),rhoyr(ix,iy))
       endif
     enddo
     enddo
 
-    ! resolve states
-
     ! simple conservative update to new time level
+
+    do ix = 1, nx
+    do iy = 1, ny
+      rho(ix,iy) = rho(ix,iy) &
+        & - dt / dx * (rhox(ix,iy)*macu(ix,iy) - rhox(ix-1,iy)*macu(ix-1,iy)) &
+        & - dt / dy * (rhoy(ix,iy)*macv(ix,iy) - rhoy(ix,iy-1)*macv(ix,iy-1))
+    enddo
+    enddo
+
 
   end subroutine advect_dens
   

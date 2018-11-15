@@ -1,8 +1,19 @@
 module shared_data
 
   implicit none
+
+  !intrinsics 
+
   integer :: out_unit = 10
   integer, parameter :: num=selected_real_kind(p=15) 
+
+  ! test setups 
+
+  logical :: use_minmod = .false. 
+  logical :: shear_test = .false.
+  logical :: minion_test = .false.
+  logical :: vortex1_test = .false.
+  logical :: drivenlid_test = .false. 
 
   ! core solver
 
@@ -17,11 +28,6 @@ module shared_data
   real(num) :: y_min, y_max
   real(num) :: dx, dy
 
-  logical :: use_minmod = .false. 
-  logical :: shear_test = .false.
-  logical :: minion_test = .false.
-  logical :: vortex1_test = .false.
-  logical :: drivenlid_test = .false. 
 
   real(num), dimension(:), allocatable :: xc, xb, yc, yb
 
@@ -51,20 +57,29 @@ module shared_data
 
   real(num), dimension(:,:), allocatable :: gradp_x, gradp_y ! pressure gradient, cc
 
-  ! boundaries
-
-  integer, parameter :: periodic = 0
-  integer, parameter :: zero_gradient = 1
-  integer, parameter :: no_slip = 2
-  integer, parameter :: driven = 3
   
-
-  integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
-
   ! viscosity
 
   logical :: use_viscosity = .false.
   real(num) :: visc = 0.0_num
 
+  ! variable density
+
+  logical :: use_vardens = .false.
+  real(num), dimension(:,:), allocatable :: rho
+  real(num), dimension(:,:), allocatable :: rhohxl, rhohxr !rho-hat-x-left / right
+  real(num), dimension(:,:), allocatable :: rhohyl, rhohyr
+  real(num), dimension(:,:), allocatable :: rhohx, rhohy ! upwinded rhohats on x and y face
+
+
+
+  ! boundary conditions 
+
+  integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
+
+  integer, parameter :: periodic = 0
+  integer, parameter :: zero_gradient = 1
+  integer, parameter :: no_slip = 2
+  integer, parameter :: driven = 3
 
 end module shared_data

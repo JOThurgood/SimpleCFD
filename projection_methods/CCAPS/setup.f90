@@ -87,7 +87,6 @@ module setup
     ! time centered left and right interface states, defined on
     ! the MAC grid
 
-!experimental stuff
 
 
     allocate(uhxl(0:nx,1:ny)) ! uhxl - u hat xface left state
@@ -144,6 +143,13 @@ module setup
     gradp_x = 0.0_num
     gradp_y = 0.0_num
 
+    ! variable density
+
+    if (use_vardens) then
+
+      allocate(rho(-1:nx+2,-1:ny+2))
+
+    endif
 
   end subroutine allocate_global_arrays
   

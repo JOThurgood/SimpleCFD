@@ -469,9 +469,29 @@ module boundary_conditions
   end subroutine phi_bcs
 
   subroutine rho_bcs
-    ! stub
-    print *,'call to rho_bcs - warning - its only a stub at the moment'
+
+    if (bc_xmin == periodic) then
+      rho( 0,:) = rho(nx,:)
+      rho(-1,:) = rho(nx-1,:)
+    endif 
+
+    if (bc_xmax == periodic) then
+      rho(nx+1,:) = rho(1,:)
+      rho(nx+2,:) = rho(2,:)
+    endif 
+
+    if (bc_ymin == periodic) then
+      rho(:, 0) = rho(:,nx)
+      rho(:,-1) = rho(:,nx-1)
+    endif 
+
+    if (bc_ymax == periodic) then
+      rho(:,ny+1) = rho(:,1)
+      rho(:,ny+2) = rho(:,2)
+    endif 
+
   end subroutine rho_bcs
+
 
 
 !!!!  subroutine gradp_bcs

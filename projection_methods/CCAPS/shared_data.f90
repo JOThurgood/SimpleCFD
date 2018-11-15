@@ -67,6 +67,11 @@ module shared_data
 
   logical :: use_vardens = .false.
   real(num), dimension(:,:), allocatable :: rho
+  real(num), dimension(:,:), allocatable :: rhohxl, rhohxr !rho-hat-x-left / right
+  real(num), dimension(:,:), allocatable :: rhohyl, rhohyr
+  real(num), dimension(:,:), allocatable :: rhohx, rhohy ! upwinded rhohats on x and y face
+
+
 
   ! boundary conditions 
 

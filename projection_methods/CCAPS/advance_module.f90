@@ -627,11 +627,11 @@ module advance_module
 
     ! calculate full states with transverse terms
 
-    print *, 'STOP'
-    STOP 
 
 
     call rho_bcs(arr_xface = rhohx, arr_yface = rhohy) 
+    print *, 'STOP in advect_denst'
+    STOP 
     call velocity_bcs(arr_xface = macu, di = 0)
     call velocity_bcs(arr_xface = macu, di = 1)
 

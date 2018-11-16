@@ -377,8 +377,8 @@ module boundary_conditions
       endif 
 
       if (present(arr_xface)) then
-        arr_yface(nx+1,:) = arr_yface(1,:)
-        arr_yface(nx+2,:) = arr_yface(2,:)
+        arr_xface(nx+1,:) = arr_xface(1,:)
+        arr_xface(nx+2,:) = arr_xface(2,:)
       endif 
 
       if (present(arr_yface)) then
@@ -401,8 +401,8 @@ module boundary_conditions
       endif
 
       if (present(arr_yface)) then
-        arr_yface(:,-1) = arr_xface(:,ny-1)
-        arr_yface(:,-2) = arr_xface(:,ny-2)
+        arr_yface(:,-1) = arr_yface(:,ny-1)
+        arr_yface(:,-2) = arr_yface(:,ny-2)
       endif
 
     endif 
@@ -423,6 +423,8 @@ module boundary_conditions
     endif 
 
     ! Zero gradient
+
+    ! Driven / general dirichlet 
 
   end subroutine rho_bcs
 

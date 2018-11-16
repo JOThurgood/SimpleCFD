@@ -148,6 +148,12 @@ module setup
     if (use_vardens) then
 
       allocate(rho(-1:nx+2,-1:ny+2))
+      allocate(rhohxl(0:nx,1:ny))
+      allocate(rhohxr(0:nx,1:ny))
+      allocate(rhohyl(1:nx,0:ny))
+      allocate(rhohyr(1:nx,0:ny))
+      allocate(rhohx(-2:nx+2,-1:ny+2)) !these need ghosts
+      allocate(rhohy(-1:nx+2,-2:ny+2))
 
     endif
 

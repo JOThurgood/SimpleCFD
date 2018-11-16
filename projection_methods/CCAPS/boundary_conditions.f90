@@ -106,6 +106,98 @@ module boundary_conditions
 
     endif
 
+
+    ! Encode no-slip and more general dirchlet in one go? 
+    ! pass xb_lo, xb_hi, yb_lo, yb_hi through driven 
+    ! if (boundary) = no_slip or driven or whatever 
+        !select the boundary var (==0 if no_slip, == whatever if not)
+    ! KISS for now ...
+
+    ! No Slip
+
+    if (bc_xmin == no_slip) then
+
+      ! at xmin, centered and yface are x coordinates 
+
+      if (present(arr_cc)) then
+!        arr_cc(0,:) = arr_cc(,:) 
+!        arr_cc(-1,:) = arr_cc(,:)
+      endif
+
+      if (present(arr_yface)) then
+!        arr_yface(0,:) = arr_yface(,:)
+!        arr_yface(-1,:) = arr_yface(,:)
+      endif
+
+      ! xface
+
+      if (present(arr_xface)) then
+!        arr_xface(-1,:) = arr_xface(,:)
+!        arr_xface(-2,:) = arr_xface(,:)
+      endif
+
+    endif
+
+    if (bc_xmax == no_slip) then
+
+      if (present(arr_cc)) then
+!        arr_cc(nx+1,:) = arr_cc(,:)
+!        arr_cc(nx+2,:) = arr_cc(,:)
+      endif
+
+      if (present(arr_yface)) then
+!        arr_yface(nx+1,:) = arr_yface(,:)
+!        arr_yface(nx+2,:) = arr_yface(,:)
+      endif
+
+      if (present(arr_xface)) then
+!        arr_xface(nx+1,:) = arr_xface(,:)
+!        arr_xface(nx+2,:) = arr_xface(,:)
+      endif
+
+    endif
+
+    if (bc_ymin == no_slip) then
+
+      ! centered and xface are same y coordinates
+
+      if (present(arr_cc)) then
+!        arr_cc(:,0) = arr_cc(:,)
+!        arr_cc(:,-1) = arr_cc(:,)
+      endif
+
+      if (present(arr_xface)) then
+!        arr_xface(:,0) = arr_xface(:,)
+!        arr_xface(:,-1) = arr_xface(:,)
+      endif
+
+      if (present(arr_yface)) then
+!        arr_yface(:,-1) = arr_yface(:,)
+!        arr_yface(:,-2) = arr_yface(:,)
+      endif
+
+    endif
+
+    if (bc_ymax == no_slip) then
+
+      if (present(arr_cc)) then
+!        arr_cc(:,ny+1) = arr_cc(:,)
+!        arr_cc(:,ny+2) = arr_cc(:,)
+      endif
+
+      if (present(arr_xface)) then
+!        arr_xface(:,ny+1) = arr_xface(:,)
+!        arr_xface(:,ny+2) = arr_xface(:,)
+      endif
+
+      if (present(arr_yface)) then
+!        arr_yface(:,ny+1) = arr_yface(:,)
+!        arr_yface(:,ny+2) = arr_yface(:,)
+      endif
+
+    endif
+
+
   end subroutine velocity_bcs_new
 
   subroutine velocity_bcs

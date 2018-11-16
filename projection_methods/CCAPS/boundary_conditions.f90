@@ -15,12 +15,13 @@ module boundary_conditions
 
   contains
 
-  subroutine velocity_bcs_new(arr_cc, arr_xface, arr_yface)
+  subroutine velocity_bcs_new(arr_cc, arr_xface, arr_yface, const)
 
     real(num), dimension(-1:nx+2,-1:ny+2), optional, intent(inout) :: arr_cc
     real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
     real(num), dimension(-1:nx+2,-2:ny+2), optional, intent(inout) :: arr_yface
 
+    real(num), optional, intent(in) :: const 
 
     ! Periodic 
 
@@ -108,9 +109,6 @@ module boundary_conditions
 
 
     ! Encode no-slip and more general dirchlet in one go? 
-    ! pass xb_lo, xb_hi, yb_lo, yb_hi through driven 
-    ! if (boundary) = no_slip or driven or whatever 
-        !select the boundary var (==0 if no_slip, == whatever if not)
     ! KISS for now ...
 
     ! No Slip
@@ -196,6 +194,34 @@ module boundary_conditions
       endif
 
     endif
+
+    ! Constant / Dirichlet
+
+    ! Driven - hardcoded as u = 1 for now
+    ! problem is distinguishing between u = 1 and v = 0
+    
+    ! It would be better to handle a class of 'constant' or 'dirchlet' 
+    ! and then have the user specify the constant for each dimension
+
+    if (( bc_ymax == dirichlet) .and. (present(const))) then
+
+      if (present(arr_cc)) then
+        arr_cc(:,ny+1) = 2.0_num * const - arr_cc(:,ny)
+        arr_cc(:,ny+2) = 2.0_num * const - arr_cc(:,ny-1)
+      endif
+
+      if (present(arr_xface)) then
+        arr_xface(:,ny+1) = 2.0_num * const - arr_xface(:,ny)
+        arr_xface(:,ny+2) = 2.0_num * const - arr_xface(:,ny-1)
+      endif
+
+      if (present(arr_yface)) then
+        arr_yface(:,ny+1) = 2.0_num - arr_yface(:,ny-1)
+        arr_yface(:,ny+2) = 2.0_num - arr_yface(:,ny-2)
+      endif
+
+    endif
+
 
 
   end subroutine velocity_bcs_new

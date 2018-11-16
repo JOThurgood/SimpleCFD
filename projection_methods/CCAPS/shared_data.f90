@@ -83,5 +83,8 @@ module shared_data
   integer, parameter :: zero_gradient = 1
   integer, parameter :: no_slip = 2
   integer, parameter :: driven = 3
+  integer, parameter :: dirichlet = 4
+  real(num) :: dirichlet_ymax_u = 0.0_num
+  real(num) :: dirichlet_ymax_v = 0.0_num
 
 end module shared_data

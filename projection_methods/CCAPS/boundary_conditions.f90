@@ -10,9 +10,21 @@ module boundary_conditions
   private
 
   public :: velocity_bcs, phi_bcs, velocity_face_bcs
+  public :: velocity_bcs_new
   public :: rho_bcs
 
   contains
+
+  subroutine velocity_bcs_new(arr_cc, arr_xface, arr_yface)
+
+    real(num), dimension(-1:nx+2,-1:ny+2), optional, intent(inout) :: arr_cc
+    real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
+    real(num), dimension(-1:nx+2,-2:ny+2), optional, intent(inout) :: arr_yface
+
+    print *,'stub'
+    STOP
+
+  end subroutine velocity_bcs_new
 
   subroutine velocity_bcs
 
@@ -265,7 +277,7 @@ module boundary_conditions
       uhx(nx+2,:) = uhx(nx-2,:)
       vhx(nx+1,:) = vhx(nx-1,:)
       vhx(nx+2,:) = vhx(nx-2,:)
-      uhy(nx+1,:) = uhy(nx,:)
+      uhy(nx+1,:) = uhy(nx,:) !!!!Dont think this is correct? 
       uhy(nx+2,:) = uhy(nx-1,:)
       vhy(nx+1,:) = vhy(nx,:)
       vhy(nx+2,:) = vhy(nx-1,:)
@@ -468,27 +480,101 @@ module boundary_conditions
 
   end subroutine phi_bcs
 
-  subroutine rho_bcs
+  subroutine rho_bcs(arr_cc, arr_xface, arr_yface)
+
+    real(num), dimension(-1:nx+2,-1:ny+2), optional, intent(inout) :: arr_cc
+    real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
+    real(num), dimension(-1:nx+2,-2:ny+2), optional, intent(inout) :: arr_yface
+
+!    if (  ((present(arr_cc)) .and. present(arr_xface)) .or. &
+!          ((present(arr_cc)) .and. present(arr_yface)) .or. &
+!          ((present(arr_xface)) .and. present(arr_yface)) ) &
+!    then
+!      print *,'invalid call to rho_bcs'
+!      STOP
+!    endif
+
+    if ( .not.present(arr_cc) .and. .not.present(arr_xface) &
+        .and. .not.present(arr_yface) ) &
+    then
+      print *,'invalid call to rho_bcs'
+      STOP
+    endif
+
+    ! periodic
 
     if (bc_xmin == periodic) then
-      rho( 0,:) = rho(nx,:)
-      rho(-1,:) = rho(nx-1,:)
+
+      if (present(arr_cc)) then
+        arr_cc( 0,:) = arr_cc(nx,:)
+        arr_cc(-1,:) = arr_cc(nx-1,:)
+      endif 
+
+      if (present(arr_xface)) then
+        arr_xface(-1,:) = arr_xface(nx-1,:)
+        arr_xface(-2,:) = arr_xface(nx-2,:)
+      endif 
+
+      if (present(arr_yface)) then
+        arr_yface( 0,:) = arr_yface(nx,:)
+        arr_yface(-1,:) = arr_yface(nx-1,:)
+      endif 
+
     endif 
 
-    if (bc_xmax == periodic) then
-      rho(nx+1,:) = rho(1,:)
-      rho(nx+2,:) = rho(2,:)
-    endif 
+!    if (bc_xmax == periodic) then
+!
+!      if (present(arr_cc)) then
+!        arr_cc(nx+1,:) = arr_cc(1,:)
+!        arr_cc(nx+2,:) = arr_cc(2,:)
+!      endif 
+!
+!      if (present(arr_xface)) then
+!        arr_yface(nx+1,:) = arr_yface(1,:)
+!        arr_yface(nx+2,:) = arr_yface(2,:)
+!
+!      if (present(arr_yface)) then
+!        arr_yface(nx+1,:) = arr_yface(1,:)
+!        arr_yface(nx+2,:) = arr_yface(2,:)
+!      endif 
+!
+!    endif 
+!
+!    if (bc_ymin == periodic) then
+!
+!      if (present(arr_cc)) then
+!        arr_cc(:, 0) = arr_cc(:,ny)
+!        arr_cc(:,-1) = arr_cc(:,ny-1)
+!      endif
+!
+!      if (present(arr_xface)) then
+!        arr_xface(:, 0) = arr_xface(:,ny)
+!        arr_xface(:,-1) = arr_xface(:,ny-1)
+!      endif
+!
+!      if (present(arr_yface)) then
+!        arr_yface(:,-1) = arr_xface(:,ny-1)
+!        arr_yface(:,-2) = arr_xface(:,ny-2)
+!      endif
+!
+!    endif 
+!
+!    if (bc_ymax == periodic) then
+!      if (present(arr_cc)) then
+!        arr_cc(:,ny+1) = arr_cc(:,1)
+!        arr_cc(:,ny+2) = arr_cc(:,2)
+!      endif
+!      if (present(arr_xface)) then
+!        arr_xface(:,ny+1) = arr_xface(:,1)
+!        arr_xface(:,ny+2) = arr_xface(:,2)
+!      endif
+!      if (present(arr_yface)) then
+!        arr_yface(:,ny+1) = arr_yface(:,1)
+!        arr_yface(:,ny+2) = arr_yface(:,2)
+!      endif
+!    endif 
 
-    if (bc_ymin == periodic) then
-      rho(:, 0) = rho(:,nx)
-      rho(:,-1) = rho(:,nx-1)
-    endif 
-
-    if (bc_ymax == periodic) then
-      rho(:,ny+1) = rho(:,1)
-      rho(:,ny+2) = rho(:,2)
-    endif 
+    ! Zero gradient
 
   end subroutine rho_bcs
 

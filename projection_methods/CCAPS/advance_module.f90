@@ -560,7 +560,7 @@ module advance_module
       STOP
     endif
 
-    call rho_bcs
+    call rho_bcs(arr_cc = rho)
 
     ! calculate rhohat states on faces 
 
@@ -630,6 +630,10 @@ module advance_module
 
     print *, 'STOP'
     STOP 
+
+
+    call rho_bcs(arr_xface = rhohx, arr_yface = rhohy) 
+    call velocity_bcs_new(arr_xface = macu, arr_yface = macv)
 
     ! As is you'd have to call bcs for rhohx and rhohy in +-1 ghost here
     ! and also macu

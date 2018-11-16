@@ -487,67 +487,67 @@ module boundary_conditions
 !!!!!      vhy(:,ny+2) = vhy(:,ny-2)
 !!!!!    endif
 
-    ! No slip
-
-    if (bc_xmin == no_slip) then
-      uha(  -2,:) = -uha(2,:)
-      uha(  -1,:) = -uha(1,:)
-      vha(   0,:) = -vha(1,:)
-      vha(  -1,:) = -vha(2,:)
-      uhx(  -2,:) = -uhx(2,:)
-      uhx(  -1,:) = -uhx(1,:)
-      vhx(  -2,:) = -vhx(2,:)
-      vhx(  -1,:) = -vhx(1,:)
-      uhy(   0,:) = -uhy(1,:)
-      uhy(  -1,:) = -uhy(2,:)
-      vhy(   0,:) = -vhy(1,:)
-      vhy(  -1,:) = -vhy(2,:)
-    endif 
-
-    if (bc_xmax == no_slip) then
-      uha(nx+1,:) = -uha(nx-1,:)
-      uha(nx+2,:) = -uha(nx-2,:)
-      vha(nx+1,:) = -vha(nx,:)
-      vha(nx+2,:) = -vha(nx-1,:)
-      uhx(nx+1,:) = -uhx(nx-1,:)
-      uhx(nx+2,:) = -uhx(nx-2,:)
-      vhx(nx+1,:) = -vhx(nx-1,:)
-      vhx(nx+2,:) = -vhx(nx-2,:)
-      uhy(nx+1,:) = -uhy(nx,:)
-      uhy(nx+2,:) = -uhy(nx-1,:)
-      vhy(nx+1,:) = -vhy(nx,:)
-      vhy(nx+2,:) = -vhy(nx-1,:)
-    endif 
-
-    if (bc_ymin == no_slip) then
-      uha(:,  -1) = -uha(:,2)
-      uha(:,   0) = -uha(:,1)
-      vha(:,  -1) = -vha(:,1)
-      vha(:,  -2) = -vha(:,2)
-      uhx(:,  -1) = -uhx(:,2)
-      uhx(:,   0) = -uhx(:,1)
-      vhx(:,  -1) = -vhx(:,2)
-      vhx(:,   0) = -vhx(:,1)
-      uhy(:,  -1) = -uhy(:,1)
-      uhy(:,  -2) = -uhy(:,2)
-      vhy(:,  -1) = -vhy(:,1)
-      vhy(:,  -2) = -vhy(:,2)
-    endif
-
-    if (bc_ymax == no_slip) then
-      uha(:,ny+1) = -uha(:,ny)
-      uha(:,ny+2) = -uha(:,ny-1)
-      vha(:,ny+1) = -vha(:,ny-1)
-      vha(:,ny+2) = -vha(:,ny-2)
-      uhx(:,ny+1) = -uhx(:,ny)
-      uhx(:,ny+2) = -uhx(:,ny-1)
-      vhx(:,ny+1) = -vhx(:,ny)
-      vhx(:,ny+2) = -vhx(:,ny-1)
-      uhy(:,ny+1) = -uhy(:,ny-1)
-      uhy(:,ny+2) = -uhy(:,ny-2)
-      vhy(:,ny+1) = -vhy(:,ny-1)
-      vhy(:,ny+2) = -vhy(:,ny-2)
-    endif
+!!!    ! No slip
+!!!
+!!!    if (bc_xmin == no_slip) then
+!!!      uha(  -2,:) = -uha(2,:)
+!!!      uha(  -1,:) = -uha(1,:)
+!!!      vha(   0,:) = -vha(1,:)
+!!!      vha(  -1,:) = -vha(2,:)
+!!!      uhx(  -2,:) = -uhx(2,:)
+!!!      uhx(  -1,:) = -uhx(1,:)
+!!!      vhx(  -2,:) = -vhx(2,:)
+!!!      vhx(  -1,:) = -vhx(1,:)
+!!!      uhy(   0,:) = -uhy(1,:)
+!!!      uhy(  -1,:) = -uhy(2,:)
+!!!      vhy(   0,:) = -vhy(1,:)
+!!!      vhy(  -1,:) = -vhy(2,:)
+!!!    endif 
+!!!
+!!!    if (bc_xmax == no_slip) then
+!!!      uha(nx+1,:) = -uha(nx-1,:)
+!!!      uha(nx+2,:) = -uha(nx-2,:)
+!!!      vha(nx+1,:) = -vha(nx,:)
+!!!      vha(nx+2,:) = -vha(nx-1,:)
+!!!      uhx(nx+1,:) = -uhx(nx-1,:)
+!!!      uhx(nx+2,:) = -uhx(nx-2,:)
+!!!      vhx(nx+1,:) = -vhx(nx-1,:)
+!!!      vhx(nx+2,:) = -vhx(nx-2,:)
+!!!      uhy(nx+1,:) = -uhy(nx,:)
+!!!      uhy(nx+2,:) = -uhy(nx-1,:)
+!!!      vhy(nx+1,:) = -vhy(nx,:)
+!!!      vhy(nx+2,:) = -vhy(nx-1,:)
+!!!    endif 
+!!!
+!!!    if (bc_ymin == no_slip) then
+!!!      uha(:,  -1) = -uha(:,2)
+!!!      uha(:,   0) = -uha(:,1)
+!!!      vha(:,  -1) = -vha(:,1)
+!!!      vha(:,  -2) = -vha(:,2)
+!!!      uhx(:,  -1) = -uhx(:,2)
+!!!      uhx(:,   0) = -uhx(:,1)
+!!!      vhx(:,  -1) = -vhx(:,2)
+!!!      vhx(:,   0) = -vhx(:,1)
+!!!      uhy(:,  -1) = -uhy(:,1)
+!!!      uhy(:,  -2) = -uhy(:,2)
+!!!      vhy(:,  -1) = -vhy(:,1)
+!!!      vhy(:,  -2) = -vhy(:,2)
+!!!    endif
+!!!
+!!!    if (bc_ymax == no_slip) then
+!!!      uha(:,ny+1) = -uha(:,ny)
+!!!      uha(:,ny+2) = -uha(:,ny-1)
+!!!      vha(:,ny+1) = -vha(:,ny-1)
+!!!      vha(:,ny+2) = -vha(:,ny-2)
+!!!      uhx(:,ny+1) = -uhx(:,ny)
+!!!      uhx(:,ny+2) = -uhx(:,ny-1)
+!!!      vhx(:,ny+1) = -vhx(:,ny)
+!!!      vhx(:,ny+2) = -vhx(:,ny-1)
+!!!      uhy(:,ny+1) = -uhy(:,ny-1)
+!!!      uhy(:,ny+2) = -uhy(:,ny-2)
+!!!      vhy(:,ny+1) = -vhy(:,ny-1)
+!!!      vhy(:,ny+2) = -vhy(:,ny-2)
+!!!    endif
   
     ! driven 
 

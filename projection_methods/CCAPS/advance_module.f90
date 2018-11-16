@@ -56,7 +56,7 @@ module advance_module
 
     call velocity_bcs_new(arr_cc=u)
     call velocity_bcs_new(arr_cc=v)
-!    call velocity_bcs ! for driven lid - zero grad + periodic should be commented out
+    call velocity_bcs ! for driven lid - zero grad + periodic should be commented out
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
   
@@ -174,10 +174,11 @@ module advance_module
 
     ! (actually get them on all interfaces, as needed later steps)
 
-    call velocity_face_bcs
+!    call velocity_face_bcs
     call velocity_bcs_new(arr_xface = uha, arr_yface = vha)
     call velocity_bcs_new(arr_xface = uhx, arr_yface = uhy)
     call velocity_bcs_new(arr_xface = vhx, arr_yface = vhy)
+    call velocity_face_bcs !debugging lid
 
     do iy = 0, ny
     do ix = 0, ny
@@ -479,6 +480,7 @@ module advance_module
 !    call velocity_bcs
     call velocity_bcs_new(arr_cc=ustar)
     call velocity_bcs_new(arr_cc=vstar)
+    call velocity_bcs ! for lid test
 
     do iy = 1, ny
     do ix = 1, nx
@@ -525,6 +527,7 @@ module advance_module
 !    call velocity_bcs
     call velocity_bcs_new(arr_cc=u)
     call velocity_bcs_new(arr_cc=v)
+    call velocity_bcs ! for lid test 
 
     do iy = 1, ny
     do ix = 1, nx

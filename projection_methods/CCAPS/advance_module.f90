@@ -50,13 +50,9 @@ module advance_module
 
     ! x faced data 
 
-!    call velocity_bcs
-
-    ! test new velocity conditions by calling it after, as you add bit by bit, and ensuring answer doesnt change
-
     call velocity_bcs_new(arr_cc=u,di=0)
     call velocity_bcs_new(arr_cc=v,di=1)
-!    call velocity_bcs ! for driven lid - zero grad + periodic should be commented out
+
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
   
@@ -174,12 +170,10 @@ module advance_module
 
     ! (actually get them on all interfaces, as needed later steps)
 
-!    call velocity_face_bcs
     call velocity_bcs_new(arr_xface = uha, di =0)
     call velocity_bcs_new(arr_yface = vha, di =1)
     call velocity_bcs_new(arr_xface = uhx, arr_yface = uhy, di=0)
     call velocity_bcs_new(arr_xface = vhx, arr_yface = vhy, di=1)
-!    call velocity_face_bcs !debugging lid
 
     do iy = 0, ny
     do ix = 0, ny
@@ -478,10 +472,8 @@ module advance_module
     ! calc divU at cc using the star velocities which themselves are cc
     ! (this differs to step two which uses face vars to get a CC var)
 
-!    call velocity_bcs
     call velocity_bcs_new(arr_cc=ustar, di=0)
     call velocity_bcs_new(arr_cc=vstar, di=1)
-!    call velocity_bcs ! for lid test
 
     do iy = 1, ny
     do ix = 1, nx
@@ -525,10 +517,8 @@ module advance_module
 
     ! calculate the divergence of the updated velocity field
 
-!    call velocity_bcs
     call velocity_bcs_new(arr_cc=u, di = 0)
     call velocity_bcs_new(arr_cc=v, di = 1)
-!    call velocity_bcs ! for lid test 
 
     do iy = 1, ny
     do ix = 1, nx
@@ -557,13 +547,6 @@ module advance_module
  
     enddo
     enddo
-
-    ! No longer calc gradp in real domain (1:nx,1:ny) and apply bc to it
-    ! Its only needed in (0:nx+1,0:ny+1) so just calculate it direct
-    ! from phi + phi's BCs. Enforces consistency and is one less
-    ! of bc's to worry about coding up
-
-    !call gradp_bcs
 
   end subroutine step_5
 
@@ -721,9 +704,10 @@ module advance_module
 
     real(num) :: dtx, dty 
 
+    ! need to call for driven if u=v=0 in the initial_conditions call
     call velocity_bcs_new(arr_cc = u, di = 0) 
-    ! needed for driven if u=v=0 in domain, so dt/=inf
     call velocity_bcs_new(arr_cc = v, di = 1)
+
     dtx = CFL * dx / maxval(abs(u))
     dty = CFL * dy / maxval(abs(v))
     dt = MIN(dtx,dty)

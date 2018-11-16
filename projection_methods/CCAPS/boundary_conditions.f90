@@ -21,8 +21,34 @@ module boundary_conditions
     real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
     real(num), dimension(-1:nx+2,-2:ny+2), optional, intent(inout) :: arr_yface
 
-    print *,'stub'
-    STOP
+
+    if (bc_xmin == periodic) then
+      if (present(arr_cc)) then
+        arr_cc(0,:) = arr_cc(nx,:)
+        arr_cc(-1,:) = arr_cc(nx-1,:)
+      endif
+    endif
+
+    if (bc_xmax == periodic) then
+      if (present(arr_cc)) then
+        arr_cc(nx+1,:) = arr_cc(1,:)
+        arr_cc(nx+2,:) = arr_cc(2,:)
+      endif
+    endif
+
+    if (bc_ymin == periodic) then
+      if (present(arr_cc)) then
+        arr_cc(:,0) = arr_cc(:,ny)
+        arr_cc(:,-1) = arr_cc(:,ny-1)
+      endif
+    endif
+
+    if (bc_ymax == periodic) then
+      if (present(arr_cc)) then
+        arr_cc(:,ny+1) = arr_cc(:,1)
+        arr_cc(:,ny+2) = arr_cc(:,2)
+      endif
+    endif
 
   end subroutine velocity_bcs_new
 

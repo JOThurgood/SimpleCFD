@@ -52,6 +52,11 @@ module advance_module
 
     call velocity_bcs
 
+    ! test new velocity conditions by calling it after, as you add bit by bit, and ensuring answer doesnt change
+
+    call velocity_bcs_new(arr_cc=u)
+    call velocity_bcs_new(arr_cc=v)
+
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
   

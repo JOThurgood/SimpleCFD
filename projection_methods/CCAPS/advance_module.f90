@@ -175,9 +175,9 @@ module advance_module
     ! (actually get them on all interfaces, as needed later steps)
 
     call velocity_face_bcs
-    call velocity_bcs_new(arr_xface = uha)
-    call velocity_bcs_new(arr_xface = uhx)
-    call velocity_bcs_new(arr_xface = vhx)
+    call velocity_bcs_new(arr_xface = uha, arr_yface = vha)
+    call velocity_bcs_new(arr_xface = uhx, arr_yface = uhy)
+    call velocity_bcs_new(arr_xface = vhx, arr_yface = vhy)
 
     do iy = 0, ny
     do ix = 0, ny

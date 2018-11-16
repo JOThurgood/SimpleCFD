@@ -15,13 +15,21 @@ module boundary_conditions
 
   contains
 
-  subroutine velocity_bcs_new(arr_cc, arr_xface, arr_yface, const)
+  subroutine velocity_bcs_new(arr_cc, arr_xface, arr_yface, di)
 
     real(num), dimension(-1:nx+2,-1:ny+2), optional, intent(inout) :: arr_cc
     real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
     real(num), dimension(-1:nx+2,-2:ny+2), optional, intent(inout) :: arr_yface
 
-    real(num), optional, intent(in) :: const 
+    integer, intent(in) :: di
+
+    real(num) :: const 
+
+    if ( (di /= 0) .and. (di /=1) ) then 
+      print *,'di not given in velocity_bcs'
+      STOP
+    endif
+
 
     ! Periodic 
 
@@ -203,7 +211,15 @@ module boundary_conditions
     ! It would be better to handle a class of 'constant' or 'dirchlet' 
     ! and then have the user specify the constant for each dimension
 
-    if (( bc_ymax == dirichlet) .and. (present(const))) then
+    if ( bc_ymax == dirichlet) then
+
+      if (di == 0) then
+        const = 1.0_num
+      else if (di == 1) then
+        const = 0.0_num
+      else 
+        STOP
+      endif
 
       if (present(arr_cc)) then
         arr_cc(:,ny+1) = 2.0_num * const - arr_cc(:,ny)
@@ -216,8 +232,8 @@ module boundary_conditions
       endif
 
       if (present(arr_yface)) then
-        arr_yface(:,ny+1) = 2.0_num - arr_yface(:,ny-1)
-        arr_yface(:,ny+2) = 2.0_num - arr_yface(:,ny-2)
+        arr_yface(:,ny+1) = 2.0_num * const - arr_yface(:,ny-1)
+        arr_yface(:,ny+2) = 2.0_num * const - arr_yface(:,ny-2)
       endif
 
     endif

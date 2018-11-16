@@ -54,9 +54,9 @@ module advance_module
 
     ! test new velocity conditions by calling it after, as you add bit by bit, and ensuring answer doesnt change
 
-    call velocity_bcs_new(arr_cc=u)
-    call velocity_bcs_new(arr_cc=v)
-    call velocity_bcs ! for driven lid - zero grad + periodic should be commented out
+    call velocity_bcs_new(arr_cc=u,di=0)
+    call velocity_bcs_new(arr_cc=v,di=1)
+!    call velocity_bcs ! for driven lid - zero grad + periodic should be commented out
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
   
@@ -175,10 +175,11 @@ module advance_module
     ! (actually get them on all interfaces, as needed later steps)
 
 !    call velocity_face_bcs
-    call velocity_bcs_new(arr_xface = uha, arr_yface = vha)
-    call velocity_bcs_new(arr_xface = uhx, arr_yface = uhy)
-    call velocity_bcs_new(arr_xface = vhx, arr_yface = vhy)
-    call velocity_face_bcs !debugging lid
+    call velocity_bcs_new(arr_xface = uha, di =0)
+    call velocity_bcs_new(arr_yface = vha, di =1)
+    call velocity_bcs_new(arr_xface = uhx, arr_yface = uhy, di=0)
+    call velocity_bcs_new(arr_xface = vhx, arr_yface = vhy, di=1)
+!    call velocity_face_bcs !debugging lid
 
     do iy = 0, ny
     do ix = 0, ny
@@ -478,9 +479,9 @@ module advance_module
     ! (this differs to step two which uses face vars to get a CC var)
 
 !    call velocity_bcs
-    call velocity_bcs_new(arr_cc=ustar)
-    call velocity_bcs_new(arr_cc=vstar)
-    call velocity_bcs ! for lid test
+    call velocity_bcs_new(arr_cc=ustar, di=0)
+    call velocity_bcs_new(arr_cc=vstar, di=1)
+!    call velocity_bcs ! for lid test
 
     do iy = 1, ny
     do ix = 1, nx
@@ -525,9 +526,9 @@ module advance_module
     ! calculate the divergence of the updated velocity field
 
 !    call velocity_bcs
-    call velocity_bcs_new(arr_cc=u)
-    call velocity_bcs_new(arr_cc=v)
-    call velocity_bcs ! for lid test 
+    call velocity_bcs_new(arr_cc=u, di = 0)
+    call velocity_bcs_new(arr_cc=v, di = 1)
+!    call velocity_bcs ! for lid test 
 
     do iy = 1, ny
     do ix = 1, nx
@@ -648,7 +649,8 @@ module advance_module
 
 
     call rho_bcs(arr_xface = rhohx, arr_yface = rhohy) 
-    call velocity_bcs_new(arr_xface = macu, arr_yface = macv)
+    call velocity_bcs_new(arr_xface = macu, di = 0)
+    call velocity_bcs_new(arr_xface = macu, di = 1)
 
     ! As is you'd have to call bcs for rhohx and rhohy in +-1 ghost here
     ! and also macu
@@ -719,8 +721,9 @@ module advance_module
 
     real(num) :: dtx, dty 
 
-    call velocity_bcs ! needed for driven if u=v=0 in domain, so dt/=inf
-
+    call velocity_bcs_new(arr_cc = u, di = 0) 
+    ! needed for driven if u=v=0 in domain, so dt/=inf
+    call velocity_bcs_new(arr_cc = v, di = 1)
     dtx = CFL * dx / maxval(abs(u))
     dty = CFL * dy / maxval(abs(v))
     dt = MIN(dtx,dty)

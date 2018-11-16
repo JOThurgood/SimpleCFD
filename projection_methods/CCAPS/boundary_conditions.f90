@@ -9,12 +9,12 @@ module boundary_conditions
 
   private
 
-  public :: velocity_bcs_new, phi_bcs
+  public :: velocity_bcs, phi_bcs
   public :: rho_bcs
 
   contains
 
-  subroutine velocity_bcs_new(arr_cc, arr_xface, arr_yface, di)
+  subroutine velocity_bcs(arr_cc, arr_xface, arr_yface, di)
 
     real(num), dimension(-1:nx+2,-1:ny+2), optional, intent(inout) :: arr_cc
     real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
@@ -239,7 +239,7 @@ module boundary_conditions
 
 
 
-  end subroutine velocity_bcs_new
+  end subroutine velocity_bcs
 
 
   subroutine phi_bcs

@@ -113,5 +113,28 @@ module initial_conditions
   end subroutine driven_lid_ic
 
 
+  subroutine vardens_adv_test_ic
+
+    real(num) :: x,y
+
+    u = 0.0_num
+    v = 1.0_num
+
+    rho = 1.0_num
+
+    do iy = -1,ny+1
+    do ix = -1,nx+1
+      x = xc(ix)
+      y = yc(iy)
+      rho(ix,iy) = 1.0_num
+      if ( (y >= 0.25_num) .and. (y <= 0.75_num) ) then
+      rho(ix,iy) = 2.0_num
+      endif 
+    enddo
+    enddo
+
+    print *,'max numerical divu in ICs',maxval(abs(divu))
+  end subroutine vardens_adv_test_ic
+
 end module initial_conditions
 

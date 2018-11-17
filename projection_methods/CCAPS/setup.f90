@@ -20,6 +20,7 @@ module setup
     if (minion_test) call minion_test_control 
     if (vortex1_test) call vortex1_test_control
     if (drivenlid_test) call driven_lid_control
+    if (vardens_adv_test) call vardens_adv_test_control
 
     call allocate_global_arrays
 
@@ -28,6 +29,7 @@ module setup
     if (minion_test) call minion_test_ic
     if (vortex1_test) call vortex1_test_ic
     if (drivenlid_test) call driven_lid_ic
+    if (vardens_adv_test) call vardens_adv_test_ic
 
 
     step = -1 !so that the bootstrap can be in the main loop (+1)
@@ -44,6 +46,7 @@ module setup
     if (minion_test) call minion_test_ic
     if (vortex1_test) call vortex1_test_ic
     if (drivenlid_test) call driven_lid_ic
+    if (vardens_adv_test) call vardens_adv_test_ic
 
     time = 0.0_num !reset to zero important
 

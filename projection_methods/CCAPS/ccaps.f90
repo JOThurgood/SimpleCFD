@@ -28,6 +28,7 @@ program ccaps
     ! special diagnostics
     if (minion_test) call test_minion
     if (drivenlid_test) call test_steady
+    if (vardens_adv_test) print *, 'rho on grid',sum(rho(1:nx,1:ny)*dx*dy)
 
     ! periodic dumps 
     if (modulo(step,dumpfreq) == 0) call sln_plots
@@ -39,6 +40,7 @@ program ccaps
   else 
     call sln_plots
   endif
-!    print *,'warning bootstrap turned off'
+
+
   print *, 'CCAPS Terminated Normally'
 end program ccaps

@@ -190,8 +190,13 @@ module setup
     print *,'With gradient limiting options'
     print *,''
     print *,'use_minmod',use_minmod
- 
 
+    print *,''
+    print *,'with extra physics options'
+    print *,''
+    print *,'use_viscosity',use_viscosity
+    print *,'use_vardens',use_vardens
+    
   end subroutine setup_report
 
 end module setup

@@ -39,9 +39,9 @@ module control
     ! favour of the specific problems
 
 !    shear_test = .true.
-!    minion_test = .true. 
+    minion_test = .true. 
 !    vortex1_test = .true.
-    drivenlid_test = .true.
+!    drivenlid_test = .true.
     ! DONT set more than one of the above true
 
   end subroutine user_control
@@ -86,6 +86,9 @@ module control
     bc_ymin = periodic
     bc_ymax = periodic
     dumpfreq = 10000
+
+    use_vardens = .true.
+
   end subroutine minion_test_control
 
   subroutine vortex1_test_control

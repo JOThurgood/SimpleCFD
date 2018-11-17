@@ -122,8 +122,8 @@ module setup
     allocate(ua(0:nx,1:ny)) ! ua - u advective (x face)
     allocate(va(1:nx,0:ny)) ! v  advective (y face)
 
-    allocate(macu(0:nx,1:ny)) ! mac velocities on faces
-    allocate(macv(1:nx,0:ny)) 
+    allocate(macu(-2:nx+2,-1:ny+2)) ! mac velocities on faces
+    allocate(macv(-1:nx+2,-2:ny+2)) 
 
     allocate(ux(0:nx,1:ny)) ! u on x face
     allocate(uy(1:nx,0:ny)) !u on y face

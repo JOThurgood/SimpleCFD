@@ -627,24 +627,10 @@ module advance_module
     ! calculate full states with transverse terms
 
 
-!    call rho_bcs(arr_xface = rhohx, arr_yface = rhohy) 
-!    call velocity_bcs(arr_xface = macu, di = 0)
-!    call velocity_bcs(arr_yface = macv, di = 1)
+    call rho_bcs(arr_xface = rhohx, arr_yface = rhohy) 
+    call velocity_bcs(arr_xface = macu, di = 0)
+    call velocity_bcs(arr_yface = macv, di = 1)
 
-print *,'stop in advect_dens'
-STOP
-
-    ! As is you'd have to call bcs for rhohx and rhohy in +-1 ghost here
-    ! and also macu
-
-    ! I think if limits had been handled properly earlier, all of this 
-    ! info should be available from the main boundaries. 
-
-    ! fix it for the core solver (i.e., in step 1), verify it, and then
-    ! extend the approach here
-
-    ! call rho_bcs
-    ! call macu_bcs
 
     do ix = 0, nx
     do iy = 0, ny
@@ -670,7 +656,6 @@ STOP
       endif
     enddo
     enddo
-
     ! resolve states via upwind
 
     do ix = 0, nx
@@ -693,7 +678,6 @@ STOP
         & - dt / dy * (rhoy(ix,iy)*macv(ix,iy) - rhoy(ix,iy-1)*macv(ix,iy-1))
     enddo
     enddo
-
 
   end subroutine advect_dens
   

@@ -14,21 +14,22 @@ module boundary_conditions
 
   contains
 
+
   subroutine velocity_bcs(arr_cc, arr_xface, arr_yface, di)
 
-    real(num), dimension(-1:nx+2,-1:ny+2), optional, intent(inout) :: arr_cc
-    real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
-    real(num), dimension(-1:nx+2,-2:ny+2), optional, intent(inout) :: arr_yface
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_cc
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_xface
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_yface
 
     integer, intent(in) :: di
 
     real(num) :: const 
 
-    if ( (di /= 0) .and. (di /=1) ) then 
-      print *,'di not given in velocity_bcs'
-      STOP
-    endif
+    ! Sanity checks
 
+    if (present(arr_cc)) call bc_sanity_check(arr_cc=arr_cc, di=di, varname='vel_bcs')
+    if (present(arr_xface)) call bc_sanity_check(arr_xface=arr_xface, di=di, varname='vel_bcs')
+    if (present(arr_yface)) call bc_sanity_check(arr_yface=arr_yface, di=di, varname='vel_bcs')
 
     ! Periodic 
 
@@ -327,25 +328,24 @@ module boundary_conditions
   end subroutine phi_bcs
 
   subroutine rho_bcs(arr_cc, arr_xface, arr_yface)
+ 
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_cc
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_xface
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_yface
+    integer :: di = 0 ! not meaningful for rho (scalar), but set to something
+      ! to stop bc_sanity_check from complaining for now
 
-    real(num), dimension(-1:nx+2,-1:ny+2), optional, intent(inout) :: arr_cc
-    real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
-    real(num), dimension(-1:nx+2,-2:ny+2), optional, intent(inout) :: arr_yface
 
-!    if (  ((present(arr_cc)) .and. present(arr_xface)) .or. &
-!          ((present(arr_cc)) .and. present(arr_yface)) .or. &
-!          ((present(arr_xface)) .and. present(arr_yface)) ) &
-!    then
-!      print *,'invalid call to rho_bcs'
-!      STOP
-!    endif
+!    real(num), dimension(-1:nx+2,-1:ny+2), optional, intent(inout) :: arr_cc
+!    real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
+!    real(num), dimension(-1:nx+2,-2:ny+2), optional, intent(inout) :: arr_yface
+ 
+   ! Sanity checks
 
-    if ( .not.present(arr_cc) .and. .not.present(arr_xface) &
-        .and. .not.present(arr_yface) ) &
-    then
-      print *,'invalid call to rho_bcs'
-      STOP
-    endif
+    if (present(arr_cc)) call bc_sanity_check(arr_cc=arr_cc, di=di, varname='rho_bcs')
+    if (present(arr_xface)) call bc_sanity_check(arr_xface=arr_xface, di=di, varname='rho_bcs')
+    if (present(arr_yface)) call bc_sanity_check(arr_yface=arr_yface, di=di, varname='rho_bcs')
+
 
     ! periodic
 
@@ -428,6 +428,92 @@ module boundary_conditions
 
   end subroutine rho_bcs
 
+  subroutine bc_sanity_check(arr_cc, arr_xface, arr_yface,di,varname)
+
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_cc
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_xface
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_yface
+    integer, intent(in) :: di
+    character(len=7) :: varname
+
+    ! check component is specified
+    ! you should change this so x is 1, y is 2 consistent with fortran dimensions
+    if ( (di /= 0) .and. (di /=1) ) then 
+      print *,'di not given in    ', varname
+      STOP
+    endif
+    
+    ! check at least valid one argument is present
+    if ( (.not. present(arr_cc)) .and. &
+      &  (.not. present(arr_xface)) .and. &
+      &  (.not. present(arr_yface)) ) &
+    then
+      print *, 'bad call to    ',varname,'    no valid arguments'
+      STOP
+    endif
+
+    ! check the shape and bounds of the arguments are as expected
+
+    if ( present(arr_cc) ) then
+      ! print *, shape(arr_cc)
+      if ( (lbound(arr_cc,1) /= -1) .or. &
+           (lbound(arr_cc,2) /= -1) .or. &
+           (ubound(arr_cc,1) /= nx+2) .or. &
+           (ubound(arr_cc,2) /= ny+2) ) &
+      then
+        print *, 'bad bounds on arr_cc passed to     ',varname
+        print *,'lbound(arr_cc) =',lbound(arr_cc)
+        print *,'ubound(arr_cc) =',ubound(arr_cc)
+      endif
+           
+
+      if ((size(arr_cc,1) /= nx+4) .or. (size(arr_cc,2) /= ny+4 ) )then
+        print *, 'bad sized arr_cc to ',varname
+        STOP
+      endif
+    endif
+
+    if ( present(arr_xface) ) then
+      ! print *, shape(arr_xface)
+      if ( (lbound(arr_xface,1) /= -2) .or. &
+           (lbound(arr_xface,2) /= -1) .or. &
+           (ubound(arr_xface,1) /= nx+2) .or. &
+           (ubound(arr_xface,2) /= ny+2) ) &
+      then
+        print *, 'bad bounds on arr_xface passed to     ',varname
+        print *,'lbound(arr_xface) =',lbound(arr_xface)
+        print *,'ubound(arr_xface) =',ubound(arr_xface)
+      endif
+           
+
+      if ((size(arr_xface,1) /= nx+5) .or. (size(arr_xface,2) /= ny+4 ) )then
+        print *, 'bad sized arr_xface to ',varname
+        STOP
+      endif
+    endif
+
+    if ( present(arr_yface) ) then
+      ! print *, shape(arr_yface)
+      if ( (lbound(arr_yface,1) /= -1) .or. &
+           (lbound(arr_yface,2) /= -2) .or. &
+           (ubound(arr_yface,1) /= nx+2) .or. &
+           (ubound(arr_yface,2) /= ny+2) ) &
+      then
+        print *, 'bad bounds on arr_yface passed to     ',varname
+        print *,'lbound(arr_yface) =',lbound(arr_yface)
+        print *,'ubound(arr_yface) =',ubound(arr_yface)
+      endif
+           
+
+      if ((size(arr_yface,1) /= nx+4) .or. (size(arr_yface,2) /= ny+5 ) )then
+        print *, 'bad sized arr_yface to ',varname
+        STOP
+      endif
+
+    endif
+
+
+  end subroutine bc_sanity_check
 
 ! Old + redundant boundary conditions below
 

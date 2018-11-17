@@ -52,7 +52,6 @@ module advance_module
 
     call velocity_bcs(arr_cc=u,di=0)
     call velocity_bcs(arr_cc=v,di=1)
-
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
   
@@ -628,12 +627,12 @@ module advance_module
     ! calculate full states with transverse terms
 
 
+!    call rho_bcs(arr_xface = rhohx, arr_yface = rhohy) 
+!    call velocity_bcs(arr_xface = macu, di = 0)
+!    call velocity_bcs(arr_yface = macv, di = 1)
 
-    call rho_bcs(arr_xface = rhohx, arr_yface = rhohy) 
-    print *, 'STOP in advect_denst'
-    STOP 
-    call velocity_bcs(arr_xface = macu, di = 0)
-    call velocity_bcs(arr_xface = macu, di = 1)
+print *,'stop in advect_dens'
+STOP
 
     ! As is you'd have to call bcs for rhohx and rhohy in +-1 ghost here
     ! and also macu

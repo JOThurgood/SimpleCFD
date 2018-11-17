@@ -50,13 +50,8 @@ module advance_module
 
     ! x faced data 
 
-!    call velocity_bcs
-
-    ! test new velocity conditions by calling it after, as you add bit by bit, and ensuring answer doesnt change
-
-    call velocity_bcs_new(arr_cc=u)
-    call velocity_bcs_new(arr_cc=v)
-    call velocity_bcs ! for driven lid - zero grad + periodic should be commented out
+    call velocity_bcs(arr_cc=u,di=0)
+    call velocity_bcs(arr_cc=v,di=1)
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
   
@@ -174,11 +169,10 @@ module advance_module
 
     ! (actually get them on all interfaces, as needed later steps)
 
-!    call velocity_face_bcs
-    call velocity_bcs_new(arr_xface = uha, arr_yface = vha)
-    call velocity_bcs_new(arr_xface = uhx, arr_yface = uhy)
-    call velocity_bcs_new(arr_xface = vhx, arr_yface = vhy)
-    call velocity_face_bcs !debugging lid
+    call velocity_bcs(arr_xface = uha, di =0)
+    call velocity_bcs(arr_yface = vha, di =1)
+    call velocity_bcs(arr_xface = uhx, arr_yface = uhy, di=0)
+    call velocity_bcs(arr_xface = vhx, arr_yface = vhy, di=1)
 
     do iy = 0, ny
     do ix = 0, ny
@@ -332,9 +326,12 @@ module advance_module
 !    call plot_divergence_now
 !    if (step /=0) call plot_divergence_now
 
+    if (use_vardens) call rho_bcs ! needed for any OOB in relax and correction 
 
     if (use_vardens) then
-      !stub
+      call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
+        & eta= 1.0_num / rho, &
+        & use_old_phi = .false., tol = 1e-18_num) 
     else
       call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
         & alpha = 0.0_num, beta = -1.0_num, &
@@ -344,14 +341,21 @@ module advance_module
 
     print *, '*** max divu before cleaning',maxval(abs(divu))
 
+
     do ix = 0, nx
     do iy = 0, ny
       if (iy /= 0) then !can do the xface stuff
         correction = (phi(ix+1,iy) - phi(ix,iy))/dx
+        if (use_vardens) then
+          correction = correction / &
+            (0.5_num * (rho(ix,iy) + rho(ix+1,iy)))
+        endif
         macu(ix,iy) = macu(ix,iy) - correction 
       endif
       if (ix /= 0) then !can do the yface stuff
         correction = (phi(ix,iy+1)-phi(ix,iy))/dy
+        if (use_vardens) correction = correction / &
+            (0.5_num * (rho(ix,iy) + rho(ix,iy+1)))
         macv(ix,iy) = macv(ix,iy) - correction 
       endif
     enddo
@@ -477,10 +481,8 @@ module advance_module
     ! calc divU at cc using the star velocities which themselves are cc
     ! (this differs to step two which uses face vars to get a CC var)
 
-!    call velocity_bcs
-    call velocity_bcs_new(arr_cc=ustar)
-    call velocity_bcs_new(arr_cc=vstar)
-    call velocity_bcs ! for lid test
+    call velocity_bcs(arr_cc=ustar, di=0)
+    call velocity_bcs(arr_cc=vstar, di=1)
 
     do iy = 1, ny
     do ix = 1, nx
@@ -495,7 +497,9 @@ module advance_module
     divu = divu/dt
 
     if (use_vardens) then
-      ! stub
+      call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
+        & eta= 1.0_num / rho, &
+        & use_old_phi = .false., tol = 1e-18_num) 
     else
       call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
         alpha = 0.0_num, beta = -1.0_num, &
@@ -513,10 +517,12 @@ module advance_module
 
       gpsi = (phi(ix+1,iy) - phi(ix-1,iy))/dx/2.0_num
       correction = dt * gpsi
+      if (use_vardens) correction = correction/rho(ix,iy) !cc here
       u(ix,iy) = ustar(ix,iy) - correction 
 
       gpsi = (phi(ix,iy+1)-phi(ix,iy-1))/dy/2.0_num
       correction = dt * gpsi
+      if (use_vardens) correction = correction/rho(ix,iy)
       v(ix,iy) = vstar(ix,iy) - correction 
 
     enddo
@@ -524,10 +530,8 @@ module advance_module
 
     ! calculate the divergence of the updated velocity field
 
-!    call velocity_bcs
-    call velocity_bcs_new(arr_cc=u)
-    call velocity_bcs_new(arr_cc=v)
-    call velocity_bcs ! for lid test 
+    call velocity_bcs(arr_cc=u, di = 0)
+    call velocity_bcs(arr_cc=v, di = 1)
 
     do iy = 1, ny
     do ix = 1, nx
@@ -557,23 +561,11 @@ module advance_module
     enddo
     enddo
 
-    ! No longer calc gradp in real domain (1:nx,1:ny) and apply bc to it
-    ! Its only needed in (0:nx+1,0:ny+1) so just calculate it direct
-    ! from phi + phi's BCs. Enforces consistency and is one less
-    ! of bc's to worry about coding up
-
-    !call gradp_bcs
-
   end subroutine step_5
 
   subroutine advect_dens
 
     real(num) :: drho
-
-    if (.not. use_vardens) then !this is probabally unnecessary
-      print *,'why have you called advect_dens without use_vardens=.true.'
-      STOP
-    endif
 
     call rho_bcs(arr_cc = rho)
 
@@ -643,24 +635,11 @@ module advance_module
 
     ! calculate full states with transverse terms
 
-    print *, 'STOP'
-    STOP 
-
 
     call rho_bcs(arr_xface = rhohx, arr_yface = rhohy) 
-    call velocity_bcs_new(arr_xface = macu, arr_yface = macv)
+    call velocity_bcs(arr_xface = macu, di = 0)
+    call velocity_bcs(arr_yface = macv, di = 1)
 
-    ! As is you'd have to call bcs for rhohx and rhohy in +-1 ghost here
-    ! and also macu
-
-    ! I think if limits had been handled properly earlier, all of this 
-    ! info should be available from the main boundaries. 
-
-    ! fix it for the core solver (i.e., in step 1), verify it, and then
-    ! extend the approach here
-
-    ! call rho_bcs
-    ! call macu_bcs
 
     do ix = 0, nx
     do iy = 0, ny
@@ -686,7 +665,6 @@ module advance_module
       endif
     enddo
     enddo
-
     ! resolve states via upwind
 
     do ix = 0, nx
@@ -710,16 +688,15 @@ module advance_module
     enddo
     enddo
 
-
   end subroutine advect_dens
   
-
-
   subroutine set_dt
 
     real(num) :: dtx, dty 
 
-    call velocity_bcs ! needed for driven if u=v=0 in domain, so dt/=inf
+    ! need to call for driven if u=v=0 in the initial_conditions call
+    call velocity_bcs(arr_cc = u, di = 0) 
+    call velocity_bcs(arr_cc = v, di = 1)
 
     dtx = CFL * dx / maxval(abs(u))
     dty = CFL * dy / maxval(abs(v))

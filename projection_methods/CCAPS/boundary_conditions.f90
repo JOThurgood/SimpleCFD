@@ -9,18 +9,27 @@ module boundary_conditions
 
   private
 
-  public :: velocity_bcs, phi_bcs, velocity_face_bcs
-  public :: velocity_bcs_new
+  public :: velocity_bcs, phi_bcs
   public :: rho_bcs
 
   contains
 
-  subroutine velocity_bcs_new(arr_cc, arr_xface, arr_yface)
 
-    real(num), dimension(-1:nx+2,-1:ny+2), optional, intent(inout) :: arr_cc
-    real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
-    real(num), dimension(-1:nx+2,-2:ny+2), optional, intent(inout) :: arr_yface
+  subroutine velocity_bcs(arr_cc, arr_xface, arr_yface, di)
 
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_cc
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_xface
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_yface
+
+    integer, intent(in) :: di
+
+    real(num) :: const 
+
+    ! Sanity checks
+
+    if (present(arr_cc)) call bc_sanity_check(arr_cc=arr_cc, di=di, varname='vel_bcs')
+    if (present(arr_xface)) call bc_sanity_check(arr_xface=arr_xface, di=di, varname='vel_bcs')
+    if (present(arr_yface)) call bc_sanity_check(arr_yface=arr_yface, di=di, varname='vel_bcs')
 
     ! Periodic 
 
@@ -108,9 +117,6 @@ module boundary_conditions
 
 
     ! Encode no-slip and more general dirchlet in one go? 
-    ! pass xb_lo, xb_hi, yb_lo, yb_hi through driven 
-    ! if (boundary) = no_slip or driven or whatever 
-        !select the boundary var (==0 if no_slip, == whatever if not)
     ! KISS for now ...
 
     ! No Slip
@@ -197,11 +203,323 @@ module boundary_conditions
 
     endif
 
+    ! Constant / Dirichlet
 
-  end subroutine velocity_bcs_new
+    ! Driven - hardcoded as u = 1 for now
+    ! problem is distinguishing between u = 1 and v = 0
+    
+    ! It would be better to handle a class of 'constant' or 'dirchlet' 
+    ! and then have the user specify the constant for each dimension
 
-  subroutine velocity_bcs
+    if ( bc_ymax == dirichlet) then
 
+      if (di == 0) then
+        const = 1.0_num
+      else if (di == 1) then
+        const = 0.0_num
+      else 
+        STOP
+      endif
+
+      if (present(arr_cc)) then
+        arr_cc(:,ny+1) = 2.0_num * const - arr_cc(:,ny)
+        arr_cc(:,ny+2) = 2.0_num * const - arr_cc(:,ny-1)
+      endif
+
+      if (present(arr_xface)) then
+        arr_xface(:,ny+1) = 2.0_num * const - arr_xface(:,ny)
+        arr_xface(:,ny+2) = 2.0_num * const - arr_xface(:,ny-1)
+      endif
+
+      if (present(arr_yface)) then
+        arr_yface(:,ny+1) = 2.0_num * const - arr_yface(:,ny-1)
+        arr_yface(:,ny+2) = 2.0_num * const - arr_yface(:,ny-2)
+      endif
+
+    endif
+
+
+
+  end subroutine velocity_bcs
+
+
+  subroutine phi_bcs
+
+    !Periodic 
+
+    if (bc_xmin == periodic) then
+      phi(0,:) = phi(nx,:)
+      phi(-1,:) = phi(nx-1,:)
+    endif
+    if (bc_xmax == periodic) then
+      phi(nx+1,:) = phi(1,:)
+      phi(nx+2,:) = phi(2,:)
+    endif
+    if (bc_ymin == periodic) then
+      phi(:,0) = phi(:,ny)
+      phi(:,-1) = phi(:,ny-1)
+    endif
+    if (bc_ymax == periodic) then
+      phi(:,ny+1) = phi(:,1)
+      phi(:,ny+2) = phi(:,2)
+    endif
+
+    ! Zero gradient
+
+    if (bc_xmin == zero_gradient) then
+      phi(0,:) = phi(1,:)
+      phi(-1,:) = phi(2,:)
+    endif
+    if (bc_xmax == zero_gradient) then
+      phi(nx+1,:) = phi(nx,:)
+      phi(nx+2,:) = phi(nx-1,:)
+    endif
+    if (bc_ymin == zero_gradient) then
+      phi(:,0) = phi(:,1)
+      phi(:,-1) = phi(:,2)
+    endif
+    if (bc_ymax == zero_gradient) then
+      phi(:,ny+1) = phi(:,ny)
+      phi(:,ny+2) = phi(:,ny-1)
+    endif
+
+    ! No slip (no actually sure what is appropriate for phi at this stage?)
+
+!!!    if (bc_xmin == no_slip) then
+!!!      phi(0,:) = -phi(1,:)
+!!!      phi(-1,:) = -phi(2,:)
+!!!    endif
+!!!    if (bc_xmax == no_slip) then
+!!!      phi(nx+1,:) = -phi(nx,:)
+!!!      phi(nx+2,:) = -phi(nx-1,:)
+!!!    endif
+!!!    if (bc_ymin == no_slip) then
+!!!      phi(:,0) = -phi(:,1)
+!!!      phi(:,-1) = -phi(:,2)
+!!!    endif
+!!!    if (bc_ymax == no_slip) then
+!!!      phi(:,ny+1) = -phi(:,ny)
+!!!      phi(:,ny+2) = -phi(:,ny-1)
+!!!    endif
+
+    if (bc_xmin == no_slip) then
+      phi(0,:) = phi(1,:)
+      phi(-1,:) = phi(2,:)
+    endif
+    if (bc_xmax == no_slip) then
+      phi(nx+1,:) = phi(nx,:)
+      phi(nx+2,:) = phi(nx-1,:)
+    endif
+    if (bc_ymin == no_slip) then
+      phi(:,0) = phi(:,1)
+      phi(:,-1) = phi(:,2)
+    endif
+    if (bc_ymax == no_slip) then
+      phi(:,ny+1) = phi(:,ny)
+      phi(:,ny+2) = phi(:,ny-1)
+    endif
+
+    !duplicate of no-slip on phi for driven
+    if (bc_ymax == driven) then
+      phi(:,ny+1) = phi(:,ny)
+      phi(:,ny+2) = phi(:,ny-1)
+    endif
+
+  end subroutine phi_bcs
+
+  subroutine rho_bcs(arr_cc, arr_xface, arr_yface)
+ 
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_cc
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_xface
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_yface
+    integer :: di = 0 ! not meaningful for rho (scalar), but set to something
+      ! to stop bc_sanity_check from complaining for now
+
+
+!    real(num), dimension(-1:nx+2,-1:ny+2), optional, intent(inout) :: arr_cc
+!    real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
+!    real(num), dimension(-1:nx+2,-2:ny+2), optional, intent(inout) :: arr_yface
+ 
+   ! Sanity checks
+
+    if (present(arr_cc)) call bc_sanity_check(arr_cc=arr_cc, di=di, varname='rho_bcs')
+    if (present(arr_xface)) call bc_sanity_check(arr_xface=arr_xface, di=di, varname='rho_bcs')
+    if (present(arr_yface)) call bc_sanity_check(arr_yface=arr_yface, di=di, varname='rho_bcs')
+
+
+    ! periodic
+
+    if (bc_xmin == periodic) then
+
+      if (present(arr_cc)) then
+        arr_cc( 0,:) = arr_cc(nx,:)
+        arr_cc(-1,:) = arr_cc(nx-1,:)
+      endif 
+
+      if (present(arr_xface)) then
+        arr_xface(-1,:) = arr_xface(nx-1,:)
+        arr_xface(-2,:) = arr_xface(nx-2,:)
+      endif 
+
+      if (present(arr_yface)) then
+        arr_yface( 0,:) = arr_yface(nx,:)
+        arr_yface(-1,:) = arr_yface(nx-1,:)
+      endif 
+
+    endif 
+
+
+    if (bc_xmax == periodic) then
+
+      if (present(arr_cc)) then
+        arr_cc(nx+1,:) = arr_cc(1,:)
+        arr_cc(nx+2,:) = arr_cc(2,:)
+      endif 
+
+      if (present(arr_xface)) then
+        arr_xface(nx+1,:) = arr_xface(1,:)
+        arr_xface(nx+2,:) = arr_xface(2,:)
+      endif 
+
+      if (present(arr_yface)) then
+        arr_yface(nx+1,:) = arr_yface(1,:)
+        arr_yface(nx+2,:) = arr_yface(2,:)
+      endif 
+
+    endif 
+
+    if (bc_ymin == periodic) then
+
+      if (present(arr_cc)) then
+        arr_cc(:, 0) = arr_cc(:,ny)
+        arr_cc(:,-1) = arr_cc(:,ny-1)
+      endif
+
+      if (present(arr_xface)) then
+        arr_xface(:, 0) = arr_xface(:,ny)
+        arr_xface(:,-1) = arr_xface(:,ny-1)
+      endif
+
+      if (present(arr_yface)) then
+        arr_yface(:,-1) = arr_yface(:,ny-1)
+        arr_yface(:,-2) = arr_yface(:,ny-2)
+      endif
+
+    endif 
+
+    if (bc_ymax == periodic) then
+      if (present(arr_cc)) then
+        arr_cc(:,ny+1) = arr_cc(:,1)
+        arr_cc(:,ny+2) = arr_cc(:,2)
+      endif
+      if (present(arr_xface)) then
+        arr_xface(:,ny+1) = arr_xface(:,1)
+        arr_xface(:,ny+2) = arr_xface(:,2)
+      endif
+      if (present(arr_yface)) then
+        arr_yface(:,ny+1) = arr_yface(:,1)
+        arr_yface(:,ny+2) = arr_yface(:,2)
+      endif
+    endif 
+
+    ! Zero gradient
+
+    ! Driven / general dirichlet 
+
+  end subroutine rho_bcs
+
+  subroutine bc_sanity_check(arr_cc, arr_xface, arr_yface,di,varname)
+
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_cc
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_xface
+    real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_yface
+    integer, intent(in) :: di
+    character(len=7) :: varname
+
+    ! check component is specified
+    ! you should change this so x is 1, y is 2 consistent with fortran dimensions
+    if ( (di /= 0) .and. (di /=1) ) then 
+      print *,'di not given in    ', varname
+      STOP
+    endif
+    
+    ! check at least valid one argument is present
+    if ( (.not. present(arr_cc)) .and. &
+      &  (.not. present(arr_xface)) .and. &
+      &  (.not. present(arr_yface)) ) &
+    then
+      print *, 'bad call to    ',varname,'    no valid arguments'
+      STOP
+    endif
+
+    ! check the shape and bounds of the arguments are as expected
+
+    if ( present(arr_cc) ) then
+      ! print *, shape(arr_cc)
+      if ( (lbound(arr_cc,1) /= -1) .or. &
+           (lbound(arr_cc,2) /= -1) .or. &
+           (ubound(arr_cc,1) /= nx+2) .or. &
+           (ubound(arr_cc,2) /= ny+2) ) &
+      then
+        print *, 'bad bounds on arr_cc passed to     ',varname
+        print *,'lbound(arr_cc) =',lbound(arr_cc)
+        print *,'ubound(arr_cc) =',ubound(arr_cc)
+      endif
+           
+
+      if ((size(arr_cc,1) /= nx+4) .or. (size(arr_cc,2) /= ny+4 ) )then
+        print *, 'bad sized arr_cc to ',varname
+        STOP
+      endif
+    endif
+
+    if ( present(arr_xface) ) then
+      ! print *, shape(arr_xface)
+      if ( (lbound(arr_xface,1) /= -2) .or. &
+           (lbound(arr_xface,2) /= -1) .or. &
+           (ubound(arr_xface,1) /= nx+2) .or. &
+           (ubound(arr_xface,2) /= ny+2) ) &
+      then
+        print *, 'bad bounds on arr_xface passed to     ',varname
+        print *,'lbound(arr_xface) =',lbound(arr_xface)
+        print *,'ubound(arr_xface) =',ubound(arr_xface)
+      endif
+           
+
+      if ((size(arr_xface,1) /= nx+5) .or. (size(arr_xface,2) /= ny+4 ) )then
+        print *, 'bad sized arr_xface to ',varname
+        STOP
+      endif
+    endif
+
+    if ( present(arr_yface) ) then
+      ! print *, shape(arr_yface)
+      if ( (lbound(arr_yface,1) /= -1) .or. &
+           (lbound(arr_yface,2) /= -2) .or. &
+           (ubound(arr_yface,1) /= nx+2) .or. &
+           (ubound(arr_yface,2) /= ny+2) ) &
+      then
+        print *, 'bad bounds on arr_yface passed to     ',varname
+        print *,'lbound(arr_yface) =',lbound(arr_yface)
+        print *,'ubound(arr_yface) =',ubound(arr_yface)
+      endif
+           
+
+      if ((size(arr_yface,1) /= nx+4) .or. (size(arr_yface,2) /= ny+5 ) )then
+        print *, 'bad sized arr_yface to ',varname
+        STOP
+      endif
+
+    endif
+
+
+  end subroutine bc_sanity_check
+
+! Old + redundant boundary conditions below
+
+
+!!!!!  subroutine velocity_bcs
+!!!!
 !!!!!    ! Periodic
 !!!!!
 !!!!!    if (bc_xmin == periodic) then
@@ -338,31 +656,31 @@ module boundary_conditions
 !!!!!      vstar(:,ny+1) = -vstar(:,ny)
 !!!!!      vstar(:,ny+2) = -vstar(:,ny-1)
 !!!!!    endif
+!!!!!
+!!!!!    ! Driven !ymax only atm
+!!!!!
+!!!!!    if (bc_ymax == driven) then
+!!!!!      u(:,ny+1) = 2.0_num * 1.0_num - u(:,ny)
+!!!!!      u(:,ny+2) = 2.0_num * 1.0_num - u(:,ny-1)
+!!!!!      ustar(:,ny+1) = 2.0_num * 1.0_num - ustar(:,ny)
+!!!!!      ustar(:,ny+2) = 2.0_num * 1.0_num - ustar(:,ny-1)
+!!!!!      !v should be as no slip
+!!!!!      v(:,ny+1) = -v(:,ny)
+!!!!!      v(:,ny+2) = -v(:,ny-1)
+!!!!!      vstar(:,ny+1) = -vstar(:,ny)
+!!!!!      vstar(:,ny+2) = -vstar(:,ny-1)
+!!!!!    endif
+!!!!!
+!!!!!
+!!!!!  end subroutine velocity_bcs
 
-    ! Driven !ymax only atm
-
-    if (bc_ymax == driven) then
-      u(:,ny+1) = 2.0_num * 1.0_num - u(:,ny)
-      u(:,ny+2) = 2.0_num * 1.0_num - u(:,ny-1)
-      ustar(:,ny+1) = 2.0_num * 1.0_num - ustar(:,ny)
-      ustar(:,ny+2) = 2.0_num * 1.0_num - ustar(:,ny-1)
-      !v should be as no slip
-      v(:,ny+1) = -v(:,ny)
-      v(:,ny+2) = -v(:,ny-1)
-      vstar(:,ny+1) = -vstar(:,ny)
-      vstar(:,ny+2) = -vstar(:,ny-1)
-    endif
-
-
-  end subroutine velocity_bcs
-
-  subroutine velocity_face_bcs 
-
-    ! uha is x faced
-    ! vha is yfaced
-    ! i.e. depending on the centered-ness relative to a 
-    ! given boundary, different relationships must be used
-
+!!!!!  subroutine velocity_face_bcs 
+!!!!!
+!!!!!    ! uha is x faced
+!!!!!    ! vha is yfaced
+!!!!!    ! i.e. depending on the centered-ness relative to a 
+!!!!!    ! given boundary, different relationships must be used
+!!!!!
 !!!!!    ! Periodic
 !!!!!
 !!!!!    if (bc_xmin == periodic) then
@@ -486,274 +804,89 @@ module boundary_conditions
 !!!!!      vhy(:,ny+1) = vhy(:,ny-1)
 !!!!!      vhy(:,ny+2) = vhy(:,ny-2)
 !!!!!    endif
-
-!!!    ! No slip
-!!!
-!!!    if (bc_xmin == no_slip) then
-!!!      uha(  -2,:) = -uha(2,:)
-!!!      uha(  -1,:) = -uha(1,:)
-!!!      vha(   0,:) = -vha(1,:)
-!!!      vha(  -1,:) = -vha(2,:)
-!!!      uhx(  -2,:) = -uhx(2,:)
-!!!      uhx(  -1,:) = -uhx(1,:)
-!!!      vhx(  -2,:) = -vhx(2,:)
-!!!      vhx(  -1,:) = -vhx(1,:)
-!!!      uhy(   0,:) = -uhy(1,:)
-!!!      uhy(  -1,:) = -uhy(2,:)
-!!!      vhy(   0,:) = -vhy(1,:)
-!!!      vhy(  -1,:) = -vhy(2,:)
-!!!    endif 
-!!!
-!!!    if (bc_xmax == no_slip) then
-!!!      uha(nx+1,:) = -uha(nx-1,:)
-!!!      uha(nx+2,:) = -uha(nx-2,:)
-!!!      vha(nx+1,:) = -vha(nx,:)
-!!!      vha(nx+2,:) = -vha(nx-1,:)
-!!!      uhx(nx+1,:) = -uhx(nx-1,:)
-!!!      uhx(nx+2,:) = -uhx(nx-2,:)
-!!!      vhx(nx+1,:) = -vhx(nx-1,:)
-!!!      vhx(nx+2,:) = -vhx(nx-2,:)
-!!!      uhy(nx+1,:) = -uhy(nx,:)
-!!!      uhy(nx+2,:) = -uhy(nx-1,:)
-!!!      vhy(nx+1,:) = -vhy(nx,:)
-!!!      vhy(nx+2,:) = -vhy(nx-1,:)
-!!!    endif 
-!!!
-!!!    if (bc_ymin == no_slip) then
-!!!      uha(:,  -1) = -uha(:,2)
-!!!      uha(:,   0) = -uha(:,1)
-!!!      vha(:,  -1) = -vha(:,1)
-!!!      vha(:,  -2) = -vha(:,2)
-!!!      uhx(:,  -1) = -uhx(:,2)
-!!!      uhx(:,   0) = -uhx(:,1)
-!!!      vhx(:,  -1) = -vhx(:,2)
-!!!      vhx(:,   0) = -vhx(:,1)
-!!!      uhy(:,  -1) = -uhy(:,1)
-!!!      uhy(:,  -2) = -uhy(:,2)
-!!!      vhy(:,  -1) = -vhy(:,1)
-!!!      vhy(:,  -2) = -vhy(:,2)
-!!!    endif
-!!!
-!!!    if (bc_ymax == no_slip) then
-!!!      uha(:,ny+1) = -uha(:,ny)
-!!!      uha(:,ny+2) = -uha(:,ny-1)
-!!!      vha(:,ny+1) = -vha(:,ny-1)
-!!!      vha(:,ny+2) = -vha(:,ny-2)
-!!!      uhx(:,ny+1) = -uhx(:,ny)
-!!!      uhx(:,ny+2) = -uhx(:,ny-1)
-!!!      vhx(:,ny+1) = -vhx(:,ny)
-!!!      vhx(:,ny+2) = -vhx(:,ny-1)
-!!!      uhy(:,ny+1) = -uhy(:,ny-1)
-!!!      uhy(:,ny+2) = -uhy(:,ny-2)
-!!!      vhy(:,ny+1) = -vhy(:,ny-1)
-!!!      vhy(:,ny+2) = -vhy(:,ny-2)
-!!!    endif
-  
-    ! driven 
-
-    if (bc_ymax == driven) then
-      uha(:,ny+1) = 2.0_num -uha(:,ny)
-      uha(:,ny+2) = 2.0_num -uha(:,ny-1)
-      vha(:,ny+1) = -vha(:,ny-1)
-      vha(:,ny+2) = -vha(:,ny-2)
-      uhx(:,ny+1) = 2.0_num -uhx(:,ny)
-      uhx(:,ny+2) = 2.0_num -uhx(:,ny-1)
-      vhx(:,ny+1) = -vhx(:,ny)
-      vhx(:,ny+2) = -vhx(:,ny-1)
-      uhy(:,ny+1) = 2.0_num-uhy(:,ny-1)
-      uhy(:,ny+2) = 2.0_num-uhy(:,ny-2)
-      vhy(:,ny+1) = -vhy(:,ny-1)
-      vhy(:,ny+2) = -vhy(:,ny-2)
-    endif
-
-
-
-  end subroutine velocity_face_bcs 
-
-  subroutine phi_bcs
-
-    !Periodic 
-
-    if (bc_xmin == periodic) then
-      phi(0,:) = phi(nx,:)
-      phi(-1,:) = phi(nx-1,:)
-    endif
-    if (bc_xmax == periodic) then
-      phi(nx+1,:) = phi(1,:)
-      phi(nx+2,:) = phi(2,:)
-    endif
-    if (bc_ymin == periodic) then
-      phi(:,0) = phi(:,ny)
-      phi(:,-1) = phi(:,ny-1)
-    endif
-    if (bc_ymax == periodic) then
-      phi(:,ny+1) = phi(:,1)
-      phi(:,ny+2) = phi(:,2)
-    endif
-
-    ! Zero gradient
-
-    if (bc_xmin == zero_gradient) then
-      phi(0,:) = phi(1,:)
-      phi(-1,:) = phi(2,:)
-    endif
-    if (bc_xmax == zero_gradient) then
-      phi(nx+1,:) = phi(nx,:)
-      phi(nx+2,:) = phi(nx-1,:)
-    endif
-    if (bc_ymin == zero_gradient) then
-      phi(:,0) = phi(:,1)
-      phi(:,-1) = phi(:,2)
-    endif
-    if (bc_ymax == zero_gradient) then
-      phi(:,ny+1) = phi(:,ny)
-      phi(:,ny+2) = phi(:,ny-1)
-    endif
-
-    ! No slip (no actually sure what is appropriate for phi at this stage?)
-
-!!!    if (bc_xmin == no_slip) then
-!!!      phi(0,:) = -phi(1,:)
-!!!      phi(-1,:) = -phi(2,:)
-!!!    endif
-!!!    if (bc_xmax == no_slip) then
-!!!      phi(nx+1,:) = -phi(nx,:)
-!!!      phi(nx+2,:) = -phi(nx-1,:)
-!!!    endif
-!!!    if (bc_ymin == no_slip) then
-!!!      phi(:,0) = -phi(:,1)
-!!!      phi(:,-1) = -phi(:,2)
-!!!    endif
-!!!    if (bc_ymax == no_slip) then
-!!!      phi(:,ny+1) = -phi(:,ny)
-!!!      phi(:,ny+2) = -phi(:,ny-1)
-!!!    endif
-
-    if (bc_xmin == no_slip) then
-      phi(0,:) = phi(1,:)
-      phi(-1,:) = phi(2,:)
-    endif
-    if (bc_xmax == no_slip) then
-      phi(nx+1,:) = phi(nx,:)
-      phi(nx+2,:) = phi(nx-1,:)
-    endif
-    if (bc_ymin == no_slip) then
-      phi(:,0) = phi(:,1)
-      phi(:,-1) = phi(:,2)
-    endif
-    if (bc_ymax == no_slip) then
-      phi(:,ny+1) = phi(:,ny)
-      phi(:,ny+2) = phi(:,ny-1)
-    endif
-
-    !duplicate of no-slip on phi for driven
-    if (bc_ymax == driven) then
-      phi(:,ny+1) = phi(:,ny)
-      phi(:,ny+2) = phi(:,ny-1)
-    endif
-
-  end subroutine phi_bcs
-
-  subroutine rho_bcs(arr_cc, arr_xface, arr_yface)
-
-    real(num), dimension(-1:nx+2,-1:ny+2), optional, intent(inout) :: arr_cc
-    real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
-    real(num), dimension(-1:nx+2,-2:ny+2), optional, intent(inout) :: arr_yface
-
-!    if (  ((present(arr_cc)) .and. present(arr_xface)) .or. &
-!          ((present(arr_cc)) .and. present(arr_yface)) .or. &
-!          ((present(arr_xface)) .and. present(arr_yface)) ) &
-!    then
-!      print *,'invalid call to rho_bcs'
-!      STOP
-!    endif
-
-    if ( .not.present(arr_cc) .and. .not.present(arr_xface) &
-        .and. .not.present(arr_yface) ) &
-    then
-      print *,'invalid call to rho_bcs'
-      STOP
-    endif
-
-    ! periodic
-
-    if (bc_xmin == periodic) then
-
-      if (present(arr_cc)) then
-        arr_cc( 0,:) = arr_cc(nx,:)
-        arr_cc(-1,:) = arr_cc(nx-1,:)
-      endif 
-
-      if (present(arr_xface)) then
-        arr_xface(-1,:) = arr_xface(nx-1,:)
-        arr_xface(-2,:) = arr_xface(nx-2,:)
-      endif 
-
-      if (present(arr_yface)) then
-        arr_yface( 0,:) = arr_yface(nx,:)
-        arr_yface(-1,:) = arr_yface(nx-1,:)
-      endif 
-
-    endif 
-
-
-    if (bc_xmax == periodic) then
-
-      if (present(arr_cc)) then
-        arr_cc(nx+1,:) = arr_cc(1,:)
-        arr_cc(nx+2,:) = arr_cc(2,:)
-      endif 
-
-      if (present(arr_xface)) then
-        arr_yface(nx+1,:) = arr_yface(1,:)
-        arr_yface(nx+2,:) = arr_yface(2,:)
-      endif 
-
-      if (present(arr_yface)) then
-        arr_yface(nx+1,:) = arr_yface(1,:)
-        arr_yface(nx+2,:) = arr_yface(2,:)
-      endif 
-
-    endif 
-
-    if (bc_ymin == periodic) then
-
-      if (present(arr_cc)) then
-        arr_cc(:, 0) = arr_cc(:,ny)
-        arr_cc(:,-1) = arr_cc(:,ny-1)
-      endif
-
-      if (present(arr_xface)) then
-        arr_xface(:, 0) = arr_xface(:,ny)
-        arr_xface(:,-1) = arr_xface(:,ny-1)
-      endif
-
-      if (present(arr_yface)) then
-        arr_yface(:,-1) = arr_xface(:,ny-1)
-        arr_yface(:,-2) = arr_xface(:,ny-2)
-      endif
-
-    endif 
-
-    if (bc_ymax == periodic) then
-      if (present(arr_cc)) then
-        arr_cc(:,ny+1) = arr_cc(:,1)
-        arr_cc(:,ny+2) = arr_cc(:,2)
-      endif
-      if (present(arr_xface)) then
-        arr_xface(:,ny+1) = arr_xface(:,1)
-        arr_xface(:,ny+2) = arr_xface(:,2)
-      endif
-      if (present(arr_yface)) then
-        arr_yface(:,ny+1) = arr_yface(:,1)
-        arr_yface(:,ny+2) = arr_yface(:,2)
-      endif
-    endif 
-
-    ! Zero gradient
-
-  end subroutine rho_bcs
-
+!!!!!
+!!!!!!!!    ! No slip
+!!!!!!!!
+!!!!!!!!    if (bc_xmin == no_slip) then
+!!!!!!!!      uha(  -2,:) = -uha(2,:)
+!!!!!!!!      uha(  -1,:) = -uha(1,:)
+!!!!!!!!      vha(   0,:) = -vha(1,:)
+!!!!!!!!      vha(  -1,:) = -vha(2,:)
+!!!!!!!!      uhx(  -2,:) = -uhx(2,:)
+!!!!!!!!      uhx(  -1,:) = -uhx(1,:)
+!!!!!!!!      vhx(  -2,:) = -vhx(2,:)
+!!!!!!!!      vhx(  -1,:) = -vhx(1,:)
+!!!!!!!!      uhy(   0,:) = -uhy(1,:)
+!!!!!!!!      uhy(  -1,:) = -uhy(2,:)
+!!!!!!!!      vhy(   0,:) = -vhy(1,:)
+!!!!!!!!      vhy(  -1,:) = -vhy(2,:)
+!!!!!!!!    endif 
+!!!!!!!!
+!!!!!!!!    if (bc_xmax == no_slip) then
+!!!!!!!!      uha(nx+1,:) = -uha(nx-1,:)
+!!!!!!!!      uha(nx+2,:) = -uha(nx-2,:)
+!!!!!!!!      vha(nx+1,:) = -vha(nx,:)
+!!!!!!!!      vha(nx+2,:) = -vha(nx-1,:)
+!!!!!!!!      uhx(nx+1,:) = -uhx(nx-1,:)
+!!!!!!!!      uhx(nx+2,:) = -uhx(nx-2,:)
+!!!!!!!!      vhx(nx+1,:) = -vhx(nx-1,:)
+!!!!!!!!      vhx(nx+2,:) = -vhx(nx-2,:)
+!!!!!!!!      uhy(nx+1,:) = -uhy(nx,:)
+!!!!!!!!      uhy(nx+2,:) = -uhy(nx-1,:)
+!!!!!!!!      vhy(nx+1,:) = -vhy(nx,:)
+!!!!!!!!      vhy(nx+2,:) = -vhy(nx-1,:)
+!!!!!!!!    endif 
+!!!!!!!!
+!!!!!!!!    if (bc_ymin == no_slip) then
+!!!!!!!!      uha(:,  -1) = -uha(:,2)
+!!!!!!!!      uha(:,   0) = -uha(:,1)
+!!!!!!!!      vha(:,  -1) = -vha(:,1)
+!!!!!!!!      vha(:,  -2) = -vha(:,2)
+!!!!!!!!      uhx(:,  -1) = -uhx(:,2)
+!!!!!!!!      uhx(:,   0) = -uhx(:,1)
+!!!!!!!!      vhx(:,  -1) = -vhx(:,2)
+!!!!!!!!      vhx(:,   0) = -vhx(:,1)
+!!!!!!!!      uhy(:,  -1) = -uhy(:,1)
+!!!!!!!!      uhy(:,  -2) = -uhy(:,2)
+!!!!!!!!      vhy(:,  -1) = -vhy(:,1)
+!!!!!!!!      vhy(:,  -2) = -vhy(:,2)
+!!!!!!!!    endif
+!!!!!!!!
+!!!!!!!!    if (bc_ymax == no_slip) then
+!!!!!!!!      uha(:,ny+1) = -uha(:,ny)
+!!!!!!!!      uha(:,ny+2) = -uha(:,ny-1)
+!!!!!!!!      vha(:,ny+1) = -vha(:,ny-1)
+!!!!!!!!      vha(:,ny+2) = -vha(:,ny-2)
+!!!!!!!!      uhx(:,ny+1) = -uhx(:,ny)
+!!!!!!!!      uhx(:,ny+2) = -uhx(:,ny-1)
+!!!!!!!!      vhx(:,ny+1) = -vhx(:,ny)
+!!!!!!!!      vhx(:,ny+2) = -vhx(:,ny-1)
+!!!!!!!!      uhy(:,ny+1) = -uhy(:,ny-1)
+!!!!!!!!      uhy(:,ny+2) = -uhy(:,ny-2)
+!!!!!!!!      vhy(:,ny+1) = -vhy(:,ny-1)
+!!!!!!!!      vhy(:,ny+2) = -vhy(:,ny-2)
+!!!!!!!!    endif
+!!!!!  
+!!!!!    ! driven 
+!!!!!
+!!!!!    if (bc_ymax == driven) then
+!!!!!      uha(:,ny+1) = 2.0_num -uha(:,ny)
+!!!!!      uha(:,ny+2) = 2.0_num -uha(:,ny-1)
+!!!!!      vha(:,ny+1) = -vha(:,ny-1)
+!!!!!      vha(:,ny+2) = -vha(:,ny-2)
+!!!!!      uhx(:,ny+1) = 2.0_num -uhx(:,ny)
+!!!!!      uhx(:,ny+2) = 2.0_num -uhx(:,ny-1)
+!!!!!      vhx(:,ny+1) = -vhx(:,ny)
+!!!!!      vhx(:,ny+2) = -vhx(:,ny-1)
+!!!!!      uhy(:,ny+1) = 2.0_num-uhy(:,ny-1)
+!!!!!      uhy(:,ny+2) = 2.0_num-uhy(:,ny-2)
+!!!!!      vhy(:,ny+1) = -vhy(:,ny-1)
+!!!!!      vhy(:,ny+2) = -vhy(:,ny-2)
+!!!!!    endif
+!!!!!
+!!!!!
+!!!!!
+!!!!!  end subroutine velocity_face_bcs 
 
 
 !!!!  subroutine gradp_bcs

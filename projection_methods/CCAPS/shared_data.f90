@@ -14,6 +14,7 @@ module shared_data
   logical :: minion_test = .false.
   logical :: vortex1_test = .false.
   logical :: drivenlid_test = .false. 
+  logical :: vardens_adv_test = .false.
 
   ! core solver
 
@@ -83,5 +84,6 @@ module shared_data
   integer, parameter :: zero_gradient = 1
   integer, parameter :: no_slip = 2
   integer, parameter :: driven = 3
+  integer, parameter :: dirichlet = 4
 
 end module shared_data

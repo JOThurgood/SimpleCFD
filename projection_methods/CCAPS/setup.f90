@@ -20,6 +20,7 @@ module setup
     if (minion_test) call minion_test_control 
     if (vortex1_test) call vortex1_test_control
     if (drivenlid_test) call driven_lid_control
+    if (vardens_adv_test) call vardens_adv_test_control
 
     call allocate_global_arrays
 
@@ -28,6 +29,7 @@ module setup
     if (minion_test) call minion_test_ic
     if (vortex1_test) call vortex1_test_ic
     if (drivenlid_test) call driven_lid_ic
+    if (vardens_adv_test) call vardens_adv_test_ic
 
 
     step = -1 !so that the bootstrap can be in the main loop (+1)
@@ -44,6 +46,7 @@ module setup
     if (minion_test) call minion_test_ic
     if (vortex1_test) call vortex1_test_ic
     if (drivenlid_test) call driven_lid_ic
+    if (vardens_adv_test) call vardens_adv_test_ic
 
     time = 0.0_num !reset to zero important
 
@@ -122,8 +125,8 @@ module setup
     allocate(ua(0:nx,1:ny)) ! ua - u advective (x face)
     allocate(va(1:nx,0:ny)) ! v  advective (y face)
 
-    allocate(macu(0:nx,1:ny)) ! mac velocities on faces
-    allocate(macv(1:nx,0:ny)) 
+    allocate(macu(-2:nx+2,-1:ny+2)) ! mac velocities on faces
+    allocate(macv(-1:nx+2,-2:ny+2)) 
 
     allocate(ux(0:nx,1:ny)) ! u on x face
     allocate(uy(1:nx,0:ny)) !u on y face
@@ -148,6 +151,19 @@ module setup
     if (use_vardens) then
 
       allocate(rho(-1:nx+2,-1:ny+2))
+      allocate(rhohxl(0:nx,1:ny))
+      allocate(rhohxr(0:nx,1:ny))
+      allocate(rhohyl(1:nx,0:ny))
+      allocate(rhohyr(1:nx,0:ny))
+      allocate(rhohx(-2:nx+2,-1:ny+2)) !these need ghosts
+      allocate(rhohy(-1:nx+2,-2:ny+2))
+
+      allocate(rhoxl(0:nx,1:ny))
+      allocate(rhoxr(0:nx,1:ny))
+      allocate(rhoyl(1:nx,0:ny))
+      allocate(rhoyr(1:nx,0:ny))
+      allocate(rhox(-2:nx+2,-1:ny+2)) !these need ghosts
+      allocate(rhoy(-1:nx+2,-2:ny+2))
 
     endif
 
@@ -177,8 +193,13 @@ module setup
     print *,'With gradient limiting options'
     print *,''
     print *,'use_minmod',use_minmod
- 
 
+    print *,''
+    print *,'with extra physics options'
+    print *,''
+    print *,'use_viscosity',use_viscosity
+    print *,'use_vardens',use_vardens
+    
   end subroutine setup_report
 
 end module setup

@@ -326,9 +326,12 @@ module advance_module
 !    call plot_divergence_now
 !    if (step /=0) call plot_divergence_now
 
+    if (use_vardens) call rho_bcs ! needed for any OOB in relax and correction 
 
     if (use_vardens) then
-      !stub
+      call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
+        & eta= 1.0_num / rho, &
+        & use_old_phi = .false., tol = 1e-18_num) 
     else
       call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
         & alpha = 0.0_num, beta = -1.0_num, &
@@ -338,14 +341,21 @@ module advance_module
 
     print *, '*** max divu before cleaning',maxval(abs(divu))
 
+
     do ix = 0, nx
     do iy = 0, ny
       if (iy /= 0) then !can do the xface stuff
         correction = (phi(ix+1,iy) - phi(ix,iy))/dx
+        if (use_vardens) then
+          correction = correction / &
+            (0.5_num * (rho(ix,iy) + rho(ix+1,iy)))
+        endif
         macu(ix,iy) = macu(ix,iy) - correction 
       endif
       if (ix /= 0) then !can do the yface stuff
         correction = (phi(ix,iy+1)-phi(ix,iy))/dy
+        if (use_vardens) correction = correction / &
+            (0.5_num * (rho(ix,iy) + rho(ix,iy+1)))
         macv(ix,iy) = macv(ix,iy) - correction 
       endif
     enddo
@@ -487,7 +497,9 @@ module advance_module
     divu = divu/dt
 
     if (use_vardens) then
-      ! stub
+      call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
+        & eta= 1.0_num / rho, &
+        & use_old_phi = .false., tol = 1e-18_num) 
     else
       call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
         alpha = 0.0_num, beta = -1.0_num, &
@@ -505,10 +517,12 @@ module advance_module
 
       gpsi = (phi(ix+1,iy) - phi(ix-1,iy))/dx/2.0_num
       correction = dt * gpsi
+      if (use_vardens) correction = correction/rho(ix,iy) !cc here
       u(ix,iy) = ustar(ix,iy) - correction 
 
       gpsi = (phi(ix,iy+1)-phi(ix,iy-1))/dy/2.0_num
       correction = dt * gpsi
+      if (use_vardens) correction = correction/rho(ix,iy)
       v(ix,iy) = vstar(ix,iy) - correction 
 
     enddo
@@ -552,11 +566,6 @@ module advance_module
   subroutine advect_dens
 
     real(num) :: drho
-
-    if (.not. use_vardens) then !this is probabally unnecessary
-      print *,'why have you called advect_dens without use_vardens=.true.'
-      STOP
-    endif
 
     call rho_bcs(arr_cc = rho)
 
@@ -681,8 +690,6 @@ module advance_module
 
   end subroutine advect_dens
   
-
-
   subroutine set_dt
 
     real(num) :: dtx, dty 

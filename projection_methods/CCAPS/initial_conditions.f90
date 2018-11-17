@@ -56,6 +56,8 @@ module initial_conditions
     enddo
     enddo
 
+    if (use_vardens) rho = 1.0_num
+
     print *,'max numerical divu in ICs',maxval(abs(divu))
 
   end subroutine minion_test_ic

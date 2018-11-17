@@ -29,9 +29,8 @@ program ccaps
     if (minion_test) call test_minion
     if (drivenlid_test) call test_steady
     if (vardens_adv_test) print *, 'rho on grid',sum(rho(1:nx,1:ny)*dx*dy)
-
     ! periodic dumps 
-    if (modulo(step,dumpfreq) == 0) call sln_plots
+    if ( (modulo(step,dumpfreq) == 0) .and. (dumpfreq > 0) )call sln_plots
   
   enddo 
 

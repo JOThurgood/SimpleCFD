@@ -115,23 +115,21 @@ module initial_conditions
 
   subroutine vardens_adv_test_ic
 
-    real(num) :: x,y
+    real(num) :: x,y,r
 
     u = 0.0_num
     v = 1.0_num
 
     rho = 1.0_num
-
     do iy = -1,ny+1
     do ix = -1,nx+1
-      x = xc(ix)
-      y = yc(iy)
-      rho(ix,iy) = 1.0_num
-      if ( (y >= 0.25_num) .and. (y <= 0.75_num) ) then
-      rho(ix,iy) = 2.0_num
-      endif 
+      x = xc(ix)-0.5_num
+      y = yc(iy)-0.5_num
+      r = sqrt(x**2 + y**2)
+      if (r <= 0.1_num) rho(ix,iy) = 2.0_num
     enddo
     enddo
+    print *, 'rho on grid',sum(rho(1:nx,1:ny)*dx*dy)
 
     print *,'max numerical divu in ICs',maxval(abs(divu))
   end subroutine vardens_adv_test_ic

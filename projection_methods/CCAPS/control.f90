@@ -66,7 +66,7 @@ module control
     bc_xmax = periodic
     bc_ymin = periodic
     bc_ymax = periodic
-    dumpfreq = 10
+    dumpfreq = -1
   end subroutine shear_test_control
 
   subroutine minion_test_control
@@ -141,7 +141,7 @@ module control
     ! user control. Dont change it here in practice.
     ny = nx !but do force nx=ny
     CFL = 1.0_num
-    t_end = 1.0_num 
+    t_end = 1000.0_num 
     nsteps = -1 
     use_minmod = .false.    
     use_viscosity = .false.
@@ -150,7 +150,7 @@ module control
     bc_xmax = periodic
     bc_ymin = periodic
     bc_ymax = periodic
-    dumpfreq = 10000
+    dumpfreq = -1
     use_vardens = .true.
   end subroutine vardens_adv_test_control
 

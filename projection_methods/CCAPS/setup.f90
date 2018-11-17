@@ -155,6 +155,13 @@ module setup
       allocate(rhohx(-2:nx+2,-1:ny+2)) !these need ghosts
       allocate(rhohy(-1:nx+2,-2:ny+2))
 
+      allocate(rhoxl(0:nx,1:ny))
+      allocate(rhoxr(0:nx,1:ny))
+      allocate(rhoyl(1:nx,0:ny))
+      allocate(rhoyr(1:nx,0:ny))
+      allocate(rhox(-2:nx+2,-1:ny+2)) !these need ghosts
+      allocate(rhoy(-1:nx+2,-2:ny+2))
+
     endif
 
   end subroutine allocate_global_arrays

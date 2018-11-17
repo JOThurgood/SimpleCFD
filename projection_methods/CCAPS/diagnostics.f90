@@ -121,6 +121,11 @@ module diagnostics
     write(out_unit) curlu(1:nx,1:ny)
     close(out_unit)
 
+    if (use_vardens) then
+      open(out_unit, file="rho.dat", access="stream")
+      write(out_unit) rho(1:nx,1:ny)
+      close(out_unit)
+    endif
 
     !open(out_unit, file="phi.dat", access="stream")
     !write(out_unit) phi(1:nx,1:ny)

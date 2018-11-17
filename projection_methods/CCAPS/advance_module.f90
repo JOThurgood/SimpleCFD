@@ -178,26 +178,34 @@ module advance_module
     do ix = 0, ny
       if (iy /= 0) then !can do the xface stuff
         ! normal components
+
         ! left
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (uhy(ix,iy)-uhy(ix,iy-1)) / dy
         gp = -0.5_num * dt * gradp_x(ix,iy)
+        if (use_vardens) gp = gp / rho(ix,iy)
         uxl(ix,iy) = uhxl(ix,iy)  + transv + gp
+
         ! right
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (uhy(ix+1,iy)-uhy(ix+1,iy-1 )) /dy
         gp = -0.5_num * dt * gradp_x(ix+1,iy) 
+        if (use_vardens) gp = gp / rho(ix,iy)
         uxr(ix,iy) = uhxr(ix,iy)  + transv + gp
         ! also calc the tangential vel states for step 3
+
         ! left 
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (vhy(ix,iy)-vhy(ix,iy-1)) / dy
         gp = -0.5_num * dt * gradp_y(ix,iy) 
+        if (use_vardens) gp = gp / rho(ix,iy)
         vxl(ix,iy) = vhxl(ix,iy) + transv + gp
+
         ! right 
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (vhy(ix+1,iy)-vhy(ix+1,iy-1 )) /dy
         gp = -0.5_num * dt * gradp_y(ix+1,iy) 
+        if (use_vardens) gp = gp / rho(ix,iy)
         vxr(ix,iy) = vhxr(ix,iy) + transv + gp 
       endif
       if (ix /= 0) then !can do the yface stuff
@@ -205,22 +213,26 @@ module advance_module
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (vhx(ix,iy) - vhx(ix-1,iy)) / dx
         gp = -0.5_num * dt * gradp_y(ix,iy) 
+        if (use_vardens) gp = gp / rho(ix,iy)
         vyl(ix,iy) = vhyl(ix,iy) + transv + gp
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (vhx(ix,iy+1) - vhx(ix-1,iy+1)) / dx
         gp = -0.5_num * dt * gradp_y(ix,iy+1) 
+        if (use_vardens) gp = gp / rho(ix,iy)
         vyr(ix,iy) = vhyr(ix,iy) + transv + gp
 
         ! also calc the tangential vel states for step 3
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (uhx(ix,iy) - uhx(ix-1,iy)) / dx
         gp = -0.5_num * dt * gradp_x(ix,iy)
+        if (use_vardens) gp = gp / rho(ix,iy)
         uyl(ix,iy) = uhyl(ix,iy) + transv + gp
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (uhx(ix,iy+1) - uhx(ix-1,iy+1)) / dx
         gp = -0.5_num * dt * gradp_x(ix,iy+1)
+        if (use_vardens) gp = gp / rho(ix,iy)
         uyr(ix,iy) = uhyr(ix,iy) + transv + gp
 
      endif

@@ -8,7 +8,8 @@ module gauss_seidel
  
   private 
  
-  public :: solve_const_Helmholtz 
+  public :: solve_const_Helmholtz, &
+            solve_variable_elliptic
  
   contains
  

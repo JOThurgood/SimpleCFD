@@ -244,6 +244,12 @@ module advance_module
 
     if (use_viscosity) then
 
+      if (use_vardens) then 
+        print *,'warning: using variable density and viscosity. Dont forget to add 1/rho terms to visc forcing'
+        print *,'stopping in step 1D'
+        STOP
+      endif
+
       do ix = 0, nx
       do iy = 0, ny
         if (iy /=0 ) then ! x faces

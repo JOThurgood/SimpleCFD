@@ -137,11 +137,14 @@ module initial_conditions
 
     real(num) :: x, y 
     real(num) :: d, rho0, rho1
+    real(num) :: fwtm , amp
 
-    rho0 = 1.0_num
-    rho1 = 7.0_num 
+    amp = 0.1_num
 
     d = x_max - x_min
+    fwtm = 0.01 * d
+    rho0 = 1.0_num
+    rho1 = 7.0_num 
 
     u = 0.0_num
     v = 0.0_num 
@@ -151,7 +154,8 @@ module initial_conditions
     do ix = -1, nx+1
     do iy = -1, ny+2
       x = xc(ix)
-      y = yc(iy) + 0.01 * d * (cos(2.0_num * pi * x / d))
+      y = yc(iy) + amp * d * (cos(2.0_num * pi * x / d))
+      y = y * 1.818_num / fwtm
       rho(ix,iy) = rho0 + 0.5_num * (rho1-rho0) * (1.0_num + tanh(y))
     enddo
     enddo

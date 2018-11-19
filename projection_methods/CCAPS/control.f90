@@ -158,14 +158,16 @@ module control
   subroutine rti1_control
     x_min = -0.5_num
     x_max = 0.5_num
-    y_min = -2.0_num
-    y_max = 2.0_num
-    !nx = 32   allow it to use whatever was set for easy overwriting in
-    ! user control. Dont change it here in practice.
-    ny = nx !but do force nx=ny
-    CFL = 1.0_num
+    y_min = -0.5_num
+    y_max = 0.5_num
+!    y_min = -2.0_num
+!    y_max = 2.0_num
+    nx = 32
+    ny = nx
+!    ny = 4*nx !but do force nx=ny
+    CFL = 0.5_num
     t_end = 1000.0_num 
-    nsteps = -1 
+    nsteps = 100 
     use_minmod = .false.    
     use_viscosity = .false.
     visc = 0.0_num
@@ -173,7 +175,7 @@ module control
     bc_xmax = periodic
     bc_ymin = no_slip
     bc_ymax = no_slip
-    dumpfreq = -1
+    dumpfreq = 10
     use_vardens = .true.
     grav_x = 0.0_num
     grav_y = -1.0_num

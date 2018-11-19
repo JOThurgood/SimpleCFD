@@ -35,7 +35,7 @@ module advance_module
 
   subroutine step_1
 
-    real(num) :: gp
+    real(num) :: force
     real(num) :: du, dv
     real(num) :: transv
     real(num) :: LU_l, LU_r ! vector laplacian of U left/right - for viscous forcing 
@@ -52,6 +52,7 @@ module advance_module
 
     call velocity_bcs(arr_cc=u,di=0)
     call velocity_bcs(arr_cc=v,di=1)
+
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
   
@@ -138,7 +139,7 @@ module advance_module
     ! by solving a Riemann problem
 
     do iy = 0, ny
-    do ix = 0, ny
+    do ix = 0, nx
       if (iy /= 0) then !can do the xface stuff
         uha(ix,iy) = riemann(uhxl(ix,iy),uhxr(ix,iy))
       endif
@@ -152,7 +153,7 @@ module advance_module
     ! using the advective vels 
 
     do iy = 0, ny
-    do ix = 0, ny
+    do ix = 0, nx
       if (iy /= 0) then !can do the xface stuff
         uhx(ix,iy) = upwind(uha(ix,iy),uhxl(ix,iy),uhxr(ix,iy))
         vhx(ix,iy) = upwind(uha(ix,iy),vhxl(ix,iy),vhxr(ix,iy)) 
@@ -175,53 +176,72 @@ module advance_module
     call velocity_bcs(arr_xface = vhx, arr_yface = vhy, di=1)
 
     do iy = 0, ny
-    do ix = 0, ny
+    do ix = 0, nx
       if (iy /= 0) then !can do the xface stuff
         ! normal components
+
         ! left
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (uhy(ix,iy)-uhy(ix,iy-1)) / dy
-        gp = -0.5_num * dt * gradp_x(ix,iy)
-        uxl(ix,iy) = uhxl(ix,iy)  + transv + gp
+        force = 0.5_num * dt * (-gradp_x(ix,iy) + grav_x)
+        if (use_vardens) force = force / rho(ix,iy)
+        uxl(ix,iy) = uhxl(ix,iy)  + transv + force
+
         ! right
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (uhy(ix+1,iy)-uhy(ix+1,iy-1 )) /dy
-        gp = -0.5_num * dt * gradp_x(ix+1,iy) 
-        uxr(ix,iy) = uhxr(ix,iy)  + transv + gp
+!        force = -0.5_num * dt * gradp_x(ix+1,iy) 
+        force = 0.5_num * dt * ( -gradp_x(ix+1,iy) + grav_x)
+        if (use_vardens) force = force / rho(ix,iy)
+        uxr(ix,iy) = uhxr(ix,iy)  + transv + force
         ! also calc the tangential vel states for step 3
+
         ! left 
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (vhy(ix,iy)-vhy(ix,iy-1)) / dy
-        gp = -0.5_num * dt * gradp_y(ix,iy) 
-        vxl(ix,iy) = vhxl(ix,iy) + transv + gp
+!        force = -0.5_num * dt * gradp_y(ix,iy) 
+        force = 0.5_num * dt * ( -gradp_y(ix,iy) + grav_y) 
+        if (use_vardens) force = force / rho(ix,iy)
+        vxl(ix,iy) = vhxl(ix,iy) + transv + force
+
         ! right 
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (vhy(ix+1,iy)-vhy(ix+1,iy-1 )) /dy
-        gp = -0.5_num * dt * gradp_y(ix+1,iy) 
-        vxr(ix,iy) = vhxr(ix,iy) + transv + gp 
+!        force = -0.5_num * dt * gradp_y(ix+1,iy) 
+        force = 0.5_num * dt * (-gradp_y(ix+1,iy) + grav_y)
+        if (use_vardens) force = force / rho(ix,iy)
+        vxr(ix,iy) = vhxr(ix,iy) + transv + force 
       endif
       if (ix /= 0) then !can do the yface stuff
         ! normal components
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (vhx(ix,iy) - vhx(ix-1,iy)) / dx
-        gp = -0.5_num * dt * gradp_y(ix,iy) 
-        vyl(ix,iy) = vhyl(ix,iy) + transv + gp
+!        force = -0.5_num * dt * gradp_y(ix,iy) 
+        force = 0.5_num * dt * (-gradp_y(ix,iy) + grav_y) 
+        if (use_vardens) force = force / rho(ix,iy)
+        vyl(ix,iy) = vhyl(ix,iy) + transv + force
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (vhx(ix,iy+1) - vhx(ix-1,iy+1)) / dx
-        gp = -0.5_num * dt * gradp_y(ix,iy+1) 
-        vyr(ix,iy) = vhyr(ix,iy) + transv + gp
+!        force = -0.5_num * dt * gradp_y(ix,iy+1) 
+        force = 0.5_num * dt * (-gradp_y(ix,iy+1) + grav_y)
+        if (use_vardens) force = force / rho(ix,iy)
+        vyr(ix,iy) = vhyr(ix,iy) + transv + force
 
         ! also calc the tangential vel states for step 3
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (uhx(ix,iy) - uhx(ix-1,iy)) / dx
-        gp = -0.5_num * dt * gradp_x(ix,iy)
-        uyl(ix,iy) = uhyl(ix,iy) + transv + gp
+!        force = -0.5_num * dt * gradp_x(ix,iy)
+        force = 0.5_num * dt * (-gradp_x(ix,iy) + grav_x)
+        if (use_vardens) force = force / rho(ix,iy)
+        uyl(ix,iy) = uhyl(ix,iy) + transv + force
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (uhx(ix,iy+1) - uhx(ix-1,iy+1)) / dx
-        gp = -0.5_num * dt * gradp_x(ix,iy+1)
-        uyr(ix,iy) = uhyr(ix,iy) + transv + gp
+!        force = -0.5_num * dt * gradp_x(ix,iy+1)
+        force = 0.5_num * dt * (-gradp_x(ix,iy+1) + grav_x) 
+        if (use_vardens) force = force / rho(ix,iy)
+        uyr(ix,iy) = uhyr(ix,iy) + transv + force
 
      endif
     enddo
@@ -230,6 +250,12 @@ module advance_module
     ! also include viscous forcing if using viscosity
 
     if (use_viscosity) then
+
+      if (use_vardens) then 
+        print *,'warning: using variable density and viscosity. Dont forget to add 1/rho terms to visc forcing'
+        print *,'stopping in step 1D'
+        STOP
+      endif
 
       do ix = 0, nx
       do iy = 0, ny
@@ -283,7 +309,7 @@ module advance_module
     ! if you find bugs here check 3E also
 
     do iy = 0, ny
-    do ix = 0, ny
+    do ix = 0, nx
       if (iy /= 0) then !can do the xface stuff
         ua(ix,iy) = riemann(uxl(ix,iy),uxr(ix,iy))
       endif
@@ -294,7 +320,7 @@ module advance_module
     enddo
 
     do iy = 0, ny
-    do ix = 0, ny
+    do ix = 0, nx
       if (iy /= 0) then !can do the xface stuff
         macu(ix,iy) = upwind(ua(ix,iy),uxl(ix,iy),uxr(ix,iy))
       endif
@@ -330,7 +356,7 @@ module advance_module
 
     if (use_vardens) then
       call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
-        & eta= 1.0_num / rho, &
+        & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
         & use_old_phi = .false., tol = 1e-18_num) 
     else
       call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
@@ -346,10 +372,8 @@ module advance_module
     do iy = 0, ny
       if (iy /= 0) then !can do the xface stuff
         correction = (phi(ix+1,iy) - phi(ix,iy))/dx
-        if (use_vardens) then
-          correction = correction / &
+        if (use_vardens) correction = correction / &
             (0.5_num * (rho(ix,iy) + rho(ix+1,iy)))
-        endif
         macu(ix,iy) = macu(ix,iy) - correction 
       endif
       if (ix /= 0) then !can do the yface stuff
@@ -394,7 +418,7 @@ module advance_module
     
 
     do iy = 0, ny
-    do ix = 0, ny
+    do ix = 0, nx
       if (iy /= 0) then !can do the xface stuff
         ux(ix,iy) = upwind(macu(ix,iy),uxl(ix,iy),uxr(ix,iy))
         vx(ix,iy) = upwind(macu(ix,iy),vxl(ix,iy),vxr(ix,iy))
@@ -411,20 +435,25 @@ module advance_module
 
 
   subroutine step_4
-
     real(num) :: Au, Av ! evaluation of advection term
 
     real(num),dimension(1:nx,1:ny) :: f !viscous only
+    real(num) :: force_x, force_y
 
     ! do inviscid calculation first since the terms
     ! used to evaluate ustar are used in the "f" term
-  
     do iy = 1, ny
     do ix = 1, nx
       Au = get_Au(ix,iy)
       Av = get_Av(ix,iy) 
-      ustar(ix,iy) = u(ix,iy) - dt * Au - dt * gradp_x(ix,iy)
-      vstar(ix,iy) = v(ix,iy) - dt * Av - dt * gradp_y(ix,iy)
+      force_x = - dt * gradp_x(ix,iy) + dt * grav_x 
+      force_y = - dt * gradp_y(ix,iy) + dt * grav_y
+      if (use_vardens) then
+        force_x = force_x / rho(ix,iy) 
+        force_y = force_y / rho(ix,iy)
+      endif
+      ustar(ix,iy) = u(ix,iy) - dt * Au + force_x
+      vstar(ix,iy) = v(ix,iy) - dt * Av + force_y
     enddo
     enddo
   
@@ -498,8 +527,8 @@ module advance_module
 
     if (use_vardens) then
       call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
-        & eta= 1.0_num / rho, &
-        & use_old_phi = .false., tol = 1e-18_num) 
+        & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
+        & use_old_phi = .true., tol = 1e-18_num) 
     else
       call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
         alpha = 0.0_num, beta = -1.0_num, &
@@ -527,7 +556,6 @@ module advance_module
 
     enddo
     enddo
-
     ! calculate the divergence of the updated velocity field
 
     call velocity_bcs(arr_cc=u, di = 0)
@@ -560,7 +588,6 @@ module advance_module
  
     enddo
     enddo
-
   end subroutine step_5
 
   subroutine advect_dens
@@ -692,15 +719,25 @@ module advance_module
   
   subroutine set_dt
 
-    real(num) :: dtx, dty 
+    real(num) :: dtx, dty
+    real(num) :: dtf
 
-    ! need to call for driven if u=v=0 in the initial_conditions call
-    call velocity_bcs(arr_cc = u, di = 0) 
+    ! need to call bcs to capture velocities on driven boundaries
+    call velocity_bcs(arr_cc = u, di = 0)  
     call velocity_bcs(arr_cc = v, di = 1)
 
     dtx = CFL * dx / maxval(abs(u))
     dty = CFL * dy / maxval(abs(v))
     dt = MIN(dtx,dty)
+
+    if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
+!      dtf = CFL * sqrt(2.0_num * min(dx,dy) / &
+!              maxval(sqrt( (gradp_x-grav_x)**2 + (gradp_y - grav_y)**2)) )
+      dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
+      dt = MIN(dt,dtf)
+      dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
+      dt = MIN(dt,dtf)
+    endif 
 
     print *, 'hydro dt = ',dt
 

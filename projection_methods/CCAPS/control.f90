@@ -17,10 +17,10 @@ module control
     ny = nx
   
     CFL = 0.8_num
-    t_end = 1.0_num
+    t_end = 10.0_num
 
     nsteps = -1 !set to <0 to run till t_end 
-
+    dumpfreq = -1
     use_minmod = .false.    
 
     use_viscosity = .false.
@@ -29,8 +29,10 @@ module control
 
     bc_xmin = periodic
     bc_xmax = periodic
-    bc_ymin = periodic
-    bc_ymax = periodic
+    bc_ymin = no_slip
+    bc_ymax = no_slip
+
+    grav_y  = 1.0_num
 
     ! set one of these to true to overwrite everything except nx 
     ! in control with correct setup for the test problems.
@@ -42,8 +44,9 @@ module control
 !    minion_test = .true. 
 !    vortex1_test = .true.
 !    drivenlid_test = .true.
-    vardens_adv_test = .true.
-  
+!    vardens_adv_test = .true.
+!    rti1_test = .true. 
+ 
     ! DONT set more than one of the above true
 
   end subroutine user_control
@@ -70,6 +73,8 @@ module control
   end subroutine shear_test_control
 
   subroutine minion_test_control
+    ! periodic every unit length in each direction - can
+    ! use to test Lx /= Ly scenarios also (dx=dy must be maintained though)
     x_min = 0.0_num
     x_max = 1.0_num
     y_min = x_min
@@ -154,5 +159,31 @@ module control
     use_vardens = .true.
   end subroutine vardens_adv_test_control
 
+  subroutine rti1_control
+    x_min = -0.5_num
+    x_max = 0.5_num
+    y_min = -0.5_num
+    y_max = 0.5_num
+!    y_min = -2.0_num
+!    y_max = 2.0_num
+    nx = 32
+    ny = nx
+!    ny = 4*nx !but do force nx=ny
+    CFL = 0.5_num
+    t_end = 1000.0_num 
+    nsteps = 100 
+    use_minmod = .false.    
+    use_viscosity = .false.
+    visc = 0.0_num
+    bc_xmin = periodic
+    bc_xmax = periodic
+    bc_ymin = no_slip
+    bc_ymax = no_slip
+    dumpfreq = 10
+    use_vardens = .true.
+    grav_x = 0.0_num
+    grav_y = -1.0_num
+    
+  end subroutine rti1_control
 end module control 
 

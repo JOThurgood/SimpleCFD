@@ -21,6 +21,7 @@ module setup
     if (vortex1_test) call vortex1_test_control
     if (drivenlid_test) call driven_lid_control
     if (vardens_adv_test) call vardens_adv_test_control
+    if (rti1_test) call rti1_control
 
     call allocate_global_arrays
 
@@ -30,7 +31,7 @@ module setup
     if (vortex1_test) call vortex1_test_ic
     if (drivenlid_test) call driven_lid_ic
     if (vardens_adv_test) call vardens_adv_test_ic
-
+    if (rti1_test) call rti1_ic
 
     step = -1 !so that the bootstrap can be in the main loop (+1)
     time = 0.0_num
@@ -47,6 +48,7 @@ module setup
     if (vortex1_test) call vortex1_test_ic
     if (drivenlid_test) call driven_lid_ic
     if (vardens_adv_test) call vardens_adv_test_ic
+    if (rti1_test) call rti1_ic
 
     time = 0.0_num !reset to zero important
 
@@ -70,6 +72,9 @@ module setup
       if (ix /= -2) xc(ix) = xb(ix) - dx/2.0_num 
     enddo                                           
 
+    xb = xb + x_min
+    xc = xc + x_min !translate 
+
 !    print *,dx
 !    print *,xb
 !    print *,xc
@@ -80,6 +85,9 @@ module setup
       yb(iy) = REAL(iy,num) * dy                    
       if (iy /= -2) yc(iy) = yb(iy) - dy/2.0_num 
     enddo                                           
+
+    yb = yb + y_min
+    yc = yc + y_min
 
     ! setup the cell-centered arrays of primative variables
 

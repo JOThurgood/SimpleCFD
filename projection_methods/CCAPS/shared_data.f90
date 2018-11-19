@@ -75,6 +75,8 @@ module shared_data
   real(num), dimension(:,:), allocatable :: rhoyl, rhoyr ! full states on left and right
   real(num), dimension(:,:), allocatable :: rhox, rhoy !resolved full states on faces
 
+  real(num) :: grav_x = 0.0_num
+  real(num) :: grav_y = 0.0_num
 
   ! boundary conditions 
 

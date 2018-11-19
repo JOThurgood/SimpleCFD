@@ -176,7 +176,7 @@ module advance_module
     call velocity_bcs(arr_xface = vhx, arr_yface = vhy, di=1)
 
     do iy = 0, ny
-    do ix = 0, ny
+    do ix = 0, nx
       if (iy /= 0) then !can do the xface stuff
         ! normal components
 
@@ -309,7 +309,7 @@ module advance_module
     ! if you find bugs here check 3E also
 
     do iy = 0, ny
-    do ix = 0, ny
+    do ix = 0, nx
       if (iy /= 0) then !can do the xface stuff
         ua(ix,iy) = riemann(uxl(ix,iy),uxr(ix,iy))
       endif
@@ -320,7 +320,7 @@ module advance_module
     enddo
 
     do iy = 0, ny
-    do ix = 0, ny
+    do ix = 0, nx
       if (iy /= 0) then !can do the xface stuff
         macu(ix,iy) = upwind(ua(ix,iy),uxl(ix,iy),uxr(ix,iy))
       endif

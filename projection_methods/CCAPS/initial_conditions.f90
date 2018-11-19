@@ -139,7 +139,7 @@ module initial_conditions
     real(num) :: d, rho0, rho1
     real(num) :: fwtm , amp
 
-    amp = 0.1_num
+    amp = 0.00_num
 
     d = x_max - x_min
     fwtm = 0.01 * d

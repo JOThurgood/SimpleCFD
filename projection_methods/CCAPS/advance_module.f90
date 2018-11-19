@@ -356,7 +356,7 @@ module advance_module
 
     if (use_vardens) then
       call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
-        & eta= 1.0_num / rho, &
+        & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
         & use_old_phi = .false., tol = 1e-18_num) 
     else
       call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
@@ -435,7 +435,6 @@ module advance_module
 
 
   subroutine step_4
-
     real(num) :: Au, Av ! evaluation of advection term
 
     real(num),dimension(1:nx,1:ny) :: f !viscous only
@@ -443,18 +442,17 @@ module advance_module
 
     ! do inviscid calculation first since the terms
     ! used to evaluate ustar are used in the "f" term
-  
     do iy = 1, ny
     do ix = 1, nx
       Au = get_Au(ix,iy)
       Av = get_Av(ix,iy) 
-      force_x = - dt * gradp_x(ix,iy) 
-      force_y = - dt * gradp_y(ix,iy) 
+      force_x = - dt * gradp_x(ix,iy) + dt * grav_x 
+      force_y = - dt * gradp_y(ix,iy) + dt * grav_y
       if (use_vardens) then
         force_x = force_x / rho(ix,iy) 
         force_y = force_y / rho(ix,iy)
       endif
-      ustar(ix,iy) = u(ix,iy) -dt * Au + force_x
+      ustar(ix,iy) = u(ix,iy) - dt * Au + force_x
       vstar(ix,iy) = v(ix,iy) - dt * Av + force_y
     enddo
     enddo
@@ -529,8 +527,8 @@ module advance_module
 
     if (use_vardens) then
       call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
-        & eta= 1.0_num / rho, &
-        & use_old_phi = .false., tol = 1e-18_num) 
+        & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
+        & use_old_phi = .true., tol = 1e-18_num) 
     else
       call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
         alpha = 0.0_num, beta = -1.0_num, &
@@ -558,7 +556,6 @@ module advance_module
 
     enddo
     enddo
-
     ! calculate the divergence of the updated velocity field
 
     call velocity_bcs(arr_cc=u, di = 0)
@@ -591,7 +588,6 @@ module advance_module
  
     enddo
     enddo
-
   end subroutine step_5
 
   subroutine advect_dens
@@ -735,9 +731,11 @@ module advance_module
     dt = MIN(dtx,dty)
 
     if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
-      dtf = CFL * sqrt(2.0_num * min(dx,dy) / &
-              maxval(sqrt( (gradp_x-grav_x)**2 + (gradp_y - grav_y)**2)) )
-
+!      dtf = CFL * sqrt(2.0_num * min(dx,dy) / &
+!              maxval(sqrt( (gradp_x-grav_x)**2 + (gradp_y - grav_y)**2)) )
+      dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
+      dt = MIN(dt,dtf)
+      dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
       dt = MIN(dt,dtf)
     endif 
 

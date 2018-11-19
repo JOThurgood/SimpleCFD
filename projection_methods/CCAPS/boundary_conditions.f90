@@ -417,6 +417,82 @@ module boundary_conditions
       endif
     endif 
 
+    ! No slip is just even sym for rho
+
+    if (bc_xmin == no_slip) then
+
+      if (present(arr_cc)) then
+        arr_cc( 0,:) = arr_cc(1,:)
+        arr_cc(-1,:) = arr_cc(2,:)
+      endif 
+
+      if (present(arr_xface)) then
+        arr_xface(-1,:) = arr_xface(1,:)
+        arr_xface(-2,:) = arr_xface(2,:)
+      endif 
+
+      if (present(arr_yface)) then
+        arr_yface( 0,:) = arr_yface(1,:)
+        arr_yface(-1,:) = arr_yface(2,:)
+      endif 
+
+    endif 
+
+
+    if (bc_xmax == no_slip) then
+
+      if (present(arr_cc)) then
+        arr_cc(nx+1,:) = arr_cc(nx,:)
+        arr_cc(nx+2,:) = arr_cc(nx-1,:)
+      endif 
+
+      if (present(arr_xface)) then
+        arr_xface(nx+1,:) = arr_xface(nx-1,:)
+        arr_xface(nx+2,:) = arr_xface(nx-2,:)
+      endif 
+
+      if (present(arr_yface)) then
+        arr_yface(nx+1,:) = arr_yface(nx,:)
+        arr_yface(nx+2,:) = arr_yface(nx-1,:)
+      endif 
+
+    endif 
+
+    if (bc_ymin == no_slip) then
+
+      if (present(arr_cc)) then
+        arr_cc(:, 0) = arr_cc(:,1)
+        arr_cc(:,-1) = arr_cc(:,2)
+      endif
+
+      if (present(arr_xface)) then
+        arr_xface(:, 0) = arr_xface(:,1)
+        arr_xface(:,-1) = arr_xface(:,2)
+      endif
+
+      if (present(arr_yface)) then
+        arr_yface(:,-1) = arr_yface(:,1)
+        arr_yface(:,-2) = arr_yface(:,2)
+      endif
+
+    endif 
+
+    if (bc_ymax == no_slip) then
+      if (present(arr_cc)) then
+        arr_cc(:,ny+1) = arr_cc(:,ny)
+        arr_cc(:,ny+2) = arr_cc(:,ny-1)
+      endif
+      if (present(arr_xface)) then
+        arr_xface(:,ny+1) = arr_xface(:,ny)
+        arr_xface(:,ny+2) = arr_xface(:,ny-1)
+      endif
+      if (present(arr_yface)) then
+        arr_yface(:,ny+1) = arr_yface(:,ny-1)
+        arr_yface(:,ny+2) = arr_yface(:,ny-2)
+      endif
+    endif 
+
+
     ! Zero gradient
 
     ! Driven / general dirichlet 

@@ -17,10 +17,10 @@ module control
     ny = nx
   
     CFL = 0.8_num
-    t_end = 1.0_num
+    t_end = 10.0_num
 
     nsteps = -1 !set to <0 to run till t_end 
-
+    dumpfreq = -1
     use_minmod = .false.    
 
     use_viscosity = .false.
@@ -29,8 +29,10 @@ module control
 
     bc_xmin = periodic
     bc_xmax = periodic
-    bc_ymin = periodic
-    bc_ymax = periodic
+    bc_ymin = no_slip
+    bc_ymax = no_slip
+
+    grav_y  = 1.0_num
 
     ! set one of these to true to overwrite everything except nx 
     ! in control with correct setup for the test problems.
@@ -43,7 +45,7 @@ module control
 !    vortex1_test = .true.
 !    drivenlid_test = .true.
 !    vardens_adv_test = .true.
-    rti1_test = .true. 
+!    rti1_test = .true. 
  
     ! DONT set more than one of the above true
 

@@ -35,7 +35,7 @@ module advance_module
 
   subroutine step_1
 
-    real(num) :: gp
+    real(num) :: gp, force
     real(num) :: du, dv
     real(num) :: transv
     real(num) :: LU_l, LU_r ! vector laplacian of U left/right - for viscous forcing 
@@ -52,6 +52,7 @@ module advance_module
 
     call velocity_bcs(arr_cc=u,di=0)
     call velocity_bcs(arr_cc=v,di=1)
+
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
   
@@ -358,10 +359,8 @@ module advance_module
     do iy = 0, ny
       if (iy /= 0) then !can do the xface stuff
         correction = (phi(ix+1,iy) - phi(ix,iy))/dx
-        if (use_vardens) then
-          correction = correction / &
+        if (use_vardens) correction = correction / &
             (0.5_num * (rho(ix,iy) + rho(ix+1,iy)))
-        endif
         macu(ix,iy) = macu(ix,iy) - correction 
       endif
       if (ix /= 0) then !can do the yface stuff
@@ -427,6 +426,7 @@ module advance_module
     real(num) :: Au, Av ! evaluation of advection term
 
     real(num),dimension(1:nx,1:ny) :: f !viscous only
+    real(num) :: force_x, force_y
 
     ! do inviscid calculation first since the terms
     ! used to evaluate ustar are used in the "f" term
@@ -435,8 +435,14 @@ module advance_module
     do ix = 1, nx
       Au = get_Au(ix,iy)
       Av = get_Av(ix,iy) 
-      ustar(ix,iy) = u(ix,iy) - dt * Au - dt * gradp_x(ix,iy)
-      vstar(ix,iy) = v(ix,iy) - dt * Av - dt * gradp_y(ix,iy)
+      force_x = - dt * gradp_x(ix,iy) 
+      force_y = - dt * gradp_y(ix,iy) 
+      if (use_vardens) then
+        force_x = force_x / rho(ix,iy) 
+        force_y = force_y / rho(ix,iy)
+      endif
+      ustar(ix,iy) = u(ix,iy) -dt * Au + force_x
+      vstar(ix,iy) = v(ix,iy) - dt * Av + force_y
     enddo
     enddo
   

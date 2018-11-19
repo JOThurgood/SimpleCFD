@@ -418,7 +418,7 @@ module advance_module
     
 
     do iy = 0, ny
-    do ix = 0, ny
+    do ix = 0, nx
       if (iy /= 0) then !can do the xface stuff
         ux(ix,iy) = upwind(macu(ix,iy),uxl(ix,iy),uxr(ix,iy))
         vx(ix,iy) = upwind(macu(ix,iy),vxl(ix,iy),vxr(ix,iy))

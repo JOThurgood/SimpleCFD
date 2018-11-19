@@ -35,7 +35,7 @@ module advance_module
 
   subroutine step_1
 
-    real(num) :: gp, force
+    real(num) :: force
     real(num) :: du, dv
     real(num) :: transv
     real(num) :: LU_l, LU_r ! vector laplacian of U left/right - for viscous forcing 
@@ -183,58 +183,65 @@ module advance_module
         ! left
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (uhy(ix,iy)-uhy(ix,iy-1)) / dy
-        gp = -0.5_num * dt * gradp_x(ix,iy)
-        if (use_vardens) gp = gp / rho(ix,iy)
-        uxl(ix,iy) = uhxl(ix,iy)  + transv + gp
+        force = 0.5_num * dt * (-gradp_x(ix,iy) + grav_x)
+        if (use_vardens) force = force / rho(ix,iy)
+        uxl(ix,iy) = uhxl(ix,iy)  + transv + force
 
         ! right
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (uhy(ix+1,iy)-uhy(ix+1,iy-1 )) /dy
-        gp = -0.5_num * dt * gradp_x(ix+1,iy) 
-        if (use_vardens) gp = gp / rho(ix,iy)
-        uxr(ix,iy) = uhxr(ix,iy)  + transv + gp
+!        force = -0.5_num * dt * gradp_x(ix+1,iy) 
+        force = 0.5_num * dt * ( -gradp_x(ix+1,iy) + grav_x)
+        if (use_vardens) force = force / rho(ix,iy)
+        uxr(ix,iy) = uhxr(ix,iy)  + transv + force
         ! also calc the tangential vel states for step 3
 
         ! left 
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (vhy(ix,iy)-vhy(ix,iy-1)) / dy
-        gp = -0.5_num * dt * gradp_y(ix,iy) 
-        if (use_vardens) gp = gp / rho(ix,iy)
-        vxl(ix,iy) = vhxl(ix,iy) + transv + gp
+!        force = -0.5_num * dt * gradp_y(ix,iy) 
+        force = 0.5_num * dt * ( -gradp_y(ix,iy) + grav_y) 
+        if (use_vardens) force = force / rho(ix,iy)
+        vxl(ix,iy) = vhxl(ix,iy) + transv + force
 
         ! right 
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (vhy(ix+1,iy)-vhy(ix+1,iy-1 )) /dy
-        gp = -0.5_num * dt * gradp_y(ix+1,iy) 
-        if (use_vardens) gp = gp / rho(ix,iy)
-        vxr(ix,iy) = vhxr(ix,iy) + transv + gp 
+!        force = -0.5_num * dt * gradp_y(ix+1,iy) 
+        force = 0.5_num * dt * (-gradp_y(ix+1,iy) + grav_y)
+        if (use_vardens) force = force / rho(ix,iy)
+        vxr(ix,iy) = vhxr(ix,iy) + transv + force 
       endif
       if (ix /= 0) then !can do the yface stuff
         ! normal components
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (vhx(ix,iy) - vhx(ix-1,iy)) / dx
-        gp = -0.5_num * dt * gradp_y(ix,iy) 
-        if (use_vardens) gp = gp / rho(ix,iy)
-        vyl(ix,iy) = vhyl(ix,iy) + transv + gp
+!        force = -0.5_num * dt * gradp_y(ix,iy) 
+        force = 0.5_num * dt * (-gradp_y(ix,iy) + grav_y) 
+        if (use_vardens) force = force / rho(ix,iy)
+        vyl(ix,iy) = vhyl(ix,iy) + transv + force
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (vhx(ix,iy+1) - vhx(ix-1,iy+1)) / dx
-        gp = -0.5_num * dt * gradp_y(ix,iy+1) 
-        if (use_vardens) gp = gp / rho(ix,iy)
-        vyr(ix,iy) = vhyr(ix,iy) + transv + gp
+!        force = -0.5_num * dt * gradp_y(ix,iy+1) 
+        force = 0.5_num * dt * (-gradp_y(ix,iy+1) + grav_y)
+        if (use_vardens) force = force / rho(ix,iy)
+        vyr(ix,iy) = vhyr(ix,iy) + transv + force
 
         ! also calc the tangential vel states for step 3
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (uhx(ix,iy) - uhx(ix-1,iy)) / dx
-        gp = -0.5_num * dt * gradp_x(ix,iy)
-        if (use_vardens) gp = gp / rho(ix,iy)
-        uyl(ix,iy) = uhyl(ix,iy) + transv + gp
+!        force = -0.5_num * dt * gradp_x(ix,iy)
+        force = 0.5_num * dt * (-gradp_x(ix,iy) + grav_x)
+        if (use_vardens) force = force / rho(ix,iy)
+        uyl(ix,iy) = uhyl(ix,iy) + transv + force
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (uhx(ix,iy+1) - uhx(ix-1,iy+1)) / dx
-        gp = -0.5_num * dt * gradp_x(ix,iy+1)
-        if (use_vardens) gp = gp / rho(ix,iy)
-        uyr(ix,iy) = uhyr(ix,iy) + transv + gp
+!        force = -0.5_num * dt * gradp_x(ix,iy+1)
+        force = 0.5_num * dt * (-gradp_x(ix,iy+1) + grav_x) 
+        if (use_vardens) force = force / rho(ix,iy)
+        uyr(ix,iy) = uhyr(ix,iy) + transv + force
 
      endif
     enddo

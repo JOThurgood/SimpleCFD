@@ -71,6 +71,8 @@ module control
   end subroutine shear_test_control
 
   subroutine minion_test_control
+    ! periodic every unit length in each direction - can
+    ! use to test Lx /= Ly scenarios also (dx=dy must be maintained though)
     x_min = 0.0_num
     x_max = 1.0_num
     y_min = x_min

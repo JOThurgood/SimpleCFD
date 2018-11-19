@@ -72,6 +72,9 @@ module setup
       if (ix /= -2) xc(ix) = xb(ix) - dx/2.0_num 
     enddo                                           
 
+    xb = xb + x_min
+    xc = xc + x_min !translate 
+
 !    print *,dx
 !    print *,xb
 !    print *,xc
@@ -82,6 +85,9 @@ module setup
       yb(iy) = REAL(iy,num) * dy                    
       if (iy /= -2) yc(iy) = yb(iy) - dy/2.0_num 
     enddo                                           
+
+    yb = yb + y_min
+    yc = yc + y_min
 
     ! setup the cell-centered arrays of primative variables
 

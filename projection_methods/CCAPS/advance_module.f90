@@ -139,7 +139,7 @@ module advance_module
     ! by solving a Riemann problem
 
     do iy = 0, ny
-    do ix = 0, ny
+    do ix = 0, nx
       if (iy /= 0) then !can do the xface stuff
         uha(ix,iy) = riemann(uhxl(ix,iy),uhxr(ix,iy))
       endif
@@ -153,7 +153,7 @@ module advance_module
     ! using the advective vels 
 
     do iy = 0, ny
-    do ix = 0, ny
+    do ix = 0, nx
       if (iy /= 0) then !can do the xface stuff
         uhx(ix,iy) = upwind(uha(ix,iy),uhxl(ix,iy),uhxr(ix,iy))
         vhx(ix,iy) = upwind(uha(ix,iy),vhxl(ix,iy),vhxr(ix,iy)) 
@@ -723,15 +723,23 @@ module advance_module
   
   subroutine set_dt
 
-    real(num) :: dtx, dty 
+    real(num) :: dtx, dty
+    real(num) :: dtf
 
-    ! need to call for driven if u=v=0 in the initial_conditions call
-    call velocity_bcs(arr_cc = u, di = 0) 
+    ! need to call bcs to capture velocities on driven boundaries
+    call velocity_bcs(arr_cc = u, di = 0)  
     call velocity_bcs(arr_cc = v, di = 1)
 
     dtx = CFL * dx / maxval(abs(u))
     dty = CFL * dy / maxval(abs(v))
     dt = MIN(dtx,dty)
+
+    if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
+      dtf = CFL * sqrt(2.0_num * min(dx,dy) / &
+              maxval(sqrt( (gradp_x-grav_x)**2 + (gradp_y - grav_y)**2)) )
+
+      dt = MIN(dt,dtf)
+    endif 
 
     print *, 'hydro dt = ',dt
 

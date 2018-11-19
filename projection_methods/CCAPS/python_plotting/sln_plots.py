@@ -98,11 +98,12 @@ try:
   rho = np.fromfile('rho.dat', dtype = np.float64)
   rho = rho.reshape(yc.size, xc.size)
   plt.clf()
-  plt.contourf(xc, yc, rho, 255, cmap=plt.cm.RdBu_r)
+  plt.contourf(xc, yc, rho, 255, cmap=plt.cm.Greys)
   plt.xlabel('x')
   plt.ylabel('y') 
   plt.title('rho at t = {:.3f}'.format(float(time)))
   plt.colorbar()
+  plt.gca().set_aspect('equal', adjustable='box')
   plt.savefig(getfilenameindex("output/rho_"))
 except:
   pass

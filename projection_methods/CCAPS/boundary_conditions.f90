@@ -335,11 +335,6 @@ module boundary_conditions
     integer :: di = 0 ! not meaningful for rho (scalar), but set to something
       ! to stop bc_sanity_check from complaining for now
 
-
-!    real(num), dimension(-1:nx+2,-1:ny+2), optional, intent(inout) :: arr_cc
-!    real(num), dimension(-2:nx+2,-1:ny+2), optional, intent(inout) :: arr_xface
-!    real(num), dimension(-1:nx+2,-2:ny+2), optional, intent(inout) :: arr_yface
- 
    ! Sanity checks
 
     if (present(arr_cc)) call bc_sanity_check(arr_cc=arr_cc, di=di, varname='rho_bcs')

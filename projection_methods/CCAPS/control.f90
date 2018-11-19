@@ -42,8 +42,9 @@ module control
 !    minion_test = .true. 
 !    vortex1_test = .true.
 !    drivenlid_test = .true.
-    vardens_adv_test = .true.
-  
+!    vardens_adv_test = .true.
+    rti1_test = .true. 
+ 
     ! DONT set more than one of the above true
 
   end subroutine user_control
@@ -154,5 +155,29 @@ module control
     use_vardens = .true.
   end subroutine vardens_adv_test_control
 
+  subroutine rti1_control
+    x_min = -0.5_num
+    x_max = 0.5_num
+    y_min = -2.0_num
+    y_max = 2.0_num
+    !nx = 32   allow it to use whatever was set for easy overwriting in
+    ! user control. Dont change it here in practice.
+    ny = nx !but do force nx=ny
+    CFL = 1.0_num
+    t_end = 1000.0_num 
+    nsteps = -1 
+    use_minmod = .false.    
+    use_viscosity = .false.
+    visc = 0.0_num
+    bc_xmin = periodic
+    bc_xmax = periodic
+    bc_ymin = no_slip
+    bc_ymax = no_slip
+    dumpfreq = -1
+    use_vardens = .true.
+    grav_x = 0.0_num
+    grav_y = -1.0_num
+    
+  end subroutine rti1_control
 end module control 
 

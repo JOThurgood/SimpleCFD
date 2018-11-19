@@ -15,6 +15,8 @@ module shared_data
   logical :: vortex1_test = .false.
   logical :: drivenlid_test = .false. 
   logical :: vardens_adv_test = .false.
+  logical :: rti1_test = .false.
+
 
   ! core solver
 

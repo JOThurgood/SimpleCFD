@@ -33,6 +33,8 @@ module initial_conditions
     enddo
     enddo
 
+    if (use_vardens) rho = 1.0_num
+
   end subroutine shear_test_ic
 
   subroutine minion_test_ic
@@ -139,10 +141,11 @@ module initial_conditions
     real(num) :: d, rho0, rho1
     real(num) :: fwtm , amp
 
-    amp = 0.01_num
+    amp = 0.1_num
 
     d = x_max - x_min
-    fwtm = 0.01 * d
+    fwtm = 0.1*d
+!    fwtm = 0.01 * d
     rho0 = 1.0_num
     rho1 = 7.0_num 
 
@@ -155,18 +158,18 @@ module initial_conditions
     do iy = -1, ny+2
       x = xc(ix)
 
-      if (step /= 0) then ! trust post step0 to have HSE built in . dont call on bootstrap?
+!      if (step /= 0) then ! trust post step0 to have HSE built in . dont call on bootstrap?
           y = yc(iy) !+ amp * d * (cos(2.0_num * pi * x / d))
           y = y * 1.818_num / fwtm
           rho(ix,iy) = rho0 + 0.5_num * (rho1-rho0) * (1.0_num + tanh(y))
-          gradp_x(ix,iy) = rho(ix,iy) * grav_x
-          gradp_y(ix,iy) = rho(ix,iy) * grav_y
-      endif
+!          gradp_x(ix,iy) = rho(ix,iy) * grav_x
+!          gradp_y(ix,iy) = rho(ix,iy) * grav_y
+!      endif
 
       !now overwrite rho with the perturbed + desingularised profile
-      y = yc(iy) + amp * d * (cos(2.0_num * pi * x / d))
-      y = y * 1.818_num / fwtm
-      rho(ix,iy) = rho0 + 0.5_num * (rho1-rho0) * (1.0_num + tanh(y))
+!      y = yc(iy) + amp * d * (cos(2.0_num * pi * x / d))
+!      y = y * 1.818_num / fwtm
+!      rho(ix,iy) = rho0 + 0.5_num * (rho1-rho0) * (1.0_num + tanh(y))
 
     enddo
     enddo

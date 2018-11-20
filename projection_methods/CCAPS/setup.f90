@@ -14,6 +14,8 @@ module setup
 
   subroutine initial_setup
 
+    step = -1 !so that the bootstrap can be in the main loop (+1)
+
     call user_control ! assign user control parameters
 
     if (shear_test) call shear_test_control
@@ -33,7 +35,6 @@ module setup
     if (vardens_adv_test) call vardens_adv_test_ic
     if (rti1_test) call rti1_ic
 
-    step = -1 !so that the bootstrap can be in the main loop (+1)
     time = 0.0_num
 
     call setup_report

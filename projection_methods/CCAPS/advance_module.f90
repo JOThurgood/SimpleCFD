@@ -738,9 +738,9 @@ module advance_module
     if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
 !      dtf = CFL * sqrt(2.0_num * min(dx,dy) / &
 !              maxval(sqrt( (gradp_x-grav_x)**2 + (gradp_y - grav_y)**2)) )
-      dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
+      dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
       dt = MIN(dt,dtf)
-      dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
+      dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
       dt = MIN(dt,dtf)
     endif 
 

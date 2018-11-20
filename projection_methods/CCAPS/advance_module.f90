@@ -183,65 +183,68 @@ module advance_module
         ! left
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (uhy(ix,iy)-uhy(ix,iy-1)) / dy
-        force = 0.5_num * dt * (-gradp_x(ix,iy) + grav_x)
-        if (use_vardens) force = force / rho(ix,iy)
-        uxl(ix,iy) = uhxl(ix,iy)  + transv + force
+!        force = 0.5_num * dt * (-gradp_x(ix,iy) + grav_x)
+!        if (use_vardens) force = force / rho(ix,iy)
+!        uxl(ix,iy) = uhxl(ix,iy)  + transv + force
+        uxl(ix,iy) = uhxl(ix,iy)  + transv + 0.5_num * dt * get_force_cc(ix,iy,1)
 
         ! right
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (uhy(ix+1,iy)-uhy(ix+1,iy-1 )) /dy
-!        force = -0.5_num * dt * gradp_x(ix+1,iy) 
-        force = 0.5_num * dt * ( -gradp_x(ix+1,iy) + grav_x)
-        if (use_vardens) force = force / rho(ix,iy)
-        uxr(ix,iy) = uhxr(ix,iy)  + transv + force
+!        force = 0.5_num * dt * ( -gradp_x(ix+1,iy) + grav_x)
+!        if (use_vardens) force = force / rho(ix,iy)
+!        uxr(ix,iy) = uhxr(ix,iy)  + transv + force
+        uxr(ix,iy) = uhxr(ix,iy)  + transv + 0.5_num * dt * get_force_cc(ix+1,iy,1)
+
+
         ! also calc the tangential vel states for step 3
 
         ! left 
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (vhy(ix,iy)-vhy(ix,iy-1)) / dy
-!        force = -0.5_num * dt * gradp_y(ix,iy) 
-        force = 0.5_num * dt * ( -gradp_y(ix,iy) + grav_y) 
-        if (use_vardens) force = force / rho(ix,iy)
-        vxl(ix,iy) = vhxl(ix,iy) + transv + force
+!        force = 0.5_num * dt * ( -gradp_y(ix,iy) + grav_y) 
+!        if (use_vardens) force = force / rho(ix,iy)
+!        vxl(ix,iy) = vhxl(ix,iy) + transv + force
+        vxl(ix,iy) = vhxl(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy,2) 
 
         ! right 
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (vhy(ix+1,iy)-vhy(ix+1,iy-1 )) /dy
-!        force = -0.5_num * dt * gradp_y(ix+1,iy) 
-        force = 0.5_num * dt * (-gradp_y(ix+1,iy) + grav_y)
-        if (use_vardens) force = force / rho(ix,iy)
-        vxr(ix,iy) = vhxr(ix,iy) + transv + force 
+!        force = 0.5_num * dt * (-gradp_y(ix+1,iy) + grav_y)
+!        if (use_vardens) force = force / rho(ix,iy)
+!        vxr(ix,iy) = vhxr(ix,iy) + transv + force 
+        vxr(ix,iy) = vhxr(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix+1,iy,2) 
       endif
       if (ix /= 0) then !can do the yface stuff
         ! normal components
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (vhx(ix,iy) - vhx(ix-1,iy)) / dx
-!        force = -0.5_num * dt * gradp_y(ix,iy) 
-        force = 0.5_num * dt * (-gradp_y(ix,iy) + grav_y) 
-        if (use_vardens) force = force / rho(ix,iy)
-        vyl(ix,iy) = vhyl(ix,iy) + transv + force
+!        force = 0.5_num * dt * (-gradp_y(ix,iy) + grav_y) 
+!        if (use_vardens) force = force / rho(ix,iy)
+!        vyl(ix,iy) = vhyl(ix,iy) + transv + force
+        vyl(ix,iy) = vhyl(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy,2)
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (vhx(ix,iy+1) - vhx(ix-1,iy+1)) / dx
-!        force = -0.5_num * dt * gradp_y(ix,iy+1) 
-        force = 0.5_num * dt * (-gradp_y(ix,iy+1) + grav_y)
-        if (use_vardens) force = force / rho(ix,iy)
-        vyr(ix,iy) = vhyr(ix,iy) + transv + force
+!        force = 0.5_num * dt * (-gradp_y(ix,iy+1) + grav_y)
+!        if (use_vardens) force = force / rho(ix,iy)
+!        vyr(ix,iy) = vhyr(ix,iy) + transv + force
+        vyr(ix,iy) = vhyr(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy+1,2) 
 
         ! also calc the tangential vel states for step 3
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (uhx(ix,iy) - uhx(ix-1,iy)) / dx
-!        force = -0.5_num * dt * gradp_x(ix,iy)
-        force = 0.5_num * dt * (-gradp_x(ix,iy) + grav_x)
-        if (use_vardens) force = force / rho(ix,iy)
-        uyl(ix,iy) = uhyl(ix,iy) + transv + force
+!        force = 0.5_num * dt * (-gradp_x(ix,iy) + grav_x)
+!        if (use_vardens) force = force / rho(ix,iy)
+!        uyl(ix,iy) = uhyl(ix,iy) + transv + force
+        uyl(ix,iy) = uhyl(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy,1)
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (uhx(ix,iy+1) - uhx(ix-1,iy+1)) / dx
-!        force = -0.5_num * dt * gradp_x(ix,iy+1)
-        force = 0.5_num * dt * (-gradp_x(ix,iy+1) + grav_x) 
-        if (use_vardens) force = force / rho(ix,iy)
-        uyr(ix,iy) = uhyr(ix,iy) + transv + force
+!        force = 0.5_num * dt * (-gradp_x(ix,iy+1) + grav_x) 
+!        if (use_vardens) force = force / rho(ix,iy)
+!        uyr(ix,iy) = uhyr(ix,iy) + transv + force
+        uyr(ix,iy) = uhyr(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy+1,1)
 
      endif
     enddo
@@ -446,14 +449,16 @@ module advance_module
     do ix = 1, nx
       Au = get_Au(ix,iy)
       Av = get_Av(ix,iy) 
-      force_x = - dt * gradp_x(ix,iy) + dt * grav_x 
-      force_y = - dt * gradp_y(ix,iy) + dt * grav_y
-      if (use_vardens) then
-        force_x = force_x / rho(ix,iy) 
-        force_y = force_y / rho(ix,iy)
-      endif
-      ustar(ix,iy) = u(ix,iy) - dt * Au + force_x
-      vstar(ix,iy) = v(ix,iy) - dt * Av + force_y
+!      force_x = - dt * gradp_x(ix,iy) + dt * grav_x 
+!      force_y = - dt * gradp_y(ix,iy) + dt * grav_y
+!      if (use_vardens) then
+!        force_x = force_x / rho(ix,iy) 
+!        force_y = force_y / rho(ix,iy)
+!      endif
+!      ustar(ix,iy) = u(ix,iy) - dt * Au + force_x
+!      vstar(ix,iy) = v(ix,iy) - dt * Av + force_y
+      ustar(ix,iy) = u(ix,iy) - dt * Au + dt * get_force_cc(ix,iy,1)
+      vstar(ix,iy) = v(ix,iy) - dt * Av + dt * get_force_cc(ix,iy,2)
     enddo
     enddo
   
@@ -523,6 +528,7 @@ module advance_module
 !    if (step /=0) call plot_divergence_now
 !    call plot_divergence_now
 
+
     divu = divu/dt
 
     if (use_vardens) then
@@ -573,6 +579,7 @@ module advance_module
 
 !    if (step /=0) call plot_divergence_now
 !    call plot_divergence_now
+
     ! update the pressure gradient 
   
 !    do ix = 1, nx * see note below
@@ -731,12 +738,18 @@ module advance_module
     dt = MIN(dtx,dty)
 
     if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
-!      dtf = CFL * sqrt(2.0_num * min(dx,dy) / &
-!              maxval(sqrt( (gradp_x-grav_x)**2 + (gradp_y - grav_y)**2)) )
+      if (use_vardens) then
+      dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
+      dt = MIN(dt,dtf)
+      dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
+      dt = MIN(dt,dtf)
+      else
       dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
       dt = MIN(dt,dtf)
       dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
       dt = MIN(dt,dtf)
+
+      endif
     endif 
 
     print *, 'hydro dt = ',dt
@@ -775,6 +788,31 @@ module advance_module
       upwind = 0.5_num * (a + b)
     endif
   end function upwind
+
+  real(num) function get_force_cc(ix,iy,di)
+    integer,intent(in) :: ix,iy, di
+
+    if (di==1) then
+      if (use_vardens) then
+        get_force_cc = -gradp_x(ix,iy)/rho(ix,iy) + grav_x
+      else
+        get_force_cc = -gradp_x(ix,iy) + grav_x
+      endif
+    else if (di==2) then
+      if (use_vardens) then
+        get_force_cc = -gradp_y(ix,iy)/rho(ix,iy) + grav_y
+      else
+        get_force_cc = -gradp_y(ix,iy) + grav_y
+      endif
+  
+    else
+      print *,'error get_force_cc given invalid dimension'
+      print *,'di = 1(x) or =2(y)'
+      print *,'STOP'
+      STOP
+    endif
+
+  end function get_force_cc
 
   real(num) function get_LU_cc(ix,iy,dimen) ! calculate vector laplacian at a coordinate
     integer, intent(in) :: ix, iy, dimen

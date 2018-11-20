@@ -19,7 +19,7 @@ module control
     CFL = 0.8_num
     t_end = 10.0_num
 
-    nsteps = -1 !set to <0 to run till t_end 
+    nsteps = 1 !set to <0 to run till t_end 
     dumpfreq = -1
     use_minmod = .false.    
 
@@ -32,7 +32,7 @@ module control
     bc_ymin = no_slip
     bc_ymax = no_slip
 
-    grav_y  = 1.0_num
+    grav_y  = -1.0_num
 
     ! set one of these to true to overwrite everything except nx 
     ! in control with correct setup for the test problems.
@@ -171,7 +171,7 @@ module control
 !    ny = 4*nx !but do force nx=ny
     CFL = 0.5_num
     t_end = 1000.0_num 
-    nsteps = 100 
+    nsteps = 4 
     use_minmod = .false.    
     use_viscosity = .false.
     visc = 0.0_num
@@ -179,7 +179,7 @@ module control
     bc_xmax = periodic
     bc_ymin = no_slip
     bc_ymax = no_slip
-    dumpfreq = 10
+    dumpfreq = 1 
     use_vardens = .true.
     grav_x = 0.0_num
     grav_y = -1.0_num

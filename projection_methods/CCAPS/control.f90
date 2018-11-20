@@ -32,7 +32,7 @@ module control
     bc_ymin = no_slip
     bc_ymax = no_slip
 
-    grav_y  = -1.0_num
+!    grav_y  = -1.0_num
 
     ! set one of these to true to overwrite everything except nx 
     ! in control with correct setup for the test problems.
@@ -41,11 +41,11 @@ module control
     ! favour of the specific problems
 
 !    shear_test = .true.
-!    minion_test = .true. 
+    minion_test = .true. 
 !    vortex1_test = .true.
 !    drivenlid_test = .true.
 !    vardens_adv_test = .true.
-    rti1_test = .true. 
+!    rti1_test = .true. 
  
     ! DONT set more than one of the above true
 

@@ -528,6 +528,7 @@ module advance_module
 !    if (step /=0) call plot_divergence_now
 !    call plot_divergence_now
 
+
     divu = divu/dt
 
     if (use_vardens) then
@@ -578,6 +579,7 @@ module advance_module
 
 !    if (step /=0) call plot_divergence_now
 !    call plot_divergence_now
+
     ! update the pressure gradient 
   
 !    do ix = 1, nx * see note below
@@ -736,12 +738,18 @@ module advance_module
     dt = MIN(dtx,dty)
 
     if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
-!      dtf = CFL * sqrt(2.0_num * min(dx,dy) / &
-!              maxval(sqrt( (gradp_x-grav_x)**2 + (gradp_y - grav_y)**2)) )
+      if (use_vardens) then
       dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
       dt = MIN(dt,dtf)
       dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
       dt = MIN(dt,dtf)
+      else
+      dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
+      dt = MIN(dt,dtf)
+      dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
+      dt = MIN(dt,dtf)
+
+      endif
     endif 
 
     print *, 'hydro dt = ',dt

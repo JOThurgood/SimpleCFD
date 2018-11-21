@@ -19,8 +19,8 @@ module control
     CFL = 0.8_num
     t_end = 10.0_num
 
-    nsteps = 1 !set to <0 to run till t_end 
-    dumpfreq = -1
+    nsteps = 10 !set to <0 to run till t_end 
+    dumpfreq = 1
     use_minmod = .false.    
 
     use_viscosity = .false.
@@ -41,7 +41,7 @@ module control
     ! favour of the specific problems
 
 !    shear_test = .true.
-!    minion_test = .true. 
+    minion_test = .true. 
 !    vortex1_test = .true.
 !    drivenlid_test = .true.
 !    vardens_adv_test = .true.
@@ -70,6 +70,9 @@ module control
     bc_ymin = periodic
     bc_ymax = periodic
     dumpfreq = -1
+    grav_x = 0.0_num
+    grav_y = 0.0_num
+! use_vardens = .true.
   end subroutine shear_test_control
 
   subroutine minion_test_control
@@ -93,6 +96,8 @@ module control
     bc_ymin = periodic
     bc_ymax = periodic
     dumpfreq = 10000
+    grav_x = 0.0_num
+    grav_y = 0.0_num
 !    use_vardens = .true.
   end subroutine minion_test_control
 
@@ -114,6 +119,8 @@ module control
     bc_xmax = no_slip
     bc_ymin = no_slip
     bc_ymax = no_slip
+    grav_x = 0.0_num
+    grav_y = 0.0_num
   end subroutine vortex1_test_control
 
   subroutine driven_lid_control
@@ -135,6 +142,9 @@ module control
 !    bc_ymax = driven
     bc_ymax = dirichlet ! dirichlet const must be hardcoded in boundary.f90 for now
     dumpfreq = 100
+    grav_x = 0.0_num
+    grav_y = 0.0_num
+    use_vardens = .false.
   end subroutine driven_lid_control
 
   subroutine vardens_adv_test_control
@@ -171,7 +181,7 @@ module control
 !    ny = 4*nx !but do force nx=ny
     CFL = 0.5_num
     t_end = 1000.0_num 
-    nsteps = 4 
+    nsteps = 10
     use_minmod = .false.    
     use_viscosity = .false.
     visc = 0.0_num
@@ -183,7 +193,7 @@ module control
     use_vardens = .true.
     grav_x = 0.0_num
     grav_y = -1.0_num
-    
   end subroutine rti1_control
+
 end module control 
 

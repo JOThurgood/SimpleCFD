@@ -561,7 +561,7 @@ module advance_module
       if (use_vardens) correction = correction/rho(ix,iy)
       v(ix,iy) = vstar(ix,iy) - correction 
 
-if (iy == 2) print *,'cor',correction
+!if (iy == 2) print *,'cor',correction
 
     enddo
     enddo
@@ -599,7 +599,7 @@ if (iy == 2) print *,'cor',correction
  
     enddo
     enddo
-call plot_gradp_now
+!call plot_gradp_now
 
   end subroutine step_5
 

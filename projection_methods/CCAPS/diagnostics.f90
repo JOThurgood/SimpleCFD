@@ -10,7 +10,8 @@ module diagnostics
   private
 
   public :: test_minion, minion_plots, sln_plots, &
-    & plot_divergence_now, test_steady, plot_vel_now
+    & plot_divergence_now, test_steady, plot_vel_now, &
+    & plot_gradp_now
 
   contains
 
@@ -248,7 +249,7 @@ module diagnostics
     !for runtime debugging
 
     print *,'******************************************************************'
-    print *, 'call plot_vel_cc_now'
+    print *, 'call plot_vel_now'
     print *,'******************************************************************'
 
     call execute_command_line("rm -rf *.dat")
@@ -286,5 +287,41 @@ module diagnostics
     STOP
 
   end subroutine plot_vel_now
+
+  subroutine plot_gradp_now
+    !for runtime debugging
+
+    print *,'******************************************************************'
+    print *, 'call plot_gradp_now' 
+    print *,'******************************************************************'
+
+    call execute_command_line("rm -rf *.dat")
+
+    open(out_unit, file="gradp_x.dat", access="stream")
+    write(out_unit) gradp_x(0:nx+1,0:ny+1)
+    close(out_unit)
+
+    open(out_unit, file="gradp_y.dat", access="stream")
+    write(out_unit) gradp_y(0:nx+1,0:ny+1)
+    close(out_unit)
+
+    open(out_unit, file="xc.dat", access="stream")
+    write(out_unit) xc(0:nx+1)
+    close(out_unit)
+   
+    open(out_unit, file="yc.dat", access="stream")
+    write(out_unit) yc(0:ny+1)
+    close(out_unit)
+
+    call execute_command_line("python python_plotting/plot_gradp_now.py")
+    call execute_command_line("rm -rf *.dat")
+
+    print *,'******************************************************************'
+    print *, 'Early stop'
+    print *,'******************************************************************'
+    STOP
+
+  end subroutine plot_gradp_now
+  
 
 end module diagnostics

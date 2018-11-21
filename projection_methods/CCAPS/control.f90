@@ -41,12 +41,13 @@ module control
     ! favour of the specific problems
 
 !    shear_test = .true.
-    minion_test = .true. 
+!    minion_test = .true. 
 !    vortex1_test = .true.
 !    drivenlid_test = .true.
 !    vardens_adv_test = .true.
 !    rti1_test = .true. 
- 
+    blob1_test = .true. 
+
     ! DONT set more than one of the above true
 
   end subroutine user_control
@@ -194,6 +195,27 @@ module control
     grav_x = 0.0_num
     grav_y = -1.0_num
   end subroutine rti1_control
+
+  subroutine blob1_control
+    x_min = 0.0_num
+    x_max = 1.0_num
+    y_min = x_min
+    y_max = x_max
+    nx = 32
+    ny = nx !but do force nx=ny
+    CFL = 1.0_num
+    t_end = 1000.0_num 
+    nsteps = 10 
+    use_minmod = .false.    
+    use_viscosity = .false.
+    visc = 0.0_num
+    bc_xmin = periodic
+    bc_xmax = periodic
+    bc_ymin = no_slip
+    bc_ymax = no_slip
+    dumpfreq = 1
+    use_vardens = .true.
+  end subroutine blob1_control
 
 end module control 
 

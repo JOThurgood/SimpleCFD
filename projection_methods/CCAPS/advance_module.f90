@@ -351,7 +351,8 @@ module advance_module
         & + (macv(ix,iy) - macv(ix,iy-1))/dy
     enddo
     enddo
-
+!print *,macv(nx/2,:)
+!STOP
 !    call plot_divergence_now
 !    if (step /=0) call plot_divergence_now
 
@@ -560,6 +561,8 @@ module advance_module
       if (use_vardens) correction = correction/rho(ix,iy)
       v(ix,iy) = vstar(ix,iy) - correction 
 
+if (iy == 2) print *,'cor',correction
+
     enddo
     enddo
     ! calculate the divergence of the updated velocity field
@@ -579,6 +582,7 @@ module advance_module
 
 !    if (step /=0) call plot_divergence_now
 !    call plot_divergence_now
+!call plot_vel_now
 
     ! update the pressure gradient 
   
@@ -595,6 +599,8 @@ module advance_module
  
     enddo
     enddo
+call plot_gradp_now
+
   end subroutine step_5
 
   subroutine advect_dens
@@ -791,18 +797,31 @@ module advance_module
 
   real(num) function get_force_cc(ix,iy,di)
     integer,intent(in) :: ix,iy, di
+    real(num) :: grav_tmp_x
+    real(num) :: grav_tmp_y
+
+    grav_tmp_x = grav_x
+    grav_tmp_y = grav_y
+
+
+    ! uncomment to turn grav off at the closest cc's to the edges
+!    grav_tmp_x = 0.0_num
+!    grav_tmp_y = 0.0_num
+!    if ( (ix > 1) .and. (ix < nx) ) grav_tmp_x = grav_x
+!    if ( (iy > 1) .and. (iy < ny) ) grav_tmp_y = grav_y
+
 
     if (di==1) then
       if (use_vardens) then
-        get_force_cc = -gradp_x(ix,iy)/rho(ix,iy) + grav_x
+        get_force_cc = -gradp_x(ix,iy)/rho(ix,iy) + grav_tmp_x
       else
-        get_force_cc = -gradp_x(ix,iy) + grav_x
+        get_force_cc = -gradp_x(ix,iy) + grav_tmp_x
       endif
     else if (di==2) then
       if (use_vardens) then
-        get_force_cc = -gradp_y(ix,iy)/rho(ix,iy) + grav_y
+        get_force_cc = -gradp_y(ix,iy)/rho(ix,iy) + grav_tmp_y
       else
-        get_force_cc = -gradp_y(ix,iy) + grav_y
+        get_force_cc = -gradp_y(ix,iy) + grav_tmp_y
       endif
   
     else

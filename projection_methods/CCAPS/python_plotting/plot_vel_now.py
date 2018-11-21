@@ -1,0 +1,61 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+xc = np.fromfile('xc.dat', dtype = np.float64)
+yc  = np.fromfile('yc.dat', dtype = np.float64)
+u = np.fromfile('u_rt.dat', dtype = np.float64)
+v = np.fromfile('v_rt.dat', dtype = np.float64)
+ustar = np.fromfile('ustar_rt.dat', dtype = np.float64)
+vstar = np.fromfile('v_rt.dat', dtype = np.float64)
+
+u = u.reshape(yc.size, xc.size)
+v = v.reshape(yc.size, xc.size)
+ustar = ustar.reshape(yc.size, xc.size)
+vstar = vstar.reshape(yc.size, xc.size)
+
+plt.clf()
+plt.contourf(xc, yc, u, 255,cmap=plt.cm.RdBu_r) 
+#plt.imshow(divu, cmap=plt.cm.RdBu_r)
+plt.grid(True)
+plt.xlabel('x')
+plt.ylabel('y') 
+plt.title('u')
+plt.colorbar()
+#plt.show()
+plt.savefig('u.png')
+
+
+plt.clf()
+plt.contourf(xc, yc, v, 255,cmap=plt.cm.RdBu_r) 
+#plt.imshow(divu, cmap=plt.cm.RdBu_r)
+plt.grid(True)
+plt.xlabel('x')
+plt.ylabel('y') 
+plt.title('v')
+plt.colorbar()
+#plt.show()
+plt.savefig('v.png')
+
+plt.clf()
+plt.contourf(xc, yc, ustar, 255,cmap=plt.cm.RdBu_r) 
+#plt.imshow(divu, cmap=plt.cm.RdBu_r)
+plt.grid(True)
+plt.xlabel('x')
+plt.ylabel('y') 
+plt.title('ustar')
+plt.colorbar()
+#plt.show()
+plt.savefig('ustar.png')
+
+plt.clf()
+plt.contourf(xc, yc, vstar, 255,cmap=plt.cm.RdBu_r) 
+#plt.imshow(divu, cmap=plt.cm.RdBu_r)
+plt.grid(True)
+plt.xlabel('x')
+plt.ylabel('y') 
+plt.title('vstar')
+plt.colorbar()
+#plt.show()
+plt.savefig('vstar.png')
+
+

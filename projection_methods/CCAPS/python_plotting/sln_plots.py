@@ -46,7 +46,12 @@ plt.savefig(getfilenameindex("output/stream_"))
 # u data
 
 plt.clf()
-plt.contourf(xc, yc, u, 255, cmap=plt.cm.RdBu_r)
+ulim = np.max(np.abs(u))
+levels = np.linspace(-ulim,ulim,255)
+try:
+  plt.contourf(xc, yc, u , levels, cmap=plt.cm.RdBu_r)
+except:
+  plt.contourf(xc, yc, u, 255, cmap=plt.cm.RdBu_r)
 plt.xlabel('x')
 plt.ylabel('y') 
 plt.title('u at t = {:.3f}'.format(float(time)))
@@ -56,40 +61,48 @@ plt.savefig(getfilenameindex("output/u_"))
 # v data
 
 plt.clf()
-plt.contourf(xc, yc, v, 255, cmap=plt.cm.RdBu_r)
+ulim = np.max(np.abs(v))
+levels = np.linspace(-ulim,ulim,255)
+try:
+  plt.contourf(xc, yc, v, levels, cmap=plt.cm.RdBu_r)
+except:
+  plt.contourf(xc, yc, v, 255, cmap=plt.cm.RdBu_r)
 plt.xlabel('x')
 plt.ylabel('y') 
 plt.title('v at t = {:.3f}'.format(float(time)))
 plt.colorbar()
 plt.savefig(getfilenameindex("output/v_"))
 
+# divergence
 
 plt.clf()
-plt.contourf(xc, yc, divu, 255, cmap=plt.cm.RdBu_r)
+ulim = np.max(np.abs(divu))
+levels = np.linspace(-ulim,ulim,255)
+try:
+  plt.contourf(xc, yc, divu, levels, cmap=plt.cm.RdBu_r)
+except:
+  plt.contourf(xc, yc, divu, 255, cmap=plt.cm.RdBu_r)
 plt.xlabel('x')
 plt.ylabel('y') 
 plt.title('div(U) at t = {:.3f}'.format(float(time)))
 plt.colorbar()
 plt.savefig(getfilenameindex("output/div_"))
 
+# curl
 
 plt.clf()
-plt.contourf(xc, yc, curlu, 255, cmap=plt.cm.RdBu_r)
+ulim = np.max(np.abs(curlu))
+levels = np.linspace(-ulim,ulim,255)
+try:
+  plt.contourf(xc, yc, curlu, levels, cmap=plt.cm.RdBu_r)
+except:
+  plt.contourf(xc, yc, curlu, 255, cmap=plt.cm.RdBu_r)
+
 plt.xlabel('x')
 plt.ylabel('y') 
 plt.title('curl(U) at t = {:.3f}'.format(float(time)))
 plt.colorbar()
 plt.savefig(getfilenameindex("output/curl_"))
-
-#plt.clf()
-#plt.contourf(xc, yc, phi, 255) 
-##plt.grid(Trve)
-#plt.xlabel('x')
-#plt.ylabel('y') 
-#plt.title('phi')
-#plt.colorbar()
-##plt.show()
-#plt.savefig('phi.png')
 
 
 ### rho isn't always dumped

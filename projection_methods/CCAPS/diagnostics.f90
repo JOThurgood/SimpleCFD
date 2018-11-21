@@ -10,7 +10,8 @@ module diagnostics
   private
 
   public :: test_minion, minion_plots, sln_plots, &
-    & plot_divergence_now, test_steady
+    & plot_divergence_now, test_steady, plot_vel_now, &
+    & plot_gradp_now
 
   contains
 
@@ -138,7 +139,7 @@ module diagnostics
       if (visc == 1e-3_num) call execute_command_line("python python_plotting/ghia_re1e3.py")
       if (visc == 1e-2_num) call execute_command_line("python python_plotting/ghia_re1e2.py")
     endif 
-!    call execute_command_line("rm -rf *.dat")
+    call execute_command_line("rm -rf *.dat")
 
   end subroutine sln_plots
 
@@ -235,7 +236,7 @@ module diagnostics
     close(out_unit)
 
     call execute_command_line("python python_plotting/plot_divercence_now.py")
-    call execute_command_line("rm -rf divu_rt.dat")
+    call execute_command_line("rm -rf divu_rt.dat xc.dat yc.dat")
 
     print *,'******************************************************************'
     print *, 'Early stop'
@@ -244,5 +245,87 @@ module diagnostics
 
   end subroutine plot_divergence_now
 
+  subroutine plot_vel_now
+    !for runtime debugging
+
+    print *,'******************************************************************'
+    print *, 'call plot_vel_now'
+    print *,'******************************************************************'
+
+    call execute_command_line("rm -rf *.dat")
+
+    open(out_unit, file="ustar_rt.dat", access="stream")
+    write(out_unit) ustar(1:nx,1:ny)
+    close(out_unit)
+
+    open(out_unit, file="vstar_rt.dat", access="stream")
+    write(out_unit) vstar(1:nx,1:ny)
+    close(out_unit)
+
+    open(out_unit, file="u_rt.dat", access="stream")
+    write(out_unit) u(1:nx,1:ny)
+    close(out_unit)
+
+    open(out_unit, file="v_rt.dat", access="stream")
+    write(out_unit) v(1:nx,1:ny)
+    close(out_unit)
+
+    open(out_unit, file="xc.dat", access="stream")
+    write(out_unit) xc(1:nx)
+    close(out_unit)
+   
+    open(out_unit, file="yc.dat", access="stream")
+    write(out_unit) yc(1:ny)
+    close(out_unit)
+
+    call execute_command_line("python python_plotting/plot_vel_now.py")
+    call execute_command_line("rm -rf *.dat")
+
+    print *,'******************************************************************'
+    print *, 'Early stop'
+    print *,'******************************************************************'
+    STOP
+
+  end subroutine plot_vel_now
+
+  subroutine plot_gradp_now
+    !for runtime debugging
+
+    print *,'******************************************************************'
+    print *, 'call plot_gradp_now' 
+    print *,'******************************************************************'
+
+    call execute_command_line("rm -rf *.dat")
+
+    open(out_unit, file="phi.dat", access="stream")
+    write(out_unit) phi(0:nx+1,0:ny+1)
+    close(out_unit)
+
+    open(out_unit, file="gradp_x.dat", access="stream")
+    write(out_unit) gradp_x(0:nx+1,0:ny+1)
+    close(out_unit)
+
+    open(out_unit, file="gradp_y.dat", access="stream")
+    write(out_unit) gradp_y(0:nx+1,0:ny+1)
+    close(out_unit)
+
+    open(out_unit, file="xc.dat", access="stream")
+    write(out_unit) xc(0:nx+1)
+    close(out_unit)
+   
+    open(out_unit, file="yc.dat", access="stream")
+    write(out_unit) yc(0:ny+1)
+    close(out_unit)
+
+    call execute_command_line("python python_plotting/plot_gradp_now.py")
+    call execute_command_line("rm -rf *.dat")
+
+    print *,'******************************************************************'
+    print *, 'Early stop'
+    print *,'******************************************************************'
+    STOP
+
+  end subroutine plot_gradp_now
+  
 
 end module diagnostics

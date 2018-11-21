@@ -139,7 +139,7 @@ module diagnostics
       if (visc == 1e-3_num) call execute_command_line("python python_plotting/ghia_re1e3.py")
       if (visc == 1e-2_num) call execute_command_line("python python_plotting/ghia_re1e2.py")
     endif 
-!    call execute_command_line("rm -rf *.dat")
+    call execute_command_line("rm -rf *.dat")
 
   end subroutine sln_plots
 

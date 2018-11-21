@@ -297,6 +297,10 @@ module diagnostics
 
     call execute_command_line("rm -rf *.dat")
 
+    open(out_unit, file="phi.dat", access="stream")
+    write(out_unit) phi(0:nx+1,0:ny+1)
+    close(out_unit)
+
     open(out_unit, file="gradp_x.dat", access="stream")
     write(out_unit) gradp_x(0:nx+1,0:ny+1)
     close(out_unit)

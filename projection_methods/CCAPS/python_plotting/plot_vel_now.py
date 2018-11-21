@@ -6,7 +6,7 @@ yc  = np.fromfile('yc.dat', dtype = np.float64)
 u = np.fromfile('u_rt.dat', dtype = np.float64)
 v = np.fromfile('v_rt.dat', dtype = np.float64)
 ustar = np.fromfile('ustar_rt.dat', dtype = np.float64)
-vstar = np.fromfile('v_rt.dat', dtype = np.float64)
+vstar = np.fromfile('vstar_rt.dat', dtype = np.float64)
 
 u = u.reshape(yc.size, xc.size)
 v = v.reshape(yc.size, xc.size)
@@ -59,3 +59,12 @@ plt.colorbar()
 plt.savefig('vstar.png')
 
 
+np.set_printoptions(threshold=np.nan)
+
+print("VSTAR")
+print(vstar)
+print("")
+print("")
+print("")
+print("V")
+print(v)

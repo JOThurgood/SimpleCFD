@@ -342,6 +342,18 @@ module gauss_seidel
       phigs(:,ny+2) = phigs(:,ny-1)
     endif
 
+!    !overwrite with experimental no_slip
+    ! seems to give large (>0 !) for the grav problem 
+
+!    if (bc_ymin == no_slip) then
+!      phigs(:,0) =  phigs(:,1) - (phigs(:,2)-phigs(:,1))
+!      phigs(:,-1) = phigs(:,1) - (phigs(:,2)-phigs(:,1))*2.0_num
+!    endif
+!    if (bc_ymax == no_slip) then
+!      phigs(:,ny+1) = phigs(:,ny) + (phigs(:,ny) - phigs(:,ny-1))
+!      phigs(:,ny+2) = phigs(:,ny) + (phigs(:,ny) - phigs(:,ny-1))*2.0_num
+!    endif
+
     !duplicate of no_slip for driven
     if (bc_ymax == driven) then
       phigs(:,ny+1) = phigs(:,ny)

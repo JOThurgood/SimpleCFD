@@ -173,15 +173,15 @@ module control
   subroutine rti1_control
     x_min = -0.5_num
     x_max = 0.5_num
-    y_min = -0.5_num
-    y_max = 0.5_num
-!    y_min = -2.0_num
-!    y_max = 2.0_num
-    nx = 32
-    ny = nx
-!    ny = 4*nx !but do force nx=ny
+!    y_min = -0.5_num
+!    y_max = 0.5_num
+    y_min = -2.0_num
+    y_max = 2.0_num
+    nx = 16
+!    ny = nx
+    ny = 4*nx !but do force nx=ny
     CFL = 0.5_num
-    t_end = 3.5_num 
+    t_end = 10.0_num 
     nsteps = -1
     use_minmod = .false.    
     use_viscosity = .false.

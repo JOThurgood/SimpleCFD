@@ -298,23 +298,23 @@ module diagnostics
     call execute_command_line("rm -rf *.dat")
 
     open(out_unit, file="phi.dat", access="stream")
-    write(out_unit) phi(0:nx+1,0:ny+1)
+    write(out_unit) phi(-1:nx+2,-1:ny+2)
     close(out_unit)
 
     open(out_unit, file="gradp_x.dat", access="stream")
-    write(out_unit) gradp_x(0:nx+1,0:ny+1)
+    write(out_unit) gradp_x(-1:nx+2,-1:ny+2)
     close(out_unit)
 
     open(out_unit, file="gradp_y.dat", access="stream")
-    write(out_unit) gradp_y(0:nx+1,0:ny+1)
+    write(out_unit) gradp_y(-1:nx+2,-1:ny+2)
     close(out_unit)
 
     open(out_unit, file="xc.dat", access="stream")
-    write(out_unit) xc(0:nx+1)
+    write(out_unit) xc(-1:nx+2)
     close(out_unit)
    
     open(out_unit, file="yc.dat", access="stream")
-    write(out_unit) yc(0:ny+1)
+    write(out_unit) yc(-1:ny+2)
     close(out_unit)
 
     call execute_command_line("python python_plotting/plot_gradp_now.py")

@@ -200,7 +200,39 @@ module setup
     print *,''
     print *,'dx =', dx
     print *,'dy =', dy
-  
+
+    print *,''
+    print *,'With boundary conditions:'
+    print *,''
+    if (bc_xmin == periodic) then
+      print *,'bc_xmin = periodic , (code =',bc_xmin,')'
+    else if (bc_xmin == no_slip) then
+      print *,'bc_xmin = no_slip, (code =',bc_xmin,')'
+    else 
+      print *,'bc_xmin = ',bc_xmin,'(parameter number - name unanticipated by setup report'
+    endif 
+    if (bc_xmax == periodic) then
+      print *,'bc_xmax = periodic , (code =',bc_xmax,')'
+    else if (bc_xmax == no_slip) then
+      print *,'bc_xmax = no_slip, (code =',bc_xmax,')'
+    else 
+      print *,'bc_xmax = ',bc_xmax,'(parameter number - name unanticipated by setup report'
+    endif 
+    if (bc_ymin == periodic) then
+      print *,'bc_ymin = periodic , (code =',bc_ymin,')'
+    else if (bc_ymin == no_slip) then
+      print *,'bc_ymin = no_slip, (code =',bc_ymin,')'
+    else 
+      print *,'bc_ymin = ',bc_ymin,'(parameter number - name unanticipated by setup report'
+    endif 
+    if (bc_ymax == periodic) then
+      print *,'bc_ymax = periodic , (code =',bc_ymax,')'
+    else if (bc_ymax == no_slip) then
+      print *,'bc_ymax = no_slip, (code =',bc_ymax,')'
+    else 
+      print *,'bc_ymax = ',bc_ymax,'(parameter number - name unanticipated by setup report'
+    endif 
+
     print *,''
     print *,'With gradient limiting options'
     print *,''
@@ -212,6 +244,12 @@ module setup
     print *,'use_viscosity',use_viscosity
     print *,'use_vardens',use_vardens
     
+    print *,''
+    print *,'with gravity options'
+    print *,''
+    print *,'grav_x', grav_x
+    print *,'grav_y', grav_y
+
   end subroutine setup_report
 
 end module setup

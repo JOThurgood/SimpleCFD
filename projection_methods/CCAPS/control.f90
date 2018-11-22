@@ -45,8 +45,8 @@ module control
 !    vortex1_test = .true.
 !    drivenlid_test = .true.
 !    vardens_adv_test = .true.
-!    rti1_test = .true. 
-    blob1_test = .true. 
+    rti1_test = .true. 
+!    blob1_test = .true. 
 
     ! DONT set more than one of the above true
 
@@ -173,16 +173,16 @@ module control
   subroutine rti1_control
     x_min = -0.5_num
     x_max = 0.5_num
-    y_min = -0.5_num
-    y_max = 0.5_num
-!    y_min = -2.0_num
-!    y_max = 2.0_num
-    nx = 32
-    ny = nx
-!    ny = 4*nx !but do force nx=ny
+!    y_min = -0.5_num
+!    y_max = 0.5_num
+    y_min = -2.0_num
+    y_max = 2.0_num
+    nx = 16
+!    ny = nx
+    ny = 4*nx !but do force nx=ny
     CFL = 0.5_num
-    t_end = 1000.0_num 
-    nsteps = 10
+    t_end = 10.0_num 
+    nsteps = -1
     use_minmod = .false.    
     use_viscosity = .false.
     visc = 0.0_num
@@ -190,7 +190,8 @@ module control
     bc_xmax = periodic
     bc_ymin = no_slip
     bc_ymax = no_slip
-    dumpfreq = 1 
+    dumpfreq = -1 
+    dt_snapshot = 0.2_num
     use_vardens = .true.
     grav_x = 0.0_num
     grav_y = -1.0_num

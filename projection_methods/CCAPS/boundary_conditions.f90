@@ -239,7 +239,6 @@ module boundary_conditions
     endif
 
 
-
   end subroutine velocity_bcs
 
 
@@ -319,7 +318,23 @@ module boundary_conditions
       phi(:,ny+2) = phi(:,ny-1)
     endif
 
-    !duplicate of no-slip on phi for driven
+    !overwrite with experimental no_slip
+
+    if (.not. drivenlid_test) then
+
+    if (bc_ymin == no_slip) then
+      phi(:,0) =  phi(:,1) - (phi(:,2)-phi(:,1))
+      phi(:,-1) = phi(:,1) - (phi(:,2)-phi(:,1))*2.0_num
+    endif
+
+    if (bc_ymax == no_slip) then
+      phi(:,ny+1) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))
+      phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
+    endif
+
+    endif
+
+    !duplicate of no-slip on phi for lid driven
     if (bc_ymax == driven) then
       phi(:,ny+1) = phi(:,ny)
       phi(:,ny+2) = phi(:,ny-1)

@@ -106,12 +106,17 @@ plt.savefig(getfilenameindex("output/curl_"))
 
 
 ### rho isn't always dumped
-
+### colour scheme geared up to RTI setup
 try:
   rho = np.fromfile('rho.dat', dtype = np.float64)
   rho = rho.reshape(yc.size, xc.size)
   plt.clf()
-  plt.contourf(xc, yc, rho, 255, cmap=plt.cm.Greys)
+  ulim = 8.
+  #ulim = np.max(rho)
+  levels = np.linspace(0.,ulim,255)
+  #plt.contourf(xc, yc, rho, 255, cmap=plt.cm.Greys)
+  #plt.contourf(xc, yc, rho,levels, cmap=plt.cm.magma)
+  plt.contourf(xc, yc, rho,levels, cmap=plt.cm.brg)
   plt.xlabel('x')
   plt.ylabel('y') 
   plt.title('rho at t = {:.3f}'.format(float(time)))
@@ -120,3 +125,4 @@ try:
   plt.savefig(getfilenameindex("output/rho_"))
 except:
   pass
+

@@ -26,7 +26,9 @@ module shared_data
   integer :: step, nsteps
   integer :: dumpfreq
 
-  real(num) :: time = 0.0_num, t_end, dt 
+
+  real(num) :: time = 0.0_num, t_end, dt
+  real(num) :: dt_snapshot = 1e14_num, next_dump
   real(num) :: CFL
   real(num) :: x_min, x_max
   real(num) :: y_min, y_max

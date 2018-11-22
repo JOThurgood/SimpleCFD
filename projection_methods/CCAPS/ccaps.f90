@@ -14,6 +14,8 @@ program ccaps
 
   call initial_setup
 
+  next_dump = 0.0_num !dt_snapshot
+
   do
     step = step + 1
     if ((step > nsteps .and. nsteps >= 0) .or. (time >= t_end)) exit
@@ -28,10 +30,15 @@ program ccaps
     ! special diagnostics
     if (minion_test) call test_minion
     if (drivenlid_test) call test_steady
-    if (vardens_adv_test) print *, 'rho on grid',sum(rho(1:nx,1:ny)*dx*dy)
+    if ((vardens_adv_test) .or. (rti1_test)) then
+      print *, 'rho on grid',sum(rho(1:nx,1:ny)*dx*dy)
+    endif
     ! periodic dumps 
-    if ( (modulo(step,dumpfreq) == 0) .and. (dumpfreq > 0) )call sln_plots
-  
+    if ( (modulo(step,dumpfreq) == 0) .and. (dumpfreq > 0) ) call sln_plots
+    if ( time >= next_dump) then
+      call sln_plots  
+      next_dump = next_dump + dt_snapshot
+    endif 
   enddo 
 
   if (minion_test) then 

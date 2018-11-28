@@ -35,7 +35,6 @@ module advance_module
 
   subroutine step_1
 
-    real(num) :: force
     real(num) :: du, dv
     real(num) :: transv
     real(num) :: LU_l, LU_r ! vector laplacian of U left/right - for viscous forcing 
@@ -50,8 +49,8 @@ module advance_module
 
     ! x faced data 
 
-    call velocity_bcs(arr_cc=u,di=0)
-    call velocity_bcs(arr_cc=v,di=1)
+    call velocity_bcs(arr_cc = u,di = 1)
+    call velocity_bcs(arr_cc = v,di = 2)
 
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
@@ -170,10 +169,10 @@ module advance_module
 
     ! (actually get them on all interfaces, as needed later steps)
 
-    call velocity_bcs(arr_xface = uha, di =0)
-    call velocity_bcs(arr_yface = vha, di =1)
-    call velocity_bcs(arr_xface = uhx, arr_yface = uhy, di=0)
-    call velocity_bcs(arr_xface = vhx, arr_yface = vhy, di=1)
+    call velocity_bcs(arr_xface = uha, di = 1)
+    call velocity_bcs(arr_yface = vha, di = 2)
+    call velocity_bcs(arr_xface = uhx, arr_yface = uhy, di = 1)
+    call velocity_bcs(arr_xface = vhx, arr_yface = vhy, di = 2)
 
     do iy = 0, ny
     do ix = 0, nx
@@ -183,17 +182,11 @@ module advance_module
         ! left
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (uhy(ix,iy)-uhy(ix,iy-1)) / dy
-!        force = 0.5_num * dt * (-gradp_x(ix,iy) + grav_x)
-!        if (use_vardens) force = force / rho(ix,iy)
-!        uxl(ix,iy) = uhxl(ix,iy)  + transv + force
         uxl(ix,iy) = uhxl(ix,iy)  + transv + 0.5_num * dt * get_force_cc(ix,iy,1)
 
         ! right
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (uhy(ix+1,iy)-uhy(ix+1,iy-1 )) /dy
-!        force = 0.5_num * dt * ( -gradp_x(ix+1,iy) + grav_x)
-!        if (use_vardens) force = force / rho(ix,iy)
-!        uxr(ix,iy) = uhxr(ix,iy)  + transv + force
         uxr(ix,iy) = uhxr(ix,iy)  + transv + 0.5_num * dt * get_force_cc(ix+1,iy,1)
 
 
@@ -202,48 +195,30 @@ module advance_module
         ! left 
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (vhy(ix,iy)-vhy(ix,iy-1)) / dy
-!        force = 0.5_num * dt * ( -gradp_y(ix,iy) + grav_y) 
-!        if (use_vardens) force = force / rho(ix,iy)
-!        vxl(ix,iy) = vhxl(ix,iy) + transv + force
         vxl(ix,iy) = vhxl(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy,2) 
 
         ! right 
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (vhy(ix+1,iy)-vhy(ix+1,iy-1 )) /dy
-!        force = 0.5_num * dt * (-gradp_y(ix+1,iy) + grav_y)
-!        if (use_vardens) force = force / rho(ix,iy)
-!        vxr(ix,iy) = vhxr(ix,iy) + transv + force 
         vxr(ix,iy) = vhxr(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix+1,iy,2) 
       endif
       if (ix /= 0) then !can do the yface stuff
         ! normal components
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (vhx(ix,iy) - vhx(ix-1,iy)) / dx
-!        force = 0.5_num * dt * (-gradp_y(ix,iy) + grav_y) 
-!        if (use_vardens) force = force / rho(ix,iy)
-!        vyl(ix,iy) = vhyl(ix,iy) + transv + force
         vyl(ix,iy) = vhyl(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy,2)
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (vhx(ix,iy+1) - vhx(ix-1,iy+1)) / dx
-!        force = 0.5_num * dt * (-gradp_y(ix,iy+1) + grav_y)
-!        if (use_vardens) force = force / rho(ix,iy)
-!        vyr(ix,iy) = vhyr(ix,iy) + transv + force
         vyr(ix,iy) = vhyr(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy+1,2) 
 
         ! also calc the tangential vel states for step 3
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (uhx(ix,iy) - uhx(ix-1,iy)) / dx
-!        force = 0.5_num * dt * (-gradp_x(ix,iy) + grav_x)
-!        if (use_vardens) force = force / rho(ix,iy)
-!        uyl(ix,iy) = uhyl(ix,iy) + transv + force
         uyl(ix,iy) = uhyl(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy,1)
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (uhx(ix,iy+1) - uhx(ix-1,iy+1)) / dx
-!        force = 0.5_num * dt * (-gradp_x(ix,iy+1) + grav_x) 
-!        if (use_vardens) force = force / rho(ix,iy)
-!        uyr(ix,iy) = uhyr(ix,iy) + transv + force
         uyr(ix,iy) = uhyr(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy+1,1)
 
      endif
@@ -267,16 +242,16 @@ module advance_module
           ! vector laplacian in cartesians L(U) = (L u_x, L u_y, L u_z)
           ! x component, in cell centers to left and right of interface
 
-          LU_l = get_LU_cc(ix,iy,0)
-          LU_r = get_LU_cc(ix+1,iy,0) 
+          LU_l = get_LU_cc(ix,iy,1)
+          LU_r = get_LU_cc(ix+1,iy,1) 
   
           uxl(ix,iy) = uxl(ix,iy) + 0.5_num * dt * visc * LU_l 
           uxr(ix,iy) = uxr(ix,iy) + 0.5_num * dt * visc * LU_r 
   
           ! vector laplacian of y component
   
-          LU_l = get_LU_cc(ix,iy,1)
-          LU_r = get_LU_cc(ix+1,iy,1)
+          LU_l = get_LU_cc(ix,iy,2)
+          LU_r = get_LU_cc(ix+1,iy,2)
 
 
           vxl(ix,iy) = vxl(ix,iy) + 0.5_num * dt * visc * LU_l
@@ -288,14 +263,14 @@ module advance_module
 
           !_l and _r is now vector laplacian at cc "below" and "above" y face
   
-          LU_l = get_LU_cc(ix,iy,0)
-          LU_r = get_LU_cc(ix,iy+1,0) 
+          LU_l = get_LU_cc(ix,iy,1)
+          LU_r = get_LU_cc(ix,iy+1,1) 
 
           uyl(ix,iy) = uyl(ix,iy) + 0.5_num * dt * visc * LU_l
           uyr(ix,iy) = uyr(ix,iy) + 0.5_num * dt * visc * LU_r
 
-          LU_l = get_LU_cc(ix,iy,1)
-          LU_r = get_LU_cc(ix,iy+1,1)
+          LU_l = get_LU_cc(ix,iy,2)
+          LU_r = get_LU_cc(ix,iy+1,2)
 
           vyl(ix,iy) = vyl(ix,iy) + 0.5_num * dt * visc * LU_l
           vyr(ix,iy) = vyr(ix,iy) + 0.5_num * dt * visc * LU_r
@@ -351,10 +326,9 @@ module advance_module
         & + (macv(ix,iy) - macv(ix,iy-1))/dy
     enddo
     enddo
-!print *,macv(nx/2,:)
-!STOP
-!    call plot_divergence_now
-!    if (step /=0) call plot_divergence_now
+ 
+!call plot_divergence_now ! debug
+!if (step /=0) call plot_divergence_now ! debug
 
     if (use_vardens) call rho_bcs ! needed for any OOB in relax and correction 
 
@@ -368,9 +342,7 @@ module advance_module
         & use_old_phi = .false., tol = 1e-18_num) 
     endif
 
-
     print *, '*** max divu before cleaning',maxval(abs(divu))
-
 
     do ix = 0, nx
     do iy = 0, ny
@@ -403,8 +375,8 @@ module advance_module
     print *, '*** max divu after cleaning',maxval(abs(divu))
     print *, '*** complete'
 
-!    if (step /=0) call plot_divergence_now
-!    call plot_divergence_now
+!if (step /=0) call plot_divergence_now ! debug
+!call plot_divergence_now ! debug
   end subroutine step_2
 
   subroutine step_3
@@ -442,7 +414,6 @@ module advance_module
     real(num) :: Au, Av ! evaluation of advection term
 
     real(num),dimension(1:nx,1:ny) :: f !viscous only
-    real(num) :: force_x, force_y
 
     ! do inviscid calculation first since the terms
     ! used to evaluate ustar are used in the "f" term
@@ -450,14 +421,6 @@ module advance_module
     do ix = 1, nx
       Au = get_Au(ix,iy)
       Av = get_Av(ix,iy) 
-!      force_x = - dt * gradp_x(ix,iy) + dt * grav_x 
-!      force_y = - dt * gradp_y(ix,iy) + dt * grav_y
-!      if (use_vardens) then
-!        force_x = force_x / rho(ix,iy) 
-!        force_y = force_y / rho(ix,iy)
-!      endif
-!      ustar(ix,iy) = u(ix,iy) - dt * Au + force_x
-!      vstar(ix,iy) = v(ix,iy) - dt * Av + force_y
       ustar(ix,iy) = u(ix,iy) - dt * Au + dt * get_force_cc(ix,iy,1)
       vstar(ix,iy) = v(ix,iy) - dt * Av + dt * get_force_cc(ix,iy,2)
     enddo
@@ -470,7 +433,7 @@ module advance_module
 
       do ix = 1, nx
       do iy = 1, ny
-        f(ix,iy) = ustar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,0)
+        f(ix,iy) = ustar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,1)
       enddo
       enddo    
 
@@ -489,7 +452,7 @@ module advance_module
 
       do ix = 1, nx
       do iy = 1, ny
-        f(ix,iy) = vstar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,1)
+        f(ix,iy) = vstar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,2)
       enddo
       enddo    
 
@@ -516,8 +479,8 @@ module advance_module
     ! calc divU at cc using the star velocities which themselves are cc
     ! (this differs to step two which uses face vars to get a CC var)
 
-    call velocity_bcs(arr_cc=ustar, di=0)
-    call velocity_bcs(arr_cc=vstar, di=1)
+    call velocity_bcs(arr_cc = ustar, di = 1)
+    call velocity_bcs(arr_cc = vstar, di = 2)
 
     do iy = 1, ny
     do ix = 1, nx
@@ -526,8 +489,8 @@ module advance_module
     enddo
     enddo
 
-!    if (step /=0) call plot_divergence_now
-!    call plot_divergence_now
+!if (step /=0) call plot_divergence_now
+!call plot_divergence_now
 
 
     divu = divu/dt
@@ -543,7 +506,6 @@ module advance_module
     endif
 
     print *, '*** max divu before cleaning',maxval(abs(divu)*dt)
-!    print *, '*** max divu/dt before cleaning',maxval(abs(divu))
 
 
     call phi_bcs
@@ -561,14 +523,13 @@ module advance_module
       if (use_vardens) correction = correction/rho(ix,iy)
       v(ix,iy) = vstar(ix,iy) - correction 
 
-!if (iy == 2) print *,'cor',correction
+    enddo
+    enddo
 
-    enddo
-    enddo
     ! calculate the divergence of the updated velocity field
 
-    call velocity_bcs(arr_cc=u, di = 0)
-    call velocity_bcs(arr_cc=v, di = 1)
+    call velocity_bcs(arr_cc = u, di = 1)
+    call velocity_bcs(arr_cc = v, di = 2)
 
     do iy = 1, ny
     do ix = 1, nx
@@ -578,16 +539,13 @@ module advance_module
     enddo
 
     print *, '*** max divu after cleaning',maxval(abs(divu))
-!      print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
 
-!    if (step /=0) call plot_divergence_now
-!    call plot_divergence_now
-!call plot_vel_now
+!if (step /=0) call plot_divergence_now ! debug
+!call plot_divergence_now ! debug
+!call plot_vel_now ! debug
 
     ! update the pressure gradient 
   
-!    do ix = 1, nx * see note below
-!    do iy = 1, ny
     do ix = 0, nx+1 
     do iy = 0, ny+1 
 
@@ -599,7 +557,8 @@ module advance_module
  
     enddo
     enddo
-!call plot_gradp_now
+
+!call plot_gradp_now ! debug
 
   end subroutine step_5
 
@@ -646,7 +605,6 @@ module advance_module
         rhohyl(ix,iy) = rho(ix,iy) + &
           & 0.5_num * (1.0_num - dt * macv(ix,iy) / dy ) * drho * dy 
           
-
         if (use_minmod) then
           drho = minmod( (rho(ix,iy+1)-rho(ix,iy))/dy, (rho(ix,iy+2)-rho(ix,iy+1))/dy)
         else
@@ -675,11 +633,9 @@ module advance_module
 
     ! calculate full states with transverse terms
 
-
     call rho_bcs(arr_xface = rhohx, arr_yface = rhohy) 
-    call velocity_bcs(arr_xface = macu, di = 0)
-    call velocity_bcs(arr_yface = macv, di = 1)
-
+    call velocity_bcs(arr_xface = macu, di = 1)
+    call velocity_bcs(arr_yface = macv, di = 2)
 
     do ix = 0, nx
     do iy = 0, ny
@@ -705,6 +661,7 @@ module advance_module
       endif
     enddo
     enddo
+
     ! resolve states via upwind
 
     do ix = 0, nx
@@ -736,8 +693,8 @@ module advance_module
     real(num) :: dtf
 
     ! need to call bcs to capture velocities on driven boundaries
-    call velocity_bcs(arr_cc = u, di = 0)  
-    call velocity_bcs(arr_cc = v, di = 1)
+    call velocity_bcs(arr_cc = u, di = 1)  
+    call velocity_bcs(arr_cc = v, di = 2)
 
     dtx = CFL * dx / maxval(abs(u))
     dty = CFL * dy / maxval(abs(v))
@@ -745,16 +702,15 @@ module advance_module
 
     if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
       if (use_vardens) then
-      dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
-      dt = MIN(dt,dtf)
-      dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
-      dt = MIN(dt,dtf)
+        dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
+        dt = MIN(dt,dtf)
+        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
+        dt = MIN(dt,dtf)
       else
-      dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
-      dt = MIN(dt,dtf)
-      dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
-      dt = MIN(dt,dtf)
-
+        dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
+        dt = MIN(dt,dtf)
+        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
+        dt = MIN(dt,dtf)
       endif
     endif 
 
@@ -804,7 +760,7 @@ module advance_module
     grav_tmp_y = grav_y
 
 
-    ! uncomment to turn grav off at the closest cc's to the edges
+! debug: uncomment to turn grav off at the closest cc's to the edges
 !    grav_tmp_x = 0.0_num
 !    grav_tmp_y = 0.0_num
 !    if ( (ix > 1) .and. (ix < nx) ) grav_tmp_x = grav_x
@@ -833,22 +789,22 @@ module advance_module
 
   end function get_force_cc
 
-  real(num) function get_LU_cc(ix,iy,dimen) ! calculate vector laplacian at a coordinate
-    integer, intent(in) :: ix, iy, dimen
+  real(num) function get_LU_cc(ix,iy,di) ! calculate vector laplacian at a coordinate
+    integer, intent(in) :: ix, iy, di
 
-    if (dimen == 0) then
+    if (di == 1) then
 
       get_LU_cc = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
          (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
 
-    else if (dimen == 1) then
+    else if (di == 2) then
 
       get_LU_cc = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
          (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
     else 
 
       print *,'error: get_LU_cc (calc vector laplacian) not given valid dimension'
-      print *,'dimen = 0 (x) or =1 (y)'
+      print *,'di = 1 (x) or = 2 (y)'
       print *,'Terminating early'
       STOP
 

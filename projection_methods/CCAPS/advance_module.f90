@@ -425,14 +425,6 @@ module advance_module
     do ix = 1, nx
       Au = get_Au(ix,iy)
       Av = get_Av(ix,iy) 
-!      force_x = - dt * gradp_x(ix,iy) + dt * grav_x 
-!      force_y = - dt * gradp_y(ix,iy) + dt * grav_y
-!      if (use_vardens) then
-!        force_x = force_x / rho(ix,iy) 
-!        force_y = force_y / rho(ix,iy)
-!      endif
-!      ustar(ix,iy) = u(ix,iy) - dt * Au + force_x
-!      vstar(ix,iy) = v(ix,iy) - dt * Av + force_y
       ustar(ix,iy) = u(ix,iy) - dt * Au + dt * get_force_cc(ix,iy,1)
       vstar(ix,iy) = v(ix,iy) - dt * Av + dt * get_force_cc(ix,iy,2)
     enddo
@@ -501,8 +493,8 @@ module advance_module
     enddo
     enddo
 
-!    if (step /=0) call plot_divergence_now
-!    call plot_divergence_now
+!if (step /=0) call plot_divergence_now
+!call plot_divergence_now
 
 
     divu = divu/dt
@@ -518,7 +510,6 @@ module advance_module
     endif
 
     print *, '*** max divu before cleaning',maxval(abs(divu)*dt)
-!    print *, '*** max divu/dt before cleaning',maxval(abs(divu))
 
 
     call phi_bcs
@@ -536,10 +527,9 @@ module advance_module
       if (use_vardens) correction = correction/rho(ix,iy)
       v(ix,iy) = vstar(ix,iy) - correction 
 
-!if (iy == 2) print *,'cor',correction
+    enddo
+    enddo
 
-    enddo
-    enddo
     ! calculate the divergence of the updated velocity field
 
     call velocity_bcs(arr_cc=u, di = 0)
@@ -553,16 +543,13 @@ module advance_module
     enddo
 
     print *, '*** max divu after cleaning',maxval(abs(divu))
-!      print *, '*** max divu/dt after cleaning',maxval(abs(divu/dt))
 
-!    if (step /=0) call plot_divergence_now
-!    call plot_divergence_now
-!call plot_vel_now
+!if (step /=0) call plot_divergence_now ! debug
+!call plot_divergence_now ! debug
+!call plot_vel_now ! debug
 
     ! update the pressure gradient 
   
-!    do ix = 1, nx * see note below
-!    do iy = 1, ny
     do ix = 0, nx+1 
     do iy = 0, ny+1 
 
@@ -574,7 +561,8 @@ module advance_module
  
     enddo
     enddo
-!call plot_gradp_now
+
+!call plot_gradp_now ! debug
 
   end subroutine step_5
 
@@ -621,7 +609,6 @@ module advance_module
         rhohyl(ix,iy) = rho(ix,iy) + &
           & 0.5_num * (1.0_num - dt * macv(ix,iy) / dy ) * drho * dy 
           
-
         if (use_minmod) then
           drho = minmod( (rho(ix,iy+1)-rho(ix,iy))/dy, (rho(ix,iy+2)-rho(ix,iy+1))/dy)
         else
@@ -650,11 +637,9 @@ module advance_module
 
     ! calculate full states with transverse terms
 
-
     call rho_bcs(arr_xface = rhohx, arr_yface = rhohy) 
     call velocity_bcs(arr_xface = macu, di = 0)
     call velocity_bcs(arr_yface = macv, di = 1)
-
 
     do ix = 0, nx
     do iy = 0, ny
@@ -680,6 +665,7 @@ module advance_module
       endif
     enddo
     enddo
+
     ! resolve states via upwind
 
     do ix = 0, nx
@@ -720,16 +706,15 @@ module advance_module
 
     if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
       if (use_vardens) then
-      dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
-      dt = MIN(dt,dtf)
-      dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
-      dt = MIN(dt,dtf)
+        dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
+        dt = MIN(dt,dtf)
+        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
+        dt = MIN(dt,dtf)
       else
-      dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
-      dt = MIN(dt,dtf)
-      dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
-      dt = MIN(dt,dtf)
-
+        dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
+        dt = MIN(dt,dtf)
+        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
+        dt = MIN(dt,dtf)
       endif
     endif 
 
@@ -779,7 +764,7 @@ module advance_module
     grav_tmp_y = grav_y
 
 
-    ! uncomment to turn grav off at the closest cc's to the edges
+! debug: uncomment to turn grav off at the closest cc's to the edges
 !    grav_tmp_x = 0.0_num
 !    grav_tmp_y = 0.0_num
 !    if ( (ix > 1) .and. (ix < nx) ) grav_tmp_x = grav_x

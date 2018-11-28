@@ -327,10 +327,9 @@ module advance_module
         & + (macv(ix,iy) - macv(ix,iy-1))/dy
     enddo
     enddo
-!print *,macv(nx/2,:)
-!STOP
-!    call plot_divergence_now
-!    if (step /=0) call plot_divergence_now
+ 
+!call plot_divergence_now ! debug
+!if (step /=0) call plot_divergence_now ! debug
 
     if (use_vardens) call rho_bcs ! needed for any OOB in relax and correction 
 
@@ -379,8 +378,8 @@ module advance_module
     print *, '*** max divu after cleaning',maxval(abs(divu))
     print *, '*** complete'
 
-!    if (step /=0) call plot_divergence_now
-!    call plot_divergence_now
+!if (step /=0) call plot_divergence_now ! debug
+!call plot_divergence_now ! debug
   end subroutine step_2
 
   subroutine step_3

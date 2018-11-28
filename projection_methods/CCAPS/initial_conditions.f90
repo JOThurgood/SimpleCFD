@@ -105,7 +105,6 @@ module initial_conditions
     print *,'max numerical divu in ICs',maxval(abs(divu))
 
   end subroutine vortex1_test_ic
-  ! Helper subroutines may go here! 
 
   subroutine driven_lid_ic
 

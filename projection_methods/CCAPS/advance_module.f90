@@ -183,17 +183,11 @@ module advance_module
         ! left
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (uhy(ix,iy)-uhy(ix,iy-1)) / dy
-!        force = 0.5_num * dt * (-gradp_x(ix,iy) + grav_x)
-!        if (use_vardens) force = force / rho(ix,iy)
-!        uxl(ix,iy) = uhxl(ix,iy)  + transv + force
         uxl(ix,iy) = uhxl(ix,iy)  + transv + 0.5_num * dt * get_force_cc(ix,iy,1)
 
         ! right
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (uhy(ix+1,iy)-uhy(ix+1,iy-1 )) /dy
-!        force = 0.5_num * dt * ( -gradp_x(ix+1,iy) + grav_x)
-!        if (use_vardens) force = force / rho(ix,iy)
-!        uxr(ix,iy) = uhxr(ix,iy)  + transv + force
         uxr(ix,iy) = uhxr(ix,iy)  + transv + 0.5_num * dt * get_force_cc(ix+1,iy,1)
 
 
@@ -202,48 +196,30 @@ module advance_module
         ! left 
         transv = -0.5_num * dt * 0.5_num * (vha(ix,iy-1) + vha(ix,iy)) &
           & * (vhy(ix,iy)-vhy(ix,iy-1)) / dy
-!        force = 0.5_num * dt * ( -gradp_y(ix,iy) + grav_y) 
-!        if (use_vardens) force = force / rho(ix,iy)
-!        vxl(ix,iy) = vhxl(ix,iy) + transv + force
         vxl(ix,iy) = vhxl(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy,2) 
 
         ! right 
         transv = -0.5_num * dt * 0.5_num *(vha(ix+1,iy-1)+vha(ix+1,iy))&
           & * (vhy(ix+1,iy)-vhy(ix+1,iy-1 )) /dy
-!        force = 0.5_num * dt * (-gradp_y(ix+1,iy) + grav_y)
-!        if (use_vardens) force = force / rho(ix,iy)
-!        vxr(ix,iy) = vhxr(ix,iy) + transv + force 
         vxr(ix,iy) = vhxr(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix+1,iy,2) 
       endif
       if (ix /= 0) then !can do the yface stuff
         ! normal components
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (vhx(ix,iy) - vhx(ix-1,iy)) / dx
-!        force = 0.5_num * dt * (-gradp_y(ix,iy) + grav_y) 
-!        if (use_vardens) force = force / rho(ix,iy)
-!        vyl(ix,iy) = vhyl(ix,iy) + transv + force
         vyl(ix,iy) = vhyl(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy,2)
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (vhx(ix,iy+1) - vhx(ix-1,iy+1)) / dx
-!        force = 0.5_num * dt * (-gradp_y(ix,iy+1) + grav_y)
-!        if (use_vardens) force = force / rho(ix,iy)
-!        vyr(ix,iy) = vhyr(ix,iy) + transv + force
         vyr(ix,iy) = vhyr(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy+1,2) 
 
         ! also calc the tangential vel states for step 3
         transv = -0.5_num * dt * 0.5_num * (uha(ix-1,iy) + uha(ix,iy)) &
           & * (uhx(ix,iy) - uhx(ix-1,iy)) / dx
-!        force = 0.5_num * dt * (-gradp_x(ix,iy) + grav_x)
-!        if (use_vardens) force = force / rho(ix,iy)
-!        uyl(ix,iy) = uhyl(ix,iy) + transv + force
         uyl(ix,iy) = uhyl(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy,1)
 
         transv = -0.5_num * dt * 0.5_num *(uha(ix-1,iy+1)+uha(ix,iy+1))&
           & * (uhx(ix,iy+1) - uhx(ix-1,iy+1)) / dx
-!        force = 0.5_num * dt * (-gradp_x(ix,iy+1) + grav_x) 
-!        if (use_vardens) force = force / rho(ix,iy)
-!        uyr(ix,iy) = uhyr(ix,iy) + transv + force
         uyr(ix,iy) = uhyr(ix,iy) + transv + 0.5_num * dt * get_force_cc(ix,iy+1,1)
 
      endif

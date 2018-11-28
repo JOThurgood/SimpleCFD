@@ -342,9 +342,7 @@ module advance_module
         & use_old_phi = .false., tol = 1e-18_num) 
     endif
 
-
     print *, '*** max divu before cleaning',maxval(abs(divu))
-
 
     do ix = 0, nx
     do iy = 0, ny

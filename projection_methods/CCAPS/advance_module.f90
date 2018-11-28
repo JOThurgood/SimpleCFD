@@ -35,7 +35,6 @@ module advance_module
 
   subroutine step_1
 
-    real(num) :: force
     real(num) :: du, dv
     real(num) :: transv
     real(num) :: LU_l, LU_r ! vector laplacian of U left/right - for viscous forcing 
@@ -50,8 +49,8 @@ module advance_module
 
     ! x faced data 
 
-    call velocity_bcs(arr_cc=u,di=0)
-    call velocity_bcs(arr_cc=v,di=1)
+    call velocity_bcs(arr_cc = u,di = 1)
+    call velocity_bcs(arr_cc = v,di = 2)
 
     do iy = 1, ny 
     do ix = 0, nx  !xb counts from 0 to nx, <0 and >nx are ghosts 
@@ -170,10 +169,10 @@ module advance_module
 
     ! (actually get them on all interfaces, as needed later steps)
 
-    call velocity_bcs(arr_xface = uha, di =0)
-    call velocity_bcs(arr_yface = vha, di =1)
-    call velocity_bcs(arr_xface = uhx, arr_yface = uhy, di=0)
-    call velocity_bcs(arr_xface = vhx, arr_yface = vhy, di=1)
+    call velocity_bcs(arr_xface = uha, di = 1)
+    call velocity_bcs(arr_yface = vha, di = 2)
+    call velocity_bcs(arr_xface = uhx, arr_yface = uhy, di = 1)
+    call velocity_bcs(arr_xface = vhx, arr_yface = vhy, di = 2)
 
     do iy = 0, ny
     do ix = 0, nx
@@ -243,16 +242,16 @@ module advance_module
           ! vector laplacian in cartesians L(U) = (L u_x, L u_y, L u_z)
           ! x component, in cell centers to left and right of interface
 
-          LU_l = get_LU_cc(ix,iy,0)
-          LU_r = get_LU_cc(ix+1,iy,0) 
+          LU_l = get_LU_cc(ix,iy,1)
+          LU_r = get_LU_cc(ix+1,iy,1) 
   
           uxl(ix,iy) = uxl(ix,iy) + 0.5_num * dt * visc * LU_l 
           uxr(ix,iy) = uxr(ix,iy) + 0.5_num * dt * visc * LU_r 
   
           ! vector laplacian of y component
   
-          LU_l = get_LU_cc(ix,iy,1)
-          LU_r = get_LU_cc(ix+1,iy,1)
+          LU_l = get_LU_cc(ix,iy,2)
+          LU_r = get_LU_cc(ix+1,iy,2)
 
 
           vxl(ix,iy) = vxl(ix,iy) + 0.5_num * dt * visc * LU_l
@@ -264,14 +263,14 @@ module advance_module
 
           !_l and _r is now vector laplacian at cc "below" and "above" y face
   
-          LU_l = get_LU_cc(ix,iy,0)
-          LU_r = get_LU_cc(ix,iy+1,0) 
+          LU_l = get_LU_cc(ix,iy,1)
+          LU_r = get_LU_cc(ix,iy+1,1) 
 
           uyl(ix,iy) = uyl(ix,iy) + 0.5_num * dt * visc * LU_l
           uyr(ix,iy) = uyr(ix,iy) + 0.5_num * dt * visc * LU_r
 
-          LU_l = get_LU_cc(ix,iy,1)
-          LU_r = get_LU_cc(ix,iy+1,1)
+          LU_l = get_LU_cc(ix,iy,2)
+          LU_r = get_LU_cc(ix,iy+1,2)
 
           vyl(ix,iy) = vyl(ix,iy) + 0.5_num * dt * visc * LU_l
           vyr(ix,iy) = vyr(ix,iy) + 0.5_num * dt * visc * LU_r
@@ -417,7 +416,6 @@ module advance_module
     real(num) :: Au, Av ! evaluation of advection term
 
     real(num),dimension(1:nx,1:ny) :: f !viscous only
-    real(num) :: force_x, force_y
 
     ! do inviscid calculation first since the terms
     ! used to evaluate ustar are used in the "f" term
@@ -437,7 +435,7 @@ module advance_module
 
       do ix = 1, nx
       do iy = 1, ny
-        f(ix,iy) = ustar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,0)
+        f(ix,iy) = ustar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,1)
       enddo
       enddo    
 
@@ -456,7 +454,7 @@ module advance_module
 
       do ix = 1, nx
       do iy = 1, ny
-        f(ix,iy) = vstar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,1)
+        f(ix,iy) = vstar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,2)
       enddo
       enddo    
 
@@ -483,8 +481,8 @@ module advance_module
     ! calc divU at cc using the star velocities which themselves are cc
     ! (this differs to step two which uses face vars to get a CC var)
 
-    call velocity_bcs(arr_cc=ustar, di=0)
-    call velocity_bcs(arr_cc=vstar, di=1)
+    call velocity_bcs(arr_cc = ustar, di = 1)
+    call velocity_bcs(arr_cc = vstar, di = 2)
 
     do iy = 1, ny
     do ix = 1, nx
@@ -532,8 +530,8 @@ module advance_module
 
     ! calculate the divergence of the updated velocity field
 
-    call velocity_bcs(arr_cc=u, di = 0)
-    call velocity_bcs(arr_cc=v, di = 1)
+    call velocity_bcs(arr_cc = u, di = 1)
+    call velocity_bcs(arr_cc = v, di = 2)
 
     do iy = 1, ny
     do ix = 1, nx
@@ -638,8 +636,8 @@ module advance_module
     ! calculate full states with transverse terms
 
     call rho_bcs(arr_xface = rhohx, arr_yface = rhohy) 
-    call velocity_bcs(arr_xface = macu, di = 0)
-    call velocity_bcs(arr_yface = macv, di = 1)
+    call velocity_bcs(arr_xface = macu, di = 1)
+    call velocity_bcs(arr_yface = macv, di = 2)
 
     do ix = 0, nx
     do iy = 0, ny
@@ -697,8 +695,8 @@ module advance_module
     real(num) :: dtf
 
     ! need to call bcs to capture velocities on driven boundaries
-    call velocity_bcs(arr_cc = u, di = 0)  
-    call velocity_bcs(arr_cc = v, di = 1)
+    call velocity_bcs(arr_cc = u, di = 1)  
+    call velocity_bcs(arr_cc = v, di = 2)
 
     dtx = CFL * dx / maxval(abs(u))
     dty = CFL * dy / maxval(abs(v))
@@ -793,22 +791,22 @@ module advance_module
 
   end function get_force_cc
 
-  real(num) function get_LU_cc(ix,iy,dimen) ! calculate vector laplacian at a coordinate
-    integer, intent(in) :: ix, iy, dimen
+  real(num) function get_LU_cc(ix,iy,di) ! calculate vector laplacian at a coordinate
+    integer, intent(in) :: ix, iy, di
 
-    if (dimen == 0) then
+    if (di == 1) then
 
       get_LU_cc = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
          (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
 
-    else if (dimen == 1) then
+    else if (di == 2) then
 
       get_LU_cc = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
          (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
     else 
 
       print *,'error: get_LU_cc (calc vector laplacian) not given valid dimension'
-      print *,'dimen = 0 (x) or =1 (y)'
+      print *,'di = 1 (x) or = 2 (y)'
       print *,'Terminating early'
       STOP
 

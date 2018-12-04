@@ -49,6 +49,7 @@ module gauss_seidel
 
     L2_old = 1e6_num
 
+    ir = 0
     do
       ir = ir + 1 
      
@@ -155,8 +156,9 @@ module gauss_seidel
 
     integer :: maxir = -1 ! <0 for no max no of iterations
     integer :: ir = 0 
-    logical :: verbose=.true. 
+    logical :: verbose = .false.
      
+
      
     print *, '*** begining GS relaxation solve.'
     print *, '*** this can take a while, use VERBOSE if you want to monitor stepping'
@@ -169,6 +171,7 @@ module gauss_seidel
 
     L2_old = 1e6_num
 
+    ir = 0
     do
       ir = ir + 1 
      

@@ -308,19 +308,21 @@ module advance_module
       & eta = eta_arr, &
       & use_old_phi = .false., tol = 1e-18_num) 
     
-    print *, '*** max beta * divu before cleaning',maxval(abs(divu))
+    print *, '*** max div beta*u before cleaning',maxval(abs(divu))
 
     do ix = 0, nx
     do iy = 0, ny
       if (iy /= 0) then !can do the xface stuff
         correction = (phi(ix+1,iy) - phi(ix,iy))/dx
-        correction = correction / &
+        betacc = p0(iy)**(1.0_num / gamma)
+        correction = correction * betacc / &
             (0.5_num * (rho(ix,iy) + rho(ix+1,iy)))
         macu(ix,iy) = macu(ix,iy) - correction 
       endif
       if (ix /= 0) then !can do the yface stuff
         correction = (phi(ix,iy+1)-phi(ix,iy))/dy
-        correction = correction / &
+        betay_r = 0.5_num * (betacc + p0(iy+1)**(1.0_num / gamma))
+        correction = correction * betay_r / &
             (0.5_num * (rho(ix,iy) + rho(ix,iy+1)))
         macv(ix,iy) = macv(ix,iy) - correction 
       endif
@@ -330,15 +332,24 @@ module advance_module
     ! calculate the new divergence
     ! calc divU at cc using the MAC velocities
 
+!    do iy = 1, ny
+!    do ix = 1, nx
+!      divu(ix,iy) = (macu(ix,iy) - macu(ix-1,iy) ) /dx &
+!        & + (macv(ix,iy) - macv(ix,iy-1))/dy
+!    enddo
+!    enddo
+
     do iy = 1, ny
     do ix = 1, nx
-      divu(ix,iy) = (macu(ix,iy) - macu(ix-1,iy) ) /dx &
-        & + (macv(ix,iy) - macv(ix,iy-1))/dy
+      betacc = p0(iy)**(1.0_num / gamma)
+      betay_r = 0.5_num * (betacc + p0(iy+1)**(1.0_num / gamma))
+      betay_l = 0.5_num * (betacc + p0(iy-1)**(1.0_num / gamma))
+      divu(ix,iy) = betacc * (macu(ix,iy) - macu(ix-1,iy) ) /dx &
+        & + (betay_r*macv(ix,iy) - betay_l*macv(ix,iy-1))/dy
     enddo
     enddo
 
-
-    print *, '*** max divu after cleaning',maxval(abs(divu))
+    print *, '*** max div beta0 * u after cleaning',maxval(abs(divu))
     print *, '*** complete'
 
 !if (step /=0) call plot_divergence_now ! debug
@@ -395,7 +406,7 @@ module advance_module
   subroutine step_5
 
     real(num) :: correction, gpsi
-
+    real(num) :: betacc_p, betacc_m, betacc
     print *,'Step #5'
     print *, '*** start'
 
@@ -407,8 +418,12 @@ module advance_module
 
     do iy = 1, ny
     do ix = 1, nx
-      divu(ix,iy) = (ustar(ix+1,iy) - ustar(ix-1,iy))/dx/2.0_num &
-        & + (vstar(ix,iy+1) - vstar(ix,iy-1))/dy/2.0_num
+      betacc_p = p0(iy+1)**(1.0_num/gamma)
+      betacc_m = p0(iy-1)**(1.0_num/gamma)
+      betacc   = p0(iy)**(1.0_num/gamma)
+
+      divu(ix,iy) = betacc*(ustar(ix+1,iy) - ustar(ix-1,iy))/dx/2.0_num &
+        & + (betacc_p*vstar(ix,iy+1) - betacc_m*vstar(ix,iy-1))/dy/2.0_num
     enddo
     enddo
 
@@ -418,25 +433,35 @@ module advance_module
 
     divu = divu/dt
 
+    do ix = 0, nx+1
+    do iy = 0, ny+1
+      betacc = p0(iy)**(1.0_num / gamma)
+      eta_arr(ix,iy) = betacc**2 / rho(ix,iy) 
+!print *,ix,iy,p0(iy),betacc,rho(ix,iy), eta_arr(ix,iy)
+    enddo
+    enddo
+
     call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
       & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
       & use_old_phi = .true., tol = 1e-18_num) 
 
-    print *, '*** max divu before cleaning',maxval(abs(divu)*dt)
+    print *, '*** max  div (beta u) before cleaning',maxval(abs(divu)*dt)
 
     call phi_bcs
 
     do iy = 1, ny
     do ix = 1, nx
 
+      betacc = p0(iy)**(1.0_num / gamma)
+ 
       gpsi = (phi(ix+1,iy) - phi(ix-1,iy))/dx/2.0_num
       correction = dt * gpsi
-      correction = correction/rho(ix,iy) !cc here
+      correction = betacc * correction / rho(ix,iy) !cc here
       u(ix,iy) = ustar(ix,iy) - correction 
 
       gpsi = (phi(ix,iy+1)-phi(ix,iy-1))/dy/2.0_num
       correction = dt * gpsi
-      correction = correction/rho(ix,iy)
+      correction = betacc * correction / rho(ix,iy)
       v(ix,iy) = vstar(ix,iy) - correction 
 
     enddo
@@ -449,18 +474,23 @@ module advance_module
 
     do iy = 1, ny
     do ix = 1, nx
-      divu(ix,iy) = (u(ix+1,iy) - u(ix-1,iy))/dx/2.0_num &
-        & + (v(ix,iy+1) - v(ix,iy-1))/dy/2.0_num
+      betacc_p = p0(iy+1)**(1.0_num/gamma)
+      betacc_m = p0(iy-1)**(1.0_num/gamma)
+      betacc   = p0(iy)**(1.0_num/gamma)
+
+      divu(ix,iy) = betacc*(ustar(ix+1,iy) - ustar(ix-1,iy))/dx/2.0_num &
+        & + (betacc_p*vstar(ix,iy+1) - betacc_m*vstar(ix,iy-1))/dy/2.0_num
     enddo
     enddo
 
-    print *, '*** max divu after cleaning',maxval(abs(divu))
+    print *, '*** max div (beta0 u) after cleaning',maxval(abs(divu))
 
 !if (step /=0) call plot_divergence_now ! debug
 !call plot_divergence_now ! debug
 !call plot_vel_now ! debug
 
     ! update the pressure gradient 
+    ! (in this case its grad p'/beta0, a pressure-like quantity)
   
     do ix = 0, nx+1 
     do iy = 0, ny+1 

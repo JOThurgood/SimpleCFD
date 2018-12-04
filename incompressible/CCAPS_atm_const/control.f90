@@ -19,7 +19,7 @@ module control
     CFL = 0.8_num
     t_end = 10.0_num
 
-    nsteps = 0 !set to <0 to run till t_end 
+    nsteps = 1 !set to <0 to run till t_end 
     dumpfreq = 1
     use_minmod = .false.    
 

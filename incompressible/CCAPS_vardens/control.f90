@@ -40,8 +40,8 @@ module control
 !    minion_test = .true. 
 !    vortex1_test = .true.
 !    drivenlid_test = .true.
-    vardens_adv_test = .true.
-!    rti1_test = .true. 
+!    vardens_adv_test = .true.
+    rti1_test = .true. 
 !    blob1_test = .true. 
 
     ! DONT set more than one of the above true

@@ -637,8 +637,9 @@ module advance_module
 
     real(num) :: dtx, dty
     real(num) :: dtf
+    real(num) :: amax
 
-    ! need to call bcs to capture velocities on driven boundaries
+    ! need to call bcs to capture velocities boundaries
     call velocity_bcs(arr_cc = u, di = 1)  
     call velocity_bcs(arr_cc = v, di = 2)
 
@@ -647,11 +648,18 @@ module advance_module
     dt = MIN(dtx,dty)
 
     if (sqrt(grav_y**2) > 1e-16_num) then
-      dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
+      amax = 0.1_num
+      do ix = -1, nx+1
+      do iy = -1, ny+1
+        amax = MAX(amax, abs((rho(ix,iy)-rho0(iy))/rho(ix,iy)*grav_y))
+      enddo
+      enddo
+      dtf = CFL * sqrt(2.0_num * dy / amax)
       dt = MIN(dt,dtf)
     endif 
 
     print *, 'hydro dt = ',dt
+PRINT *,'Warning: artificially ensuring amax > 0, this should be temporary!!'
 
   end subroutine set_dt
 

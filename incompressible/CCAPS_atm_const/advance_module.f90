@@ -261,7 +261,7 @@ module advance_module
     real(num) :: betay_l, betay_r !beta evaluated at y top face (r) and bottom face (l)
     real(num) :: betacc ! beta evaluated at cc
  
-   print *, 'Step #2'
+    print *, 'Step #2'
     print *, '*** start'
 
     ! calc divU at cc using the MAC velocities
@@ -430,7 +430,6 @@ module advance_module
 !if (step /=0) call plot_divergence_now
 !call plot_divergence_now
 
-
     divu = divu/dt
 
     do ix = 0, nx+1
@@ -442,7 +441,7 @@ module advance_module
     enddo
 
     call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
-      & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
+      & eta = eta_arr , &
       & use_old_phi = .true., tol = 1e-18_num) 
 
     print *, '*** max  div (beta u) before cleaning',maxval(abs(divu)*dt)
@@ -478,8 +477,8 @@ module advance_module
       betacc_m = p0(iy-1)**(1.0_num/gamma)
       betacc   = p0(iy)**(1.0_num/gamma)
 
-      divu(ix,iy) = betacc*(ustar(ix+1,iy) - ustar(ix-1,iy))/dx/2.0_num &
-        & + (betacc_p*vstar(ix,iy+1) - betacc_m*vstar(ix,iy-1))/dy/2.0_num
+      divu(ix,iy) = betacc*(u(ix+1,iy) - u(ix-1,iy))/dx/2.0_num &
+        & + (betacc_p*v(ix,iy+1) - betacc_m*v(ix,iy-1))/dy/2.0_num
     enddo
     enddo
 

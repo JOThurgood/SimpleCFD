@@ -49,6 +49,7 @@ module gauss_seidel
 
     L2_old = 1e6_num
 
+    ir = 0
     do
       ir = ir + 1 
      
@@ -169,6 +170,7 @@ module gauss_seidel
 
     L2_old = 1e6_num
 
+    ir = 0
     do
       ir = ir + 1 
      

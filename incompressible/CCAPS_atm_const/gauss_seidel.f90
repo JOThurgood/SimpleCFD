@@ -155,7 +155,7 @@ module gauss_seidel
 
     integer :: maxir = -1 ! <0 for no max no of iterations
     integer :: ir = 0 
-    logical :: verbose=.false. 
+    logical :: verbose=.true. 
      
      
     print *, '*** begining GS relaxation solve.'

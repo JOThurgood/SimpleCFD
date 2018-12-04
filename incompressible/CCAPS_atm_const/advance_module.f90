@@ -258,15 +258,30 @@ module advance_module
   subroutine step_2
 
     real(num) :: correction
-
-    print *, 'Step #2'
+    real(num) :: betay_l, betay_r !beta evaluated at y top face (r) and bottom face (l)
+    real(num) :: betacc ! beta evaluated at cc
+ 
+   print *, 'Step #2'
     print *, '*** start'
 
     ! calc divU at cc using the MAC velocities
+!    do iy = 1, ny
+!    do ix = 1, nx
+!      divu(ix,iy) = (macu(ix,iy) - macu(ix-1,iy) ) /dx &
+!        & + (macv(ix,iy) - macv(ix,iy-1))/dy
+!    enddo
+!    enddo
+
+    ! calc div(beta * U) at cc using the MAC velocities
+    ! (continute to just call the array "divu" throughout)
+    ! (remember d/dx beta = 0 by construction) 
     do iy = 1, ny
     do ix = 1, nx
-      divu(ix,iy) = (macu(ix,iy) - macu(ix-1,iy) ) /dx &
-        & + (macv(ix,iy) - macv(ix,iy-1))/dy
+      betacc = p0(iy)**(1.0_num / gamma)
+      betay_r = 0.5_num * (betacc + p0(iy+1)**(1.0_num / gamma))
+      betay_l = 0.5_num * (betacc + p0(iy-1)**(1.0_num / gamma))
+      divu(ix,iy) = betacc * (macu(ix,iy) - macu(ix-1,iy) ) /dx &
+        & + (betay_r*macv(ix,iy) - betay_l*macv(ix,iy-1))/dy
     enddo
     enddo
  
@@ -275,11 +290,25 @@ module advance_module
 
     call rho_bcs ! needed for any OOB in relax and correction 
 
-    call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
-      & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
-      & use_old_phi = .false., tol = 1e-18_num) 
+    ! allocate the "eta" coefficient array(0:nx+1,0:ny+1) if necessary and populate
 
-    print *, '*** max divu before cleaning',maxval(abs(divu))
+    if (.not.(allocated(eta_arr))) allocate(eta_arr(0:nx+1,0:ny+1)) ! if this is always needed it should be done elsewhwer
+
+!print *,rho
+!STOP
+    do ix = 0, nx+1
+    do iy = 0, ny+1
+      betacc = p0(iy)**(1.0_num / gamma)
+      eta_arr(ix,iy) = betacc**2 / rho(ix,iy) 
+!print *,ix,iy,p0(iy),betacc,rho(ix,iy), eta_arr(ix,iy)
+    enddo
+    enddo
+
+    call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
+      & eta = eta_arr, &
+      & use_old_phi = .false., tol = 1e-18_num) 
+    
+    print *, '*** max beta * divu before cleaning',maxval(abs(divu))
 
     do ix = 0, nx
     do iy = 0, ny
@@ -587,9 +616,7 @@ module advance_module
     dty = CFL * dy / maxval(abs(v))
     dt = MIN(dtx,dty)
 
-    if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
-      dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
-      dt = MIN(dt,dtf)
+    if (sqrt(grav_y**2) > 1e-16_num) then
       dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
       dt = MIN(dt,dtf)
     endif 
@@ -633,22 +660,22 @@ module advance_module
 
   real(num) function get_force_cc(ix,iy,di)
     integer,intent(in) :: ix,iy, di
-    real(num) :: grav_tmp_x
     real(num) :: grav_tmp_y
-
-    grav_tmp_x = grav_x
+    real(num) :: beta
+    real(num) :: g_coeff ! rho' / rho
     grav_tmp_y = grav_y
 
 ! debug: uncomment to turn grav off at the closest cc's to the edges
-!    grav_tmp_x = 0.0_num
 !    grav_tmp_y = 0.0_num
-!    if ( (ix > 1) .and. (ix < nx) ) grav_tmp_x = grav_x
 !    if ( (iy > 1) .and. (iy < ny) ) grav_tmp_y = grav_y
 
+    beta = p0(iy)**(1.0_num/gamma)
+
     if (di==1) then
-      get_force_cc = -gradp_x(ix,iy)/rho(ix,iy) + grav_tmp_x
+      get_force_cc = -gradp_x(ix,iy)/rho(ix,iy)*beta
     else if (di==2) then
-      get_force_cc = -gradp_y(ix,iy)/rho(ix,iy) + grav_tmp_y
+      g_coeff = (rho(ix,iy) - rho0(iy)) / rho(ix,iy)
+      get_force_cc = -gradp_y(ix,iy)/rho(ix,iy)*beta + g_coeff*grav_tmp_y
     else
       print *,'error get_force_cc given invalid dimension'
       print *,'di = 1(x) or =2(y)'

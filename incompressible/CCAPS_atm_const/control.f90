@@ -19,7 +19,7 @@ module control
     CFL = 0.8_num
     t_end = 10.0_num
 
-    nsteps = 10 !set to <0 to run till t_end 
+    nsteps = 0 !set to <0 to run till t_end 
     dumpfreq = 1
     use_minmod = .false.    
 
@@ -29,6 +29,8 @@ module control
     bc_ymax = no_slip
 
     grav_y  = -1.0_num
+
+    gamma = 5.0_num/3.0_num
 
     ! set one of these to true to overwrite everything except nx 
     ! in control with correct setup for the test problems.
@@ -40,7 +42,7 @@ module control
 !    minion_test = .true. 
 !    vortex1_test = .true.
 !    drivenlid_test = .true.
-    vardens_adv_test = .true.
+!    vardens_adv_test = .true.
 !    rti1_test = .true. 
 !    blob1_test = .true. 
 
@@ -65,7 +67,6 @@ module control
     bc_ymin = periodic
     bc_ymax = periodic
     dumpfreq = -1
-    grav_x = 0.0_num
     grav_y = 0.0_num
   end subroutine shear_test_control
 
@@ -88,7 +89,6 @@ module control
     bc_ymin = periodic
     bc_ymax = periodic
     dumpfreq = 10000
-    grav_x = 0.0_num
     grav_y = 0.0_num
   end subroutine minion_test_control
 
@@ -132,7 +132,6 @@ module control
     bc_ymax = no_slip
     dumpfreq = -1 
     dt_snapshot = 0.2_num
-    grav_x = 0.0_num
     grav_y = -1.0_num
   end subroutine rti1_control
 

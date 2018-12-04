@@ -41,11 +41,11 @@ module control
     ! favour of the specific problems
 
 !    shear_test = .true.
-!    minion_test = .true. 
+    minion_test = .true. 
 !    vortex1_test = .true.
 !    drivenlid_test = .true.
 !    vardens_adv_test = .true.
-    rti1_test = .true. 
+!    rti1_test = .true. 
 !    blob1_test = .true. 
 
     ! DONT set more than one of the above true

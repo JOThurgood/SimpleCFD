@@ -62,7 +62,7 @@ module shared_data
 
   ! variable density
 
-  real(num), dimension(:,:), allocatable :: rho
+  real(num), dimension(:,:), allocatable :: rho, rho_old
   real(num), dimension(:,:), allocatable :: rhohxl, rhohxr !rho-hat-x-left / right
   real(num), dimension(:,:), allocatable :: rhohyl, rhohyr
   real(num), dimension(:,:), allocatable :: rhohx, rhohy ! upwinded rhohats on x and y face

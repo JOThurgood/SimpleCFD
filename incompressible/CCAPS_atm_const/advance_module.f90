@@ -395,8 +395,8 @@ module advance_module
     do ix = 1, nx
       Au = get_Au(ix,iy)
       Av = get_Av(ix,iy) 
-      ustar(ix,iy) = u(ix,iy) - dt * Au + dt * get_force_cc(ix,iy,1)
-      vstar(ix,iy) = v(ix,iy) - dt * Av + dt * get_force_cc(ix,iy,2)
+      ustar(ix,iy) = u(ix,iy) - dt * Au + dt * get_force_cc(ix,iy,1,halftime=.true.)
+      vstar(ix,iy) = v(ix,iy) - dt * Av + dt * get_force_cc(ix,iy,2,halftime=.true.)
     enddo
     enddo
 
@@ -512,6 +512,10 @@ module advance_module
     real(num) :: drho
 
     call rho_bcs(arr_cc = rho)
+
+    ! save old rho so you can compute a time centered rho for use in step 4
+
+    rho_old = rho
 
     ! calculate rhohat states on faces 
 
@@ -695,30 +699,44 @@ PRINT *,'Warning: artificially ensuring amax > 0, this should be temporary!!'
     endif
   end function upwind
 
-  real(num) function get_force_cc(ix,iy,di)
+  real(num) function get_force_cc(ix,iy,di,halftime)
     integer,intent(in) :: ix,iy, di
-    real(num) :: grav_tmp_y
-    real(num) :: beta
-    real(num) :: g_coeff ! rho' / rho
-    grav_tmp_y = grav_y
+    logical, optional, intent(in) :: halftime
 
-! debug: uncomment to turn grav off at the closest cc's to the edges
-!    grav_tmp_y = 0.0_num
-!    if ( (iy > 1) .and. (iy < ny) ) grav_tmp_y = grav_y
+    real(num) :: beta
+    real(num) :: p_coeff
+    real(num) :: g_coeff
+    real(num) :: rhohalf
 
     beta = p0(iy)**(1.0_num/gamma)
 
+    p_coeff = beta / rho(ix,iy) 
+    g_coeff = (rho(ix,iy) - rho0(iy)) / rho(ix,iy)
+
+    if (present(halftime)) then !*
+      if (halftime) then 
+        rhohalf = 0.5_num * (rho_old(ix,iy) + rho(ix,iy))
+        !p_coeff = beta / rhohalf !**
+        g_coeff = (rhohalf - rho0(iy)) / rhohalf
+      endif
+    endif
+
     if (di==1) then
-      get_force_cc = -gradp_x(ix,iy)/rho(ix,iy)*beta
+      get_force_cc = -gradp_x(ix,iy) * p_coeff
     else if (di==2) then
-      g_coeff = (rho(ix,iy) - rho0(iy)) / rho(ix,iy)
-      get_force_cc = -gradp_y(ix,iy)/rho(ix,iy)*beta + g_coeff*grav_tmp_y
+      get_force_cc = -gradp_y(ix,iy) * p_coeff + g_coeff*grav_y
     else
       print *,'error get_force_cc given invalid dimension'
       print *,'di = 1(x) or =2(y)'
       print *,'STOP'
       STOP
     endif
+
+  ! * IIRC if you dont check for present and true separately compilers can do
+  ! some dangerous things.
+
+  ! ** Not not sure if to use it on pressure grad since gradp itself is lagged,
+  !    perhaps it should even have a lagged coefficient? 
 
   end function get_force_cc
 

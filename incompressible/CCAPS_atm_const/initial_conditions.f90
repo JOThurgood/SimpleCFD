@@ -37,7 +37,7 @@ module initial_conditions
       y = yc(iy)-0.5_num
       y = y * 1.818_num / fwtm
       rho0(iy) = rho_lo + 0.5_num * (rho_hi-rho_lo) * (1.0_num + tanh(y))
-      rho(:,iy) = rho0(iy)
+      rho(-1:nx+2,iy) = rho0(iy)
     enddo
 
     ! Calculate a HSE background pressure p0 
@@ -50,6 +50,8 @@ module initial_conditions
     do iy = 0, ny+2
       p0(iy) = p0(iy-1) + 0.5_num * dy * (rho0(iy-1) + rho0(iy)) * grav_y
     enddo
+
+
 
   end subroutine set_ic
 
@@ -73,7 +75,12 @@ module initial_conditions
     enddo
     enddo
 
+    ! for homogeneous tests, should just be able to set background to uniform with 
+    ! an arbitary pressure 
+
     rho = 1.0_num
+    rho0 = 1.0_num
+    p0 = 1.0_num
 
   end subroutine shear_test_ic
 
@@ -97,7 +104,13 @@ module initial_conditions
     enddo
     enddo
 
+    ! for homogeneous tests, should just be able to set background to uniform with 
+    ! an arbitary pressure 
+
     rho = 1.0_num
+    rho0 = 1.0_num
+    p0 = 1.0_num
+
 
   end subroutine minion_test_ic
 

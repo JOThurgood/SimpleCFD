@@ -173,8 +173,8 @@ module setup
 
     ! background
 
-    allocate(rho0(-1:nx+2))
-    allocate(p0(-1:nx+2))
+    allocate(rho0(-1:ny+2))
+    allocate(p0(-1:ny+2))
 
   end subroutine allocate_global_arrays
   

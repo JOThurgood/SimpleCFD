@@ -319,17 +319,17 @@ module boundary_conditions
     endif
 
 !    !overwrite with experimental no_slip
-!
-!    if (bc_ymin == no_slip) then
-!      phi(:,0) =  phi(:,1) - (phi(:,2)-phi(:,1))
-!      phi(:,-1) = phi(:,1) - (phi(:,2)-phi(:,1))*2.0_num
-!    endif
-!
-!    if (bc_ymax == no_slip) then
-!      phi(:,ny+1) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))
-!      phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
-!    endif
-!
+
+    if (bc_ymin == no_slip) then
+      phi(:,0) =  phi(:,1) - (phi(:,2)-phi(:,1))
+      phi(:,-1) = phi(:,1) - (phi(:,2)-phi(:,1))*2.0_num
+    endif
+
+    if (bc_ymax == no_slip) then
+      phi(:,ny+1) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))
+      phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
+    endif
+
   end subroutine phi_bcs
 
   subroutine rho_bcs(arr_cc, arr_xface, arr_yface)

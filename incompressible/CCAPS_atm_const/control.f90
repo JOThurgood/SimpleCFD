@@ -13,13 +13,15 @@ module control
     y_min = x_min
     y_max = x_max
 
-    nx = 32
+    nx = 32 
     ny = nx
   
     CFL = 0.8_num
     t_end = 10.0_num
 
-    nsteps = 10 !set to <0 to run till t_end 
+    dt_min = 0.1_num ! if calc dt > this, uses this. Set to huge if you always want dynamically calced
+
+    nsteps = 5 !set to <0 to run till t_end 
     dumpfreq = 1
     use_minmod = .false.    
 
@@ -40,8 +42,6 @@ module control
 
 !    shear_test = .true.
 !    minion_test = .true. 
-!    vortex1_test = .true.
-!    drivenlid_test = .true.
 !    vardens_adv_test = .true.
 !    rti1_test = .true. 
 !    blob1_test = .true. 
@@ -68,6 +68,7 @@ module control
     bc_ymax = periodic
     dumpfreq = -1
     grav_y = 0.0_num
+    dt_min = 1e6_num ! i.e. allow it to always be based on u and v and g
   end subroutine shear_test_control
 
   subroutine minion_test_control
@@ -90,6 +91,7 @@ module control
     bc_ymax = periodic
     dumpfreq = 10000
     grav_y = 0.0_num
+    dt_min = 1e6_num
   end subroutine minion_test_control
 
   subroutine vardens_adv_test_control

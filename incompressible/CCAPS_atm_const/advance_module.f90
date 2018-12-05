@@ -264,14 +264,6 @@ module advance_module
     print *, 'Step #2'
     print *, '*** start'
 
-    ! calc divU at cc using the MAC velocities
-!    do iy = 1, ny
-!    do ix = 1, nx
-!      divu(ix,iy) = (macu(ix,iy) - macu(ix-1,iy) ) /dx &
-!        & + (macv(ix,iy) - macv(ix,iy-1))/dy
-!    enddo
-!    enddo
-
     ! calc div(beta * U) at cc using the MAC velocities
     ! (continute to just call the array "divu" throughout)
     ! (remember d/dx beta = 0 by construction) 
@@ -294,18 +286,15 @@ module advance_module
 
     if (.not.(allocated(eta_arr))) allocate(eta_arr(0:nx+1,0:ny+1)) ! if this is always needed it should be done elsewhwer
 
-!print *,rho
-!STOP
     do ix = 0, nx+1
     do iy = 0, ny+1
       betacc = p0(iy)**(1.0_num / gamma)
       eta_arr(ix,iy) = betacc**2 / rho(ix,iy) 
-!print *,ix,iy,p0(iy),betacc,rho(ix,iy), eta_arr(ix,iy)
     enddo
     enddo
 
     call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
-      & eta = eta_arr, &
+      & eta = eta_arr(0:nx+1,0:ny+1), &
       & use_old_phi = .false., tol = 1e-18_num) 
     
     print *, '*** max div beta*u before cleaning',maxval(abs(divu))
@@ -332,13 +321,6 @@ module advance_module
     ! calculate the new divergence
     ! calc divU at cc using the MAC velocities
 
-!    do iy = 1, ny
-!    do ix = 1, nx
-!      divu(ix,iy) = (macu(ix,iy) - macu(ix-1,iy) ) /dx &
-!        & + (macv(ix,iy) - macv(ix,iy-1))/dy
-!    enddo
-!    enddo
-
     do iy = 1, ny
     do ix = 1, nx
       betacc = p0(iy)**(1.0_num / gamma)
@@ -354,6 +336,7 @@ module advance_module
 
 !if (step /=0) call plot_divergence_now ! debug
 !call plot_divergence_now ! debug
+
   end subroutine step_2
 
   subroutine step_3
@@ -441,7 +424,7 @@ module advance_module
     enddo
 
     call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
-      & eta = eta_arr , &
+      & eta = eta_arr(0:nx+1,0:ny+1) , &
       & use_old_phi = .true., tol = 1e-18_num) 
 
     print *, '*** max  div (beta u) before cleaning',maxval(abs(divu)*dt)
@@ -504,6 +487,7 @@ module advance_module
     enddo
 
 !call plot_gradp_now ! debug
+!if (step >1 )call plot_gradp_now ! debug
 
   end subroutine step_5
 
@@ -648,10 +632,10 @@ module advance_module
 
     dtx = CFL * dx / maxval(abs(u))
     dty = CFL * dy / maxval(abs(v))
-    dt = MIN(dtx,dty)
+    dt = MIN(dt_min,dtx,dty)
 
     if (sqrt(grav_y**2) > 1e-16_num) then
-      amax = 0.1_num
+      amax = 0.0_num
       do ix = -1, nx+1
       do iy = -1, ny+1
         amax = MAX(amax, abs((rho(ix,iy)-rho0(iy))/rho(ix,iy)*grav_y))
@@ -662,7 +646,6 @@ module advance_module
     endif 
 
     print *, 'hydro dt = ',dt
-PRINT *,'Warning: artificially ensuring amax > 0, this should be temporary!!'
 
   end subroutine set_dt
 

@@ -21,7 +21,7 @@ module control
 
     dt_min = 0.1_num ! if calc dt > this, uses this. Set to huge if you always want dynamically calced
 
-    nsteps = 5 !set to <0 to run till t_end 
+    nsteps = 10 !set to <0 to run till t_end 
     dumpfreq = 1
     use_minmod = .false.    
 
@@ -42,9 +42,11 @@ module control
 
 !    shear_test = .true.
 !    minion_test = .true. 
-!    vardens_adv_test = .true.
-!    rti1_test = .true. 
+    rti1_test = .true. 
+
+!!!! following not yet updated for bkgd
 !    blob1_test = .true. 
+!    vardens_adv_test = .true.
 
     ! DONT set more than one of the above true
 

@@ -37,7 +37,7 @@ module initial_conditions
       y = yc(iy)-0.5_num
       y = y * 1.818_num / fwtm
       rho0(iy) = rho_lo + 0.5_num * (rho_hi-rho_lo) * (1.0_num + tanh(y))
-      rho(:,iy) = rho0(iy)
+      rho(-1:nx+2,iy) = rho0(iy)
     enddo
 
     ! Calculate a HSE background pressure p0 
@@ -50,6 +50,7 @@ module initial_conditions
     do iy = 0, ny+2
       p0(iy) = p0(iy-1) + 0.5_num * dy * (rho0(iy-1) + rho0(iy)) * grav_y
     enddo
+
 
   end subroutine set_ic
 
@@ -73,7 +74,12 @@ module initial_conditions
     enddo
     enddo
 
+    ! for homogeneous tests, should just be able to set background to uniform with 
+    ! an arbitary pressure 
+
     rho = 1.0_num
+    rho0 = 1.0_num
+    p0 = 1.0_num
 
   end subroutine shear_test_ic
 
@@ -97,7 +103,13 @@ module initial_conditions
     enddo
     enddo
 
+    ! for homogeneous tests, should just be able to set background to uniform with 
+    ! an arbitary pressure 
+
     rho = 1.0_num
+    rho0 = 1.0_num
+    p0 = 1.0_num
+
 
   end subroutine minion_test_ic
 
@@ -126,20 +138,21 @@ module initial_conditions
   subroutine rti1_ic
 
     real(num) :: x, y 
-    real(num) :: d, rho0, rho1
+    real(num) :: d, rho_lo, rho_hi
     real(num) :: fwtm , amp
+    real(num) :: p0_lo
 
     amp = 0.1_num
 
     d = x_max - x_min
     fwtm = 0.1_num *d
-    rho0 = 1.0_num
-    rho1 = 7.0_num 
+    rho_lo = 1.0_num
+    rho_hi = 7.0_num 
 
     u = 0.0_num
     v = 0.0_num 
 
-    rho = rho0
+    rho = rho_lo
 
     do ix = -1, nx+1
     do iy = -1, ny+2
@@ -148,7 +161,7 @@ module initial_conditions
 !      if (step /= 0) then ! trust post step0 to have HSE built in . dont call on bootstrap?
 !          y = yc(iy) !+ amp * d * (cos(2.0_num * pi * x / d))
 !          y = y * 1.818_num / fwtm
-          rho(ix,iy) = rho0 + 0.5_num * (rho1-rho0) * (1.0_num + tanh(y))
+!          rho(ix,iy) = rho_lo + 0.5_num * (rho_hi-rho_lo) * (1.0_num + tanh(y))
 !          gradp_x(ix,iy) = rho(ix,iy) * grav_x
 !          gradp_y(ix,iy) = rho(ix,iy) * grav_y
 !      endif
@@ -156,9 +169,26 @@ module initial_conditions
       !now overwrite rho with the perturbed + desingularised profile
       y = yc(iy) + amp * d * (cos(2.0_num * pi * x / d))
       y = y * 1.818_num / fwtm
-      rho(ix,iy) = rho0 + 0.5_num * (rho1-rho0) * (1.0_num + tanh(y))
+      rho(ix,iy) = rho_lo + 0.5_num * (rho_hi-rho_lo) * (1.0_num + tanh(y))
 
     enddo
+    enddo
+
+  ! calculate a consistent rho0 and p0
+
+    do iy = -1, ny+2
+      rho0(iy) = sum(rho(1:nx,iy)) / REAL(nx,num)
+    enddo
+
+    ! Calculate a HSE background pressure p0 
+
+    p0_lo = 100.0_num ! just sets a Gauge? 
+        ! However, due to p0^(<1) terms, cant tolerate a negative number in the profile
+        ! so needs to be sufficiently high to not NAN the betas 
+
+    p0(-1) = p0_lo
+    do iy = 0, ny+2
+      p0(iy) = p0(iy-1) + 0.5_num * dy * (rho0(iy-1) + rho0(iy)) * grav_y
     enddo
 
   end subroutine rti1_ic

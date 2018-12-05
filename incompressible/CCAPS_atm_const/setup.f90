@@ -169,10 +169,12 @@ module setup
     allocate(rhox(-2:nx+2,-1:ny+2)) !these need ghosts
     allocate(rhoy(-1:nx+2,-2:ny+2))
 
+    allocate(rho_old(-1:nx+2,-1:ny+2))
+
     ! background
 
-    allocate(rho0(-1:nx+2))
-    allocate(p0(-1:nx+2))
+    allocate(rho0(-1:ny+2))
+    allocate(p0(-1:ny+2))
 
   end subroutine allocate_global_arrays
   

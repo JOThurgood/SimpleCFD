@@ -136,7 +136,7 @@ module gauss_seidel
 
     print *, '*** solve_gs completed:'
     print *, '****** steps:',ir
-    print '(" ****** cpu_time: ",f6.3," seconds.")',finish-start
+    print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
     print *, '****** tolerance (L2-L2_old <=tol for exit)',tol 
     print *, '****** L2 norm on residual', L2
 
@@ -166,11 +166,12 @@ module mg_2level
 
   contains
 
-  subroutine solve_mg(myphi,rhs,tol) 
+  subroutine solve_mg(myphi,rhs,tol,ncoarse,nfine) 
 
     real(num), dimension(:), allocatable, intent(inout) :: myphi
     real(num), dimension(:), allocatable, intent(in) :: rhs
     real(num), intent(in) :: tol
+    integer, intent(in) :: ncoarse, nfine
 
     real(num), dimension(1:nx) :: residual
     real(num), dimension(1:nx/2) :: residual_c!oarse
@@ -180,7 +181,7 @@ module mg_2level
     real(num) :: L2, L2_old ! norms
 
     integer :: nsteps ! number of steps through the algoritm (main do loop)
-    integer :: nop ! number of operations through a 1D 
+    integer :: nop ! number of iterative operations through a 1D array
     integer :: c ! counter for sub iterations
 
     integer :: ixc !coarse x index
@@ -203,7 +204,8 @@ module mg_2level
       nsteps = nsteps + 1
 
       ! 3 iterations of GS relaxation on initial (finest) grid
-      do c = 1, 3
+      do c = 1, ncoarse
+        nop = nop + 1
         call bcs(myphi) 
         do ix = 1, nx
           myphi(ix) = 0.5_num * (myphi(ix-1) + myphi(ix+1) - dx**2 * rhs(ix)) 
@@ -228,7 +230,6 @@ module mg_2level
       ! restrict residue to a coarse grid
       ix = 1
       do ixc = 1, nx/2
-! print *,ix,ixc
         residual_c(ixc) = 0.5_num * (residual(ix) + residual(ix+1))
         ix = ix + 2
       enddo
@@ -236,7 +237,8 @@ module mg_2level
       ! GS relaxation on the coarse grid to estimate a solution to
       ! Lap * epsi = residual_c 
 
-      do c = 1, 50
+      do c = 1, nfine
+        if (mod(c,2)==0) nop = nop + 1 !only do every 2 steps since coarse array is half the size of fine
         call coarse_bcs(epsi)
         do ixc = 1, nx /2
           epsi(ixc) = 0.5_num * (epsi(ixc-1) + epsi(ixc+1) - (dx*2.0_num)**2 * residual_c(ixc))
@@ -261,8 +263,11 @@ module mg_2level
 
     print *, '*** solve_mg completed:'
     print *, '****** ncycles:',nsteps
-    print '(" ****** cpu_time: ",f6.3," seconds.")',finish-start
+    print *, '****** relative number of iterative steps through array(1:nx)',nop
+    print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
     print *, '****** tolerance (L2-L2_old <=tol for exit)',tol 
+    print *, '****** ncoarse iterations per cycle',ncoarse
+    print *, '****** nfine iterations per cycle',nfine
     print *, '****** L2 norm on residual', L2
 
     ! deallocate the coarse grid
@@ -315,29 +320,37 @@ program poission_2dgrid_test
 
   x_min = 0.0_num
   x_max = 1.0_num 
-  nx = 32
+  nx = 128
 
   A = 10.0_num
   k = 4.0_num
 
   call initial_setup
 
-  ! GS Relaxation (for comparisons sake)
-  print *,'Gauss-Seidel Iteration'
+  ! Some output to remind you of your parameters
+  print *,''
+  print *,'Multilevel relaxation tests on Poission eqn'
   print *,'*******************'
-  print *, '***Start GS relaxation'
-  phi = 0.0_num ! initial guess, arbitary
-  call solve_gs(myphi = phi, rhs = f, tol = 1e-16_num) 
-  print *, '*** Comparing to analytical sln'
-  call check_vs_analytic
+  print *,'nx =',nx
+  
 
   ! Two Level Multigrid
   print *,''
   print *, 'Two-level Multi Grid Relaxation'
   print *,'*******************'
   print *, '***Start MG2 relaxation'
-  phi = 0.0_num ! reset to same initial guess
-  call solve_mg(myphi = phi, rhs = f, tol = 1e-16_num)
+  phi = 0.0_num
+  call solve_mg(myphi = phi, rhs = f, tol = 1e-16_num, ncoarse = 3, nfine =50)
+  print *, '*** Comparing to analytical sln'
+  call check_vs_analytic
+
+  ! GS Relaxation (for comparisons sake)
+  print *,''
+  print *,'Gauss-Seidel Iteration'
+  print *,'*******************'
+  print *, '***Start GS relaxation'
+  phi = 0.0_num 
+  call solve_gs(myphi = phi, rhs = f, tol = 1e-16_num) 
   print *, '*** Comparing to analytical sln'
   call check_vs_analytic
 

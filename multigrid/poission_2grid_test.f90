@@ -1,3 +1,14 @@
+! a test problem comparing direct GS relaxation vs a simple 2 level MG relaxation
+! to distill the basic idea and show the potential for speed up and agreement in the solutions.
+
+! solves L phi = A sin (k * x * 2pi/L) where L is a discritised laplacian in 1D 
+! and compares to an analytical solution.
+
+! this same problem was considered with more  exposition (such as  figures, which I can't be bothered with 
+! - this just spits out L2 norms vs the analytical) on  Lubos Brida's (particle in cell consulting) blog  
+! at https://www.particleincell.com/2018/multigrid-solver/ . He also has some python code on that website that may be 
+! of interest. 
+
 module shared_data
 
   implicit none

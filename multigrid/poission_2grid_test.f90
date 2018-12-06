@@ -173,6 +173,8 @@ module mg_2level
     real(num), intent(in) :: tol
 
     real(num), dimension(1:nx) :: residual
+    real(num), dimension(1:nx/2) :: residual_c!oarse
+    real(num), dimension(:), allocatable :: epsi
 
     real(num) :: Lap ! Laplacian
     real(num) :: L2, L2_old ! norms
@@ -181,8 +183,16 @@ module mg_2level
     integer :: nop ! number of operations through a 1D 
     integer :: c ! counter for sub iterations
 
+    integer :: ixc !coarse x index
+
+    real(num) :: start, finish
+
+    call cpu_time(start)
 
     ! initialise a coarse grid and data
+    if (.not.(allocated(epsi))) allocate(epsi(0:nx/2+1))
+    epsi = 0.0_num
+    residual = 0.0_num
 
     ! the main cycle
 
@@ -215,17 +225,47 @@ module mg_2level
       if (abs(L2-L2_old) <= tol) exit
       L2_old = L2
 
-      ! restrict to a coarse grid
-      
+      ! restrict residue to a coarse grid
+      ix = 1
+      do ixc = 1, nx/2
+! print *,ix,ixc
+        residual_c(ixc) = 0.5_num * (residual(ix) + residual(ix+1))
+        ix = ix + 2
+      enddo
+
+      ! GS relaxation on the coarse grid to estimate a solution to
+      ! Lap * epsi = residual_c 
+
+      do c = 1, 50
+        call coarse_bcs(epsi)
+        do ixc = 1, nx /2
+          epsi(ixc) = 0.5_num * (epsi(ixc-1) + epsi(ixc+1) - (dx*2.0_num)**2 * residual_c(ixc))
+        enddo
+      enddo
+
+      ! prolongation of epsi to update the estimate of phi on the fine grid
+      ix = 1
+      do ixc = 1, nx/2
+        ! direct injection - replace with 2nd order method down line?
+        ! phi => phi - epsi
+        myphi(ix) = myphi(ix) - epsi(ixc)
+        myphi(ix+1) = myphi(ix+1) - epsi(ixc)
+        ix = ix + 2
+      enddo
+     
     enddo !main do
+
+    call cpu_time(finish)
 
     ! output
 
     print *, '*** solve_mg completed:'
     print *, '****** ncycles:',nsteps
-!    print '(" ****** cpu_time: ",f6.3," seconds.")',finish-start
+    print '(" ****** cpu_time: ",f6.3," seconds.")',finish-start
     print *, '****** tolerance (L2-L2_old <=tol for exit)',tol 
     print *, '****** L2 norm on residual', L2
+
+    ! deallocate the coarse grid
 
   end subroutine solve_mg
 
@@ -241,6 +281,24 @@ module mg_2level
 
   end subroutine bcs
 
+  subroutine coarse_bcs(epsi)
+
+    real(num), dimension(:), allocatable, intent(inout) :: epsi
+
+    ! since solving a residual eqn, always homogeneous
+    ! for this test case, the fine BCs (i.e. bcs on phi) are also homogeneous
+    ! so these are the same
+
+    ! exept upper limit nx => nx/2 . In other words this subroutine
+    ! exists purely for this reason -> should do a more compact solution
+
+    ! Neumann (dphi/dx =0 at x=0) BC
+    ! i.e. zero gradient
+    epsi(0) = epsi(1)
+    ! Dirichlet (phi = 0 at x = x_max) 
+    epsi(nx/2+1) = -epsi(nx/2)
+
+  end subroutine coarse_bcs
 
 end module mg_2level
 

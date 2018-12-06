@@ -19,13 +19,19 @@ module shared_data
 
   subroutine initial_setup ! allocate and initialise
 
+    ! assume nx is divisible by 2
+    if (mod(nx,2) /= 0) then
+      print *,'idiot'
+      STOP
+    endif
+
     allocate(xc(0:nx+1)) ! 1 ghost cell either side needed
     allocate(f(1:nx))
     allocate(phi(0:nx+1))
 
     dx = (x_max - x_min) / real(nx,num)
 
-    xc(0) = x_min - dx/2. 
+    xc(0) = x_min - dx/2.0_num 
     do ix = 1,nx+1
       xc(ix) = xc(ix-1) + dx
     enddo
@@ -54,20 +60,16 @@ module diagnostics
     real(num) :: L2 
 
     d = x_max-x_min
-
     C1 = A * d / k / pi2
     C2 = - C1 * d
-
 
     L2 = 0.0_num
     do ix = 1, nx
       analytic = - A * sin(k * pi2 * xc(ix) / d) * (d / k / pi2)**2 &
                 & + C1 * xc(ix) + C2
       diff = phi(ix) - analytic
-!print *, phi(ix),analytic, abs(diff)
       L2 = L2 + abs(diff)**2
     enddo
-
     L2 = sqrt(L2 / real(nx,num))
 
     print *, '****** L2 on computed vs analytic',L2
@@ -86,12 +88,12 @@ module gauss_seidel
 
   contains
 
-  subroutine solve_gs(phigs,rhs,tol) 
+  subroutine solve_gs(myphi,rhs,tol) 
 
-    real(num), dimension(:), allocatable, intent(inout) :: phigs
+    real(num), dimension(:), allocatable, intent(inout) :: myphi
     real(num), dimension(:), allocatable, intent(in) :: rhs
     real(num), intent(in) :: tol
-    real(num) :: L_phigs ! discritised laplacian of phigs
+    real(num) :: L_myphi ! discritised laplacian of myphi
     real(num) :: L2_old, L2 ! norms 
     integer :: ir
 
@@ -103,21 +105,21 @@ module gauss_seidel
 
     ir = 0
 
-    call bcs(phigs)
+    call bcs(myphi)
 
     do
       ir = ir + 1
 
       do ix = 1, nx
-        phigs(ix) = 0.5_num * (phigs(ix-1) + phigs(ix+1) - dx**2 * rhs(ix)) 
+        myphi(ix) = 0.5_num * (myphi(ix-1) + myphi(ix+1) - dx**2 * rhs(ix)) 
       enddo
 
-      call bcs(phigs)
+      call bcs(myphi)
       
       L2 = 0.0_num
       do ix = 1, nx
-        L_phigs = ( phigs(ix-1) - 2.0_num * phigs(ix) + phigs(ix+1) ) / dx**2
-        L2 = L2 + abs(rhs(ix) - L_phigs)**2
+        L_myphi = ( myphi(ix-1) - 2.0_num * myphi(ix) + myphi(ix+1) ) / dx**2
+        L2 = L2 + abs(rhs(ix) - L_myphi)**2
       enddo
       L2 = sqrt(L2 / real(nx,num))
 
@@ -140,15 +142,15 @@ module gauss_seidel
 
   end subroutine solve_gs
 
-  subroutine bcs(phigs)
+  subroutine bcs(myphi)
 
-    real(num), dimension(:), allocatable, intent(inout) :: phigs
+    real(num), dimension(:), allocatable, intent(inout) :: myphi
 
     ! Neumann (dphi/dx =0 at x=0) BC
     ! i.e. zero gradient
-    phigs(0) = phigs(1)
+    myphi(0) = myphi(1)
     ! Dirichlet (phi = 0 at x = x_max) 
-    phigs(nx+1) = -phigs(nx)
+    myphi(nx+1) = -myphi(nx)
 
   end subroutine bcs
 
@@ -170,10 +172,75 @@ module mg_2level
     real(num), dimension(:), allocatable, intent(in) :: rhs
     real(num), intent(in) :: tol
 
+    real(num), dimension(1:nx) :: residual
+
+    real(num) :: Lap ! Laplacian
+    real(num) :: L2, L2_old ! norms
+
+    integer :: nsteps ! number of steps through the algoritm (main do loop)
+    integer :: nop ! number of operations through a 1D 
+    integer :: c ! counter for sub iterations
+
+
+    ! initialise a coarse grid and data
+
+    ! the main cycle
+
+    L2_old = 1e6_num ! init as huge
+    nsteps = 0
+    nop = 0 
+    do ! main do
+      nsteps = nsteps + 1
+
+      ! 3 iterations of GS relaxation on initial (finest) grid
+      do c = 1, 3
+        call bcs(myphi) 
+        do ix = 1, nx
+          myphi(ix) = 0.5_num * (myphi(ix-1) + myphi(ix+1) - dx**2 * rhs(ix)) 
+        enddo
+      enddo 
+
+      ! see if converged to tolerance on this finest grid and exit 
+      ! if satisfied
+  
+      call bcs(myphi)
+
+      L2 = 0.0_num
+      do ix = 1, nx
+        Lap = ( myphi(ix-1) - 2.0_num * myphi(ix) + myphi(ix+1) ) / dx**2
+        residual(ix) = Lap - rhs(ix)
+      enddo
+      L2 = sqrt(sum(abs(residual)**2)/real(nx,num))
+
+      if (abs(L2-L2_old) <= tol) exit
+      L2_old = L2
+
+      ! restrict to a coarse grid
+      
+    enddo !main do
+
+    ! output
+
+    print *, '*** solve_mg completed:'
+    print *, '****** ncycles:',nsteps
+!    print '(" ****** cpu_time: ",f6.3," seconds.")',finish-start
+    print *, '****** tolerance (L2-L2_old <=tol for exit)',tol 
+    print *, '****** L2 norm on residual', L2
+
   end subroutine solve_mg
 
-  subroutine bcs
+  subroutine bcs(myphi)
+
+    real(num), dimension(:), allocatable, intent(inout) :: myphi
+
+    ! Neumann (dphi/dx =0 at x=0) BC
+    ! i.e. zero gradient
+    myphi(0) = myphi(1)
+    ! Dirichlet (phi = 0 at x = x_max) 
+    myphi(nx+1) = -myphi(nx)
+
   end subroutine bcs
+
 
 end module mg_2level
 
@@ -198,15 +265,22 @@ program poission_2dgrid_test
   call initial_setup
 
   ! GS Relaxation (for comparisons sake)
-  print *, 'Begining GS Relaxation'
+  print *,'Gauss-Seidel Iteration'
+  print *,'*******************'
+  print *, '***Start GS relaxation'
   phi = 0.0_num ! initial guess, arbitary
-  call solve_gs(phigs = phi, rhs = f, tol = 1e-16_num) 
+  call solve_gs(myphi = phi, rhs = f, tol = 1e-16_num) 
+  print *, '*** Comparing to analytical sln'
   call check_vs_analytic
-  print *, '*** GS Relaxation complete'
 
   ! Two Level Multigrid
-  print *, 'Begining two-level Multi Grid Relaxation'
+  print *,''
+  print *, 'Two-level Multi Grid Relaxation'
+  print *,'*******************'
+  print *, '***Start MG2 relaxation'
   phi = 0.0_num ! reset to same initial guess
-
+  call solve_mg(myphi = phi, rhs = f, tol = 1e-16_num)
+  print *, '*** Comparing to analytical sln'
+  call check_vs_analytic
 
 end program poission_2dgrid_test

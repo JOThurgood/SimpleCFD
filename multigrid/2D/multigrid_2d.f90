@@ -127,7 +127,7 @@ module multigrid_2d
           if (modulo(ix+iy,2) == 1) then
             epsi(ix,iy) = 0.25_num * ( & 
               & epsi(ix+1,iy) + epsi(ix-1,iy) + epsi(ix,iy+1) + epsi(ix,iy-1) &
-              - dx**2 * residual_c(ix,iy) ) 
+              - (2.0_num*dx)**2 * residual_c(ix,iy) ) 
           endif
         end do
         end do 
@@ -137,7 +137,7 @@ module multigrid_2d
           if (modulo(ix+iy,2) == 0) then
             epsi(ix,iy) = 0.25_num * ( & 
               & epsi(ix+1,iy) + epsi(ix-1,iy) + epsi(ix,iy+1) + epsi(ix,iy-1) &
-              - dx**2 * residual_c(ix,iy) ) 
+              - (2.0_num*dx)**2 * residual_c(ix,iy) ) 
           endif
         end do
         end do 

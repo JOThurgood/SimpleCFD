@@ -5,10 +5,14 @@ module multigrid
   private
   public :: mg_interface
 
+  ! will need own private constants and parameters since entirely modular
+  integer, parameter :: num=selected_real_kind(p=15)
+
+  ! data object
   type grid
-    integer :: level 
-!    real(num),dimension(:,:), allocatable :: phi
-!    real(num),dimension(:,:), allocatable :: f
+    integer :: level, nx, ny  
+    real(num),dimension(:,:), allocatable :: phi
+    real(num),dimension(:,:), allocatable :: f
     type(grid), pointer :: next, prev
 !    contains
 !      procedure :: allocate_arrs => allocate_arrs
@@ -18,8 +22,13 @@ module multigrid
 
 contains
 
-  subroutine mg_interface
-    call initialise_grids
+  subroutine mg_interface(nx,ny,nlevels)
+    integer, intent(in) :: nx
+    integer, intent(in) :: ny
+    integer, intent(in) :: nlevels
+
+    call initialise_grids(nx,ny,nlevels)
+
   end subroutine mg_interface
 
   subroutine create_grid(new_grid)
@@ -43,7 +52,20 @@ contains
     tail=>new_grid
   end subroutine add_grid
 
-  subroutine initialise_grids
+!  subroutine create_grid(new_grid)
+!    type(grid), pointer :: new_grid
+!    allocate(new_grid)
+!    nullify(new_grid%next)
+!    nullify(new_grid%prev)
+!    new_grid%level = -1
+!  end subroutine create_grid
+
+
+  subroutine initialise_grids(nx,ny,nlevels)
+
+    integer, intent(in) :: nx
+    integer, intent(in) :: ny
+    integer, intent(in) :: nlevels
 
     integer :: lev
 
@@ -54,7 +76,7 @@ contains
     nullify(head)
     nullify(tail)
 
-    do lev = 1, 3
+    do lev = 1, nlevels
       call create_grid(new)
       call add_grid(new)
     enddo
@@ -64,12 +86,16 @@ contains
     do while(associated(current))
       lev = lev + 1
       current%level = lev 
+      current%nx = nx / (2**(lev-1)) 
+      current%ny = ny / (2**(lev-1)) 
       current=>current%next
     enddo
 
     current => head
     do while(associated(current))
-      print *,current%level
+      print *,'level',current%level
+      print *,'nx',current%nx
+      print *,'ny',current%ny
       current=>current%next
     enddo 
  

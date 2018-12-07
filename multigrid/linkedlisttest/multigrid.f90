@@ -11,6 +11,7 @@ module multigrid
   ! data object
   type grid
     integer :: level, nx, ny  
+    real(num) :: dx, dy
     real(num),dimension(:,:), allocatable :: phi
     real(num),dimension(:,:), allocatable :: f
     type(grid), pointer :: next, prev
@@ -20,14 +21,36 @@ module multigrid
 
 contains
 
-  subroutine mg_interface(nx,ny,nlevels)
+  subroutine mg_interface(nx,ny,dx,dy, nlevels)
+    integer, intent(in) :: nx 
+    integer, intent(in) :: ny
+    integer, intent(in) :: nlevels
+    real(num), intent(in) :: dx, dy
+
+    call sanity_checks(nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+
+    call initialise_grids(nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+
+  end subroutine mg_interface
+
+!* in  practice, in CCAPS / multistep hydro codes might want to "first
+!  call" this only to keep
+!  them all allocated throughout .. not sure yet how that will work so
+!  keep this comment till it pans out
+
+  subroutine sanity_checks(nx,ny,dx,dy,nlevels)
     integer, intent(in) :: nx
     integer, intent(in) :: ny
     integer, intent(in) :: nlevels
+    real(num), intent(in) :: dx, dy
 
-    call initialise_grids(nx,ny,nlevels)
+    if (dx /= dy) then
+      print *,'multigrid: dx =/ dy, terminating'
+      stop
+    endif
 
-  end subroutine mg_interface
+  end subroutine sanity_checks
+  ! stuff to do with the grid heirarchy below here
 
   subroutine create_grid(new_grid)
     type(grid), pointer :: new_grid
@@ -35,6 +58,10 @@ contains
     nullify(new_grid%next)
     nullify(new_grid%prev)
     new_grid%level = -1
+    new_grid%nx = -1
+    new_grid%ny = -1
+    new_grid%dx = -1
+    new_grid%dy = -1
   end subroutine create_grid
 
   subroutine add_grid(new_grid)
@@ -62,6 +89,8 @@ contains
       print *,'level',this%level
       print *,'nx',this%nx
       print *,'ny',this%ny
+      print *,'dx',this%dx
+      print *,'dy',this%dy
       print *,'lbound phi',lbound(this%phi)
       print *,'ubound phi',ubound(this%phi)
       print *,'lbound f',lbound(this%f)
@@ -69,12 +98,12 @@ contains
       print *,'******'
   end subroutine grid_report
 
-
-  subroutine initialise_grids(nx,ny,nlevels)
+  subroutine initialise_grids(nx,ny,dx,dy, nlevels)
 
     integer, intent(in) :: nx
     integer, intent(in) :: ny
     integer, intent(in) :: nlevels
+    real(num), intent(in) :: dx, dy
 
     integer :: lev
 
@@ -99,6 +128,8 @@ contains
       current%level = lev 
       current%nx = nx / (2**(lev-1)) 
       current%ny = ny / (2**(lev-1)) 
+      current%dx = dx * real(2**(lev-1),num) 
+      current%dy = dy * real(2**(lev-1),num)
       call allocate_arrays(current)
       current=>current%next
     enddo

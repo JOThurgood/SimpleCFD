@@ -100,7 +100,7 @@ module multigrid_2d
       L2_old = L2
 
 ! skip for rest purposes
-GOTO 9999
+!GOTO 9999
 
       ! restrict the residue down to a grid with half the resolution in each
       ! dimension  

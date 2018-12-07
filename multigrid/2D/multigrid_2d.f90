@@ -38,8 +38,17 @@ module multigrid_2d
     real(num), dimension(1:nx,1:ny) :: residual
     real(num) :: L2, L2_old
     real(num) :: Lap
+    real(num) :: start
+    real(num) :: finish
+
+    ! coarse stuff
+    real(num), dimension(1:nx/2,1:ny/2) :: residual_c
+    real(num), dimension(:,:), allocatable :: epsi
+    integer :: ixc, iyc
+    if (.not.allocated(epsi)) allocate(epsi(0:nx/2+1,0:ny/2+1))
 
     print *, 'called mg_2level'
+    call cpu_time (start)
 
     ! main cycle 
     nsteps = 0
@@ -90,10 +99,75 @@ module multigrid_2d
       if (abs(L2-L2_old) <= tol) exit
       L2_old = L2
 
+! skip for rest purposes
+GOTO 9999
+
+      ! restrict the residue down to a grid with half the resolution in each
+      ! dimension  
+      iy=  1
+      do iyc = 1, ny/2
+      ix = 1
+      do ixc = 1, nx/2
+        residual_c(ixc,iyc) = 0.25_num * (residual(ix,iy) + residual(ix+1,iy) &
+          & + residual(ix,iy+1) + residual(ix+1,iy+1) ) 
+        ix = ix + 2
+      enddo
+      iy = iy + 2
+      enddo
+
+      ! perform smoothing on the coarser grid for Lap * epsi = residual_c
+
+      do c = 1, nfine
+
+        call bcs_coarse(epsi)
+
+        ! redblack, odd
+        do iy = 1, ny/2 
+        do ix = 1, nx/2
+          if (modulo(ix+iy,2) == 1) then
+            epsi(ix,iy) = 0.25_num * ( & 
+              & epsi(ix+1,iy) + epsi(ix-1,iy) + epsi(ix,iy+1) + epsi(ix,iy-1) &
+              - dx**2 * residual_c(ix,iy) ) 
+          endif
+        end do
+        end do 
+        ! even iteration
+        do iy = 1, ny/2  
+        do ix = 1, nx/2  
+          if (modulo(ix+iy,2) == 0) then
+            epsi(ix,iy) = 0.25_num * ( & 
+              & epsi(ix+1,iy) + epsi(ix-1,iy) + epsi(ix,iy+1) + epsi(ix,iy-1) &
+              - dx**2 * residual_c(ix,iy) ) 
+          endif
+        end do
+        end do 
+
+      enddo
+
+      ! prolongate via direct injection back into fine residual
+
+      iy=  1
+      do iyc = 1, ny/2
+      ix = 1
+      do ixc = 1, nx/2
+        mgphi(ix,iy) = mgphi(ix,iy) - epsi(ixc,iyc)
+        mgphi(ix+1,iy) = mgphi(ix+1,iy) - epsi(ixc,iyc)
+        mgphi(ix,iy+1) = mgphi(ix,iy+1) - epsi(ixc,iyc)
+        mgphi(ix+1,iy+1) = mgphi(ix+1,iy+1) - epsi(ixc,iyc)
+        ix = ix + 2
+      enddo
+      iy = iy + 2
+      enddo
+9999 CONTINUE
+
     enddo ! exit main clycle
+
+    call cpu_time (finish)
 
     print *, 'nsteps', nsteps
     print *,' L2', L2
+    print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
+
 
   end subroutine mg_2level
 
@@ -107,5 +181,16 @@ module multigrid_2d
     mgphi(:,ny+1) = mgphi(:,1)
 
   end subroutine bcs_fine
+
+  subroutine bcs_coarse(epsi)
+
+    real(num), dimension(:,:), allocatable, intent(inout) :: epsi
+
+    epsi(0,:) = epsi(nx/2,:)
+    epsi(nx/2+1,:) = epsi(1,:)
+    epsi(:,0) = epsi(:,ny/2)
+    epsi(:,ny/2+1) = epsi(:,1)
+
+  end subroutine bcs_coarse
 
 end module multigrid_2d

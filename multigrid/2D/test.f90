@@ -14,7 +14,7 @@ program test
 
   ! 0. User options
 
-  nx = 64
+  nx = 256
   ny = nx
   x_min = 0.0_num
   x_max = 1.0_num

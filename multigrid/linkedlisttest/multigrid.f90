@@ -91,21 +91,28 @@ contains
               ! should replace with user chosen tol eventually
           L2_old = L2
         endif
-GOTO 9999
+!GOTO 9999
         call residual(current)
         call restrict(current) 
         current=>current%next
 
       enddo downcycle
 
+
       ! bottom solve
       do c = 1, 50 ! for now only 
         call relax(current)
       enddo
+!print *,'sum phi on level 2', sum(current%phi**2)
 !    call residual(current) 
       call inject(current)
       current => current%prev
-9999 CONTINUE
+
+!print *,'sum phi after injection', sum(current%phi**2)
+!print *,'reporting level',current%level
+
+!STOP
+!9999 CONTINUE
       ! upcycle goes here 
 
     enddo mainloop
@@ -173,9 +180,9 @@ GOTO 9999
     prev => this%prev
 
     iy=  1                   
-    do iyc = 1, this%ny/2         
+    do iyc = 1, this%ny!/2         
     ix = 1                   
-    do ixc = 1, this%nx/2         
+    do ixc = 1, this%nx!/2         
       prev%phi(ix,iy) = prev%phi(ix,iy) - this%phi(ixc,iyc)
       prev%phi(ix+1,iy) = prev%phi(ix+1,iy) - this%phi(ixc,iyc)
       prev%phi(ix,iy+1) = prev%phi(ix,iy+1) - this%phi(ixc,iyc)

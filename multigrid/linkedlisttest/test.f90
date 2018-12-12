@@ -19,7 +19,7 @@ program test
   
   ! setup a test problem 
 
-  nx = 128
+  nx = 32
   ny = nx
   x_min = 0.0_num
   x_max = 1.0_num

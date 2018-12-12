@@ -32,12 +32,18 @@ contains
     integer, intent(in) :: nlevels
     real(num), intent(in) :: dx, dy
     type(grid), pointer :: current 
+    real(num) :: start, finish
 
     call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
     call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
+    call cpu_time(start)
+!    call gs_solve
     call mg_solve
+    call cpu_time(finish)
+    print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
+
 
     ! set the inout(phi) = phi on finest grid to return to caller
     current => head
@@ -54,26 +60,133 @@ contains
 
   subroutine mg_solve
 
-    type(grid), pointer :: new_grid
+!    type(grid), pointer :: new_grid
     type(grid), pointer :: current
 
     real(num) :: L2, L2_old
+    
+    integer :: nsteps
+    integer :: c
+    integer :: num_sweeps_down = 3
 
     L2_old = 1e6_num
     current => head
 
-    do 
-      call relax(current) 
-      call residual(current)
+    nsteps = 0
 
-      L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
-      if (abs(L2-L2_old) < 1e-12_num) exit ! should replace with user chosen tol eventually
-      L2_old = L2
-    enddo
+    mainloop: do
+      nsteps = nsteps +1
+
+      downcycle: do
+        if (current%level == tail%level) exit
+
+        do c = 1, num_sweeps_down
+          call relax(current) 
+        enddo
+
+        if (current%level == 1) then
+          call residual(current) 
+          L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
+          if (abs(L2-L2_old) <= 1e-12_num) exit mainloop
+              ! should replace with user chosen tol eventually
+          L2_old = L2
+        endif
+GOTO 9999
+        call residual(current)
+        call restrict(current) 
+        current=>current%next
+
+      enddo downcycle
+
+      ! bottom solve
+      do c = 1, 50 ! for now only 
+        call relax(current)
+      enddo
+!    call residual(current) 
+      call inject(current)
+      current => current%prev
+9999 CONTINUE
+      ! upcycle goes here 
+
+    enddo mainloop
+
+  print *,'nsteps',nsteps
 
   end subroutine mg_solve
 
+  subroutine gs_solve ! for comparison
+
+!    type(grid), pointer :: new_grid
+    type(grid), pointer :: current
+                        
+    real(num) :: L2, L2_old
+
+    integer :: nsteps 
+                        
+    L2_old = 1e6_num 
+    current => head  
+    nsteps = 0                        
+    do        
+      nsteps = nsteps + 1       
+      call relax(current) 
+      call residual(current)
+                        
+      L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
+      if (abs(L2-L2_old) < 1e-12_num) exit ! should replace with user chosen tol eventually
+      L2_old = L2       
+    enddo               
+                    
+    print *,'nsteps',nsteps
+  end subroutine gs_solve
+
+
   ! methods used in the main solver
+
+  subroutine restrict(this)
+    ! restrict the residual at level "this" (this%residue)
+    ! to be the rhs of the next level (next%f) 
+
+    type(grid), pointer :: this
+    type(grid), pointer :: next
+    integer :: ixc, iyc
+
+    next => this%next
+
+    iy=  1
+    do iyc = 1, next%ny 
+    ix = 1
+    do ixc = 1, next%nx
+      next%f(ixc,iyc) = 0.25_num * (this%residue(ix,iy) + this%residue(ix+1,iy) &
+        & + this%residue(ix,iy+1) + this%residue(ix+1,iy+1) ) 
+      ix = ix + 2 
+    enddo
+    iy = iy + 2 
+    enddo
+
+  end subroutine restrict
+
+  subroutine inject(this)
+
+    type(grid), pointer :: this
+    type(grid), pointer :: prev
+    integer :: ixc, iyc
+    prev => this%prev
+
+    iy=  1                   
+    do iyc = 1, this%ny/2         
+    ix = 1                   
+    do ixc = 1, this%nx/2         
+      prev%phi(ix,iy) = prev%phi(ix,iy) - this%phi(ixc,iyc)
+      prev%phi(ix+1,iy) = prev%phi(ix+1,iy) - this%phi(ixc,iyc)
+      prev%phi(ix,iy+1) = prev%phi(ix,iy+1) - this%phi(ixc,iyc)
+      prev%phi(ix+1,iy+1) = prev%phi(ix+1,iy+1) - this%phi(ixc,iyc)
+      ix = ix + 2            
+    enddo                    
+    iy = iy + 2              
+    enddo  
+
+  end subroutine inject
+
 
   subroutine relax(this)
 
@@ -253,7 +366,7 @@ contains
     allocate(new_grid%residue(1:new_grid%nx,1:new_grid%ny))
     new_grid%phi = 0.0_num
     new_grid%f = 0.0_num
-    new_grid%residue = 1e6_num
+    new_grid%residue = 0.0_num
   end subroutine allocate_arrays
 
   subroutine grid_report(this)

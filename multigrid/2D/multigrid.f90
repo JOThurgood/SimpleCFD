@@ -70,6 +70,93 @@ contains
     integer :: nsteps
     integer :: c
     integer :: num_sweeps_down = 3
+    integer :: num_sweeps_up = 3
+
+    L2_old = 1e6_num
+    current => head
+
+    nsteps = 0
+
+    mainloop: do
+      nsteps = nsteps +1
+
+      downcycle: do
+        if (current%level == tail%level) exit downcycle
+
+        do c = 1, num_sweeps_down
+          call relax(current) 
+        enddo
+
+        if (current%level == 1) then
+          call residual(current) 
+          L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
+          if (abs(L2-L2_old) <= tol) exit mainloop
+          L2_old = L2
+        endif
+        call residual(current)
+        call restrict(current) 
+        current=>current%next
+
+      enddo downcycle
+
+      bottom_solve: do
+        do c = 1, 50 ! for now only 
+          call relax(current)
+        enddo
+        call inject(current)
+        current => current%prev
+        exit bottom_solve !not really a loop / readability. Possible performance hit?
+      enddo bottom_solve
+
+! I had this idea for the upcycle but L2 blows up - come back later
+!      upcycle: do
+!        if (current%level == 1) exit upcycle
+!        do c = 1, num_sweeps_up
+!          call relax(current)
+!        enddo
+!        call inject(current)
+!        current => current%prev
+!      enddo upcycle
+
+    enddo mainloop
+
+  print *,'nsteps',nsteps
+
+  end subroutine mg_solve
+
+  subroutine gs_solve ! for comparison
+
+    type(grid), pointer :: current
+                        
+    real(num) :: L2, L2_old
+
+    integer :: nsteps 
+                        
+    L2_old = 1e6_num 
+    current => head  
+    nsteps = 0                        
+    do        
+      nsteps = nsteps + 1       
+      call relax(current) 
+      call residual(current)
+                        
+      L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
+      if (abs(L2-L2_old) < 1e-12_num) exit ! should replace with user chosen tol eventually
+      L2_old = L2       
+    enddo               
+                    
+    print *,'nsteps',nsteps
+  end subroutine gs_solve
+
+  subroutine mg_2level_solve(tol) ! for debugging, dont call with more than 2 levels
+    real(num), intent(in) :: tol
+    type(grid), pointer :: current
+
+    real(num) :: L2, L2_old
+    
+    integer :: nsteps
+    integer :: c
+    integer :: num_sweeps_down = 3
 
     L2_old = 1e6_num
     current => head
@@ -113,31 +200,7 @@ contains
 
   print *,'nsteps',nsteps
 
-  end subroutine mg_solve
-
-  subroutine gs_solve ! for comparison
-
-    type(grid), pointer :: current
-                        
-    real(num) :: L2, L2_old
-
-    integer :: nsteps 
-                        
-    L2_old = 1e6_num 
-    current => head  
-    nsteps = 0                        
-    do        
-      nsteps = nsteps + 1       
-      call relax(current) 
-      call residual(current)
-                        
-      L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
-      if (abs(L2-L2_old) < 1e-12_num) exit ! should replace with user chosen tol eventually
-      L2_old = L2       
-    enddo               
-                    
-    print *,'nsteps',nsteps
-  end subroutine gs_solve
+  end subroutine mg_2level_solve
 
 
   ! methods used in the main solver
@@ -191,30 +254,23 @@ contains
   subroutine relax(this)
 
     type(grid), pointer :: this
+    integer :: odd_then_even
 
     call bcs(this)
 
     ! redblack / odd
-    do iy = 1, this%ny  
-    do ix = 1, this%nx  
-      if (modulo(ix+iy,2) == 1) then
-        this%phi(ix,iy) = 0.25_num * ( & 
-          & this%phi(ix+1,iy) + this%phi(ix-1,iy) + this%phi(ix,iy+1) + this%phi(ix,iy-1) &
-          - this%dx**2 * this%f(ix,iy) ) 
-      endif
-    end do
-    end do 
-    
-    ! even iteration
-    do iy = 1, this%ny  
-    do ix = 1, this%nx  
-      if (modulo(ix+iy,2) == 0) then
-        this%phi(ix,iy) = 0.25_num * ( & 
-          & this%phi(ix+1,iy) + this%phi(ix-1,iy) + this%phi(ix,iy+1) + this%phi(ix,iy-1) &
-          - this%dx**2 * this%f(ix,iy) )
-      endif
-    end do
-    end do 
+
+    red_blk: do odd_then_even = 1, 0, -1 
+      do iy = 1, this%ny  
+      do ix = 1, this%nx  
+        if (modulo(ix+iy,2) == odd_then_even) then
+          this%phi(ix,iy) = 0.25_num * ( & 
+            & this%phi(ix+1,iy) + this%phi(ix-1,iy) + this%phi(ix,iy+1) + this%phi(ix,iy-1) &
+            - this%dx**2 * this%f(ix,iy) ) 
+        endif
+      end do
+      end do 
+    enddo red_blk
 
   end subroutine relax
 
@@ -433,6 +489,7 @@ contains
     current%phi = 0.0_num 
 
   end subroutine initialise_grids
+
 
 end module multigrid
 

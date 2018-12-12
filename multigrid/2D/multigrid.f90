@@ -139,6 +139,60 @@ contains
     print *,'nsteps',nsteps
   end subroutine gs_solve
 
+  subroutine mg_2level_solve(tol) ! for debugging, dont call with more than 2 levels
+    real(num), intent(in) :: tol
+    type(grid), pointer :: current
+
+    real(num) :: L2, L2_old
+    
+    integer :: nsteps
+    integer :: c
+    integer :: num_sweeps_down = 3
+
+    L2_old = 1e6_num
+    current => head
+
+    nsteps = 0
+
+    mainloop: do
+      nsteps = nsteps +1
+
+      downcycle: do
+        if (current%level == tail%level) exit
+
+        do c = 1, num_sweeps_down
+          call relax(current) 
+        enddo
+
+        if (current%level == 1) then
+          call residual(current) 
+          L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
+          if (abs(L2-L2_old) <= tol) exit mainloop
+          L2_old = L2
+        endif
+        call residual(current)
+        call restrict(current) 
+        current=>current%next
+
+      enddo downcycle
+
+
+      ! bottom solve
+      do c = 1, 50 ! for now only 
+        call relax(current)
+      enddo
+!    call residual(current) 
+      call inject(current)
+      current => current%prev
+
+      ! upcycle goes here , currently unnecessary as two level
+
+    enddo mainloop
+
+  print *,'nsteps',nsteps
+
+  end subroutine mg_2level_solve
+
 
   ! methods used in the main solver
 
@@ -426,6 +480,7 @@ contains
     current%phi = 0.0_num 
 
   end subroutine initialise_grids
+
 
 end module multigrid
 

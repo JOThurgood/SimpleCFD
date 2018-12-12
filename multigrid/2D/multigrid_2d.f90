@@ -99,8 +99,8 @@ module multigrid_2d
       if (abs(L2-L2_old) <= tol) exit
       L2_old = L2
 
-! skip for rest purposes
-!GOTO 9999
+! skip for test purposes
+!GOTO 9999 ! naughty
 
       ! restrict the residue down to a grid with half the resolution in each
       ! dimension  
@@ -158,7 +158,7 @@ module multigrid_2d
       enddo
       iy = iy + 2
       enddo
-9999 CONTINUE
+9999 CONTINUE ! goto is naughty
 
     enddo ! exit main clycle
 

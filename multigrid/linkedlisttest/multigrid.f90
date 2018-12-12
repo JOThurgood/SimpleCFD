@@ -24,13 +24,14 @@ module multigrid
 
 contains
 
-  subroutine mg_interface(f, phi, nx,ny,dx,dy, nlevels)
+  subroutine mg_interface(f, phi, tol, nx,ny,dx,dy, nlevels)
     real(num), dimension(:,:), intent(in) :: f
     real(num), dimension(:,:), allocatable, intent(inout) :: phi
     integer, intent(in) :: nx 
     integer, intent(in) :: ny
     integer, intent(in) :: nlevels
     real(num), intent(in) :: dx, dy
+    real(num), intent(in) :: tol
     type(grid), pointer :: current 
     real(num) :: start, finish
 
@@ -39,11 +40,13 @@ contains
     call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
     call cpu_time(start)
-!    call gs_solve
-    call mg_solve
+!    if (nlevels ==1) then  ! not sure about this, maybe more elegant handling of nlevels=1 with same loop
+!      call gs_solve        ! would be better for testing etc
+!    else 
+    call mg_solve(tol)
+    
     call cpu_time(finish)
     print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
-
 
     ! set the inout(phi) = phi on finest grid to return to caller
     current => head
@@ -58,9 +61,8 @@ contains
 
   ! main solver
 
-  subroutine mg_solve
-
-!    type(grid), pointer :: new_grid
+  subroutine mg_solve(tol)
+    real(num), intent(in) :: tol
     type(grid), pointer :: current
 
     real(num) :: L2, L2_old
@@ -87,16 +89,15 @@ contains
         if (current%level == 1) then
           call residual(current) 
           L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
-          if (abs(L2-L2_old) <= 1e-12_num) exit mainloop
-              ! should replace with user chosen tol eventually
+          if (abs(L2-L2_old) <= tol) exit mainloop
           L2_old = L2
         endif
-GOTO 9999
         call residual(current)
         call restrict(current) 
         current=>current%next
 
       enddo downcycle
+
 
       ! bottom solve
       do c = 1, 50 ! for now only 
@@ -105,8 +106,8 @@ GOTO 9999
 !    call residual(current) 
       call inject(current)
       current => current%prev
-9999 CONTINUE
-      ! upcycle goes here 
+
+      ! upcycle goes here , currently unnecessary as two level
 
     enddo mainloop
 
@@ -116,7 +117,6 @@ GOTO 9999
 
   subroutine gs_solve ! for comparison
 
-!    type(grid), pointer :: new_grid
     type(grid), pointer :: current
                         
     real(num) :: L2, L2_old
@@ -173,9 +173,9 @@ GOTO 9999
     prev => this%prev
 
     iy=  1                   
-    do iyc = 1, this%ny/2         
-    ix = 1                   
-    do ixc = 1, this%nx/2         
+    do iyc = 1, this%ny         
+    ix = 1                
+    do ixc = 1, this%nx         
       prev%phi(ix,iy) = prev%phi(ix,iy) - this%phi(ixc,iyc)
       prev%phi(ix+1,iy) = prev%phi(ix+1,iy) - this%phi(ixc,iyc)
       prev%phi(ix,iy+1) = prev%phi(ix,iy+1) - this%phi(ixc,iyc)

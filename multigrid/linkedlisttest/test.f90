@@ -19,7 +19,7 @@ program test
   
   ! setup a test problem 
 
-  nx = 32
+  nx = 256
   ny = nx
   x_min = 0.0_num
   x_max = 1.0_num
@@ -83,7 +83,7 @@ program test
 
   ! solve for phi
 
-  call mg_interface(f = divu, phi=phi, nx = nx, ny = ny, dx = dx, dy = dy,  nlevels = 2)
+  call mg_interface(f = divu, phi=phi, tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy,  nlevels = 2)
 
   ! correct it 
    

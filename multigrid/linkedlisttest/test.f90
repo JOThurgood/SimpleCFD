@@ -83,7 +83,7 @@ program test
 
   ! solve for phi
 
-  call mg_interface(f = divu, phi=phi, nx = nx, ny = ny, dx = dx, dy = dy,  nlevels = 2)
+  call mg_interface(f = divu, phi=phi, tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy,  nlevels = 2)
 
   ! correct it 
    

@@ -70,6 +70,7 @@ contains
     integer :: nsteps
     integer :: c
     integer :: num_sweeps_down = 3
+    integer :: num_sweeps_up = 3
 
     L2_old = 1e6_num
     current => head
@@ -80,7 +81,7 @@ contains
       nsteps = nsteps +1
 
       downcycle: do
-        if (current%level == tail%level) exit
+        if (current%level == tail%level) exit downcycle
 
         do c = 1, num_sweeps_down
           call relax(current) 
@@ -98,16 +99,24 @@ contains
 
       enddo downcycle
 
+      bottom_solve: do
+        do c = 1, 50 ! for now only 
+          call relax(current)
+        enddo
+        call inject(current)
+        current => current%prev
+        exit bottom_solve !not really a loop / readability. Possible performance hit?
+      enddo bottom_solve
 
-      ! bottom solve
-      do c = 1, 50 ! for now only 
-        call relax(current)
-      enddo
-!    call residual(current) 
-      call inject(current)
-      current => current%prev
-
-      ! upcycle goes here , currently unnecessary as two level
+! I had this idea for the upcycle but L2 blows up - come back later
+!      upcycle: do
+!        if (current%level == 1) exit upcycle
+!        do c = 1, num_sweeps_up
+!          call relax(current)
+!        enddo
+!        call inject(current)
+!        current => current%prev
+!      enddo upcycle
 
     enddo mainloop
 

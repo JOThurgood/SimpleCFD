@@ -191,30 +191,23 @@ contains
   subroutine relax(this)
 
     type(grid), pointer :: this
+    integer :: odd_then_even
 
     call bcs(this)
 
     ! redblack / odd
-    do iy = 1, this%ny  
-    do ix = 1, this%nx  
-      if (modulo(ix+iy,2) == 1) then
-        this%phi(ix,iy) = 0.25_num * ( & 
-          & this%phi(ix+1,iy) + this%phi(ix-1,iy) + this%phi(ix,iy+1) + this%phi(ix,iy-1) &
-          - this%dx**2 * this%f(ix,iy) ) 
-      endif
-    end do
-    end do 
-    
-    ! even iteration
-    do iy = 1, this%ny  
-    do ix = 1, this%nx  
-      if (modulo(ix+iy,2) == 0) then
-        this%phi(ix,iy) = 0.25_num * ( & 
-          & this%phi(ix+1,iy) + this%phi(ix-1,iy) + this%phi(ix,iy+1) + this%phi(ix,iy-1) &
-          - this%dx**2 * this%f(ix,iy) )
-      endif
-    end do
-    end do 
+
+    red_blk: do odd_then_even = 1, 0, -1 
+      do iy = 1, this%ny  
+      do ix = 1, this%nx  
+        if (modulo(ix+iy,2) == odd_then_even) then
+          this%phi(ix,iy) = 0.25_num * ( & 
+            & this%phi(ix+1,iy) + this%phi(ix-1,iy) + this%phi(ix,iy+1) + this%phi(ix,iy-1) &
+            - this%dx**2 * this%f(ix,iy) ) 
+        endif
+      end do
+      end do 
+    enddo red_blk
 
   end subroutine relax
 

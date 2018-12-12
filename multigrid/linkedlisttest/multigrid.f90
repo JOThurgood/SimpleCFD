@@ -21,15 +21,21 @@ module multigrid
 
 contains
 
-  subroutine mg_interface(nx,ny,dx,dy, nlevels)
+  subroutine mg_interface(f, nx,ny,dx,dy, nlevels)
     integer, intent(in) :: nx 
     integer, intent(in) :: ny
+    real(num), dimension(:,:), intent(in) :: f
     integer, intent(in) :: nlevels
     real(num), intent(in) :: dx, dy
 
-    call sanity_checks(nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+    call sanity_checks(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
-    call initialise_grids(nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+    call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+
+    if (nlevels == 1) then 
+      ! just perform GS relaxation without any level change 
+
+    endif
 
   end subroutine mg_interface
 
@@ -38,9 +44,11 @@ contains
 !  them all allocated throughout .. not sure yet how that will work so
 !  keep this comment till it pans out
 
-  subroutine sanity_checks(nx,ny,dx,dy,nlevels)
+
+  subroutine sanity_checks(f, nx,ny,dx,dy,nlevels)
     integer, intent(in) :: nx
     integer, intent(in) :: ny
+    real(num), dimension(:,:), intent(in) :: f
     integer, intent(in) :: nlevels
     real(num), intent(in) :: dx, dy
 
@@ -49,7 +57,45 @@ contains
       stop
     endif
 
+    if (size(f,1) /= nx) then 
+      print *, 'wrong size on f input'
+      print *,'size(f,1)=',size(f,1)
+      stop
+    endif 
+
+    if (size(f,2) /= ny) then 
+      print *, 'wrong size on f input'
+      print *,'size(f,2)=',size(f,2)
+      stop
+    endif 
+
+    if (lbound(f,1) /= 1) then 
+      print *, 'wrong lbound on allocatable f input to MG'
+      print *,'lbound(f,1)=',lbound(f,1)
+      stop
+    endif 
+
+    if (lbound(f,2) /= 1) then 
+      print *, 'wrong lbound on allocatable f input to MG'
+      print *,'lbound(f,2)=',lbound(f,2)
+      stop
+    endif 
+
+    if (ubound(f,1) /= nx) then 
+      print *, 'wrong ubound on allocatable f input to MG'
+      print *,'ubound(f,1)=',ubound(f,1)
+      stop
+    endif 
+
+    if (ubound(f,2) /= ny) then 
+      print *, 'wrong ubound on allocatable f input to MG'
+      print *,'ubound(f,2)=',ubound(f,2)
+      stop
+    endif 
+
+
   end subroutine sanity_checks
+
   ! stuff to do with the grid heirarchy below here
 
   subroutine create_grid(new_grid)
@@ -98,13 +144,13 @@ contains
       print *,'******'
   end subroutine grid_report
 
-  subroutine initialise_grids(nx,ny,dx,dy, nlevels)
+  subroutine initialise_grids(f,nx,ny,dx,dy, nlevels)
 
+    real(num), dimension(:,:), intent(in) :: f
     integer, intent(in) :: nx
     integer, intent(in) :: ny
     integer, intent(in) :: nlevels
     real(num), intent(in) :: dx, dy
-
     integer :: lev
 
     type(grid), pointer :: new
@@ -140,7 +186,12 @@ contains
       call grid_report(current)
       current=>current%next
     enddo 
- 
+
+    ! set phi and f on the level-1 (finest) grid 
+    current => head
+    current%f = f
+    current%phi = 0.0_num 
+
   end subroutine initialise_grids
 
 end module multigrid

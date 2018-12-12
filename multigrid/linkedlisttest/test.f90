@@ -19,7 +19,7 @@ program test
   
   ! setup a test problem 
 
-  nx = 32
+  nx = 128
   ny = nx
   x_min = 0.0_num
   x_max = 1.0_num
@@ -80,6 +80,43 @@ program test
   L2 = sqrt(sum(abs(vtrue(1:nx,1:ny)-vpol(1:nx,1:ny))**2) / real(nx*ny,num))
   print *, 'L2 (vtrue vs vpol) before cleaning',L2
 
-  call mg_interface(f = divu, nx = nx, ny = ny, dx = dx, dy = dy,  nlevels = 2)
+
+  ! solve for phi
+
+  call mg_interface(f = divu, phi=phi, nx = nx, ny = ny, dx = dx, dy = dy,  nlevels = 2)
+
+  ! correct it 
+   
+  do iy = 1, ny
+  do ix = 1, nx
+    upol(ix,iy) = upol(ix,iy) - 0.5_num*(phi(ix+1,iy)-phi(ix-1,iy))/dx
+    vpol(ix,iy) = vpol(ix,iy) - 0.5_num*(phi(ix,iy+1)-phi(ix,iy-1))/dy
+  enddo
+  enddo
+   
+  ! apply periodic bc to the polluted vels and then re calc divu
+  upol(0,:) = upol(nx,:)
+  upol(nx+1,:) = upol(1,:)
+  upol(:,0) = upol(:,ny)
+  upol(:,ny+1) = upol(:,1)
+  vpol(0,:) = vpol(nx,:)
+  vpol(nx+1,:) = vpol(1,:)
+  vpol(:,0) = vpol(:,ny)
+  vpol(:,ny+1) = vpol(:,1)
+   
+  do iy = 1, ny  
+  do ix = 1, nx  
+    divu(ix,iy) = (upol(ix+1,iy) - upol(ix-1,iy)) / 2.0_num / dx + & 
+            & (vpol(ix,iy+1) - vpol(ix,iy-1)) / 2.0_num / dy
+  enddo
+  enddo
+   
+  print *, 'max divu after cleaning',maxval(divu)
+  L2 = sqrt(sum(abs(utrue(1:nx,1:ny)-upol(1:nx,1:ny))**2) / real(nx*ny,num))
+  print *, 'L2 (utrue vs upol) after cleaning',L2
+  L2 = sqrt(sum(abs(vtrue(1:nx,1:ny)-vpol(1:nx,1:ny))**2) / real(nx*ny,num))
+  print *, 'L2 (vtrue vs vpol) after cleaning',L2
+
+
 
 end program test

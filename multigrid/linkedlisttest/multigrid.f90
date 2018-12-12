@@ -16,6 +16,7 @@ module multigrid
     real(num) :: dx, dy
     real(num),dimension(:,:), allocatable :: phi
     real(num),dimension(:,:), allocatable :: f
+    real(num),dimension(:,:), allocatable :: residue
     type(grid), pointer :: next, prev
   end type grid
 
@@ -23,14 +24,16 @@ module multigrid
 
 contains
 
-  subroutine mg_interface(f, nx,ny,dx,dy, nlevels)
+  subroutine mg_interface(f, phi, nx,ny,dx,dy, nlevels)
+    real(num), dimension(:,:), intent(in) :: f
+    real(num), dimension(:,:), allocatable, intent(inout) :: phi
     integer, intent(in) :: nx 
     integer, intent(in) :: ny
-    real(num), dimension(:,:), intent(in) :: f
     integer, intent(in) :: nlevels
     real(num), intent(in) :: dx, dy
+    type(grid), pointer :: current 
 
-    call sanity_checks(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+    call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
     call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
@@ -39,8 +42,11 @@ contains
 
     endif
 
-
     call mg_solve
+
+    ! return phi on the level1 (finest) grid to the caller 
+    current => head
+    phi = current%phi 
 
   end subroutine mg_interface
 
@@ -55,10 +61,20 @@ contains
     type(grid), pointer :: new_grid
     type(grid), pointer :: current
 
+    real(num) :: L2, L2_old
+
+    L2_old = 1e6_num
     current => head
 
-    call relax(current) 
-    call residual(current)
+    do 
+      call relax(current) 
+      call residual(current)
+
+      L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
+      if (abs(L2-L2_old) < 1e-12_num) exit ! should replace with user chosen tol eventually
+      L2_old = L2
+    enddo
+
   end subroutine mg_solve
 
 
@@ -93,9 +109,23 @@ contains
   end subroutine relax
 
   subroutine residual(this)
-    type(grid), pointer(this)
 
-  end subroutine residual(this)
+    type(grid), pointer :: this 
+
+    real(num) :: Lap ! 5 point discrete laplacian at a cell center 
+
+    call bcs(this)
+
+    do iy = 1, this%ny   
+    do ix = 1, this%nx   
+      Lap = (this%phi(ix+1,iy) - 2.0_num*this%phi(ix,iy) + this%phi(ix-1,iy)) / this%dx**2 + & 
+          & (this%phi(ix,iy+1) - 2.0_num*this%phi(ix,iy) + this%phi(ix,iy-1)) / this%dy**2 
+      this%residue(ix,iy) = Lap - this%f(ix,iy)
+    enddo              
+    enddo        
+
+
+  end subroutine residual
 
   subroutine bcs(this)
 
@@ -115,10 +145,11 @@ contains
 
   end subroutine bcs
 
-  subroutine sanity_checks(f, nx,ny,dx,dy,nlevels)
+  subroutine sanity_checks(f,phi, nx,ny,dx,dy,nlevels)
     integer, intent(in) :: nx
     integer, intent(in) :: ny
     real(num), dimension(:,:), intent(in) :: f
+    real(num), dimension(:,:), allocatable, intent(inout) :: phi
     integer, intent(in) :: nlevels
     real(num), intent(in) :: dx, dy
 
@@ -163,6 +194,29 @@ contains
       stop
     endif 
 
+    if (lbound(phi,1) /= -1) then 
+      print *, 'wrong lbound on allocatable phi input to MG'
+      print *,'lbound(phi,1)=',lbound(phi,1)
+      stop
+    endif 
+
+    if (lbound(phi,2) /= -1) then 
+      print *, 'wrong lbound on allocatable phi input to MG'
+      print *,'lbound(phi,2)=',lbound(phi,2)
+      stop
+    endif 
+
+    if (ubound(phi,1) /= nx+2) then 
+      print *, 'wrong ubound on allocatable phi input to MG'
+      print *,'ubound(phi,1)=',ubound(phi,1)
+      stop
+    endif 
+
+    if (ubound(phi,2) /= ny+2) then 
+      print *, 'wrong ubound on allocatable phi input to MG'
+      print *,'ubound(phi,2)=',ubound(phi,2)
+      stop
+    endif 
 
   end subroutine sanity_checks
 
@@ -197,8 +251,10 @@ contains
     type(grid), pointer :: new_grid
     allocate(new_grid%phi(0:new_grid%nx+1,0:new_grid%ny+1))
     allocate(new_grid%f(1:new_grid%nx,1:new_grid%ny))
+    allocate(new_grid%residue(1:new_grid%nx,1:new_grid%ny))
     new_grid%phi = 0.0_num
     new_grid%f = 0.0_num
+    new_grid%residue = 1e6_num
   end subroutine allocate_arrays
 
   subroutine grid_report(this)

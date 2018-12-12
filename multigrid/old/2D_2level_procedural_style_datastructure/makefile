@@ -18,7 +18,7 @@ PROGRAMS = test
 # "make" builds all
 all: $(PROGRAMS)
 
-test: multigrid.o
+test: shared_data.o  multigrid_2d.o
 
 
 # ======================================================================

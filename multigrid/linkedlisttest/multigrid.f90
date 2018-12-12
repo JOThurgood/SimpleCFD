@@ -37,14 +37,9 @@ contains
 
     call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
-    if (nlevels == 1) then 
-      ! just perform GS relaxation without any level change 
-
-    endif
-
     call mg_solve
 
-    ! return phi on the level1 (finest) grid to the caller 
+    ! set the inout(phi) = phi on finest grid to return to caller
     current => head
     phi = current%phi 
 
@@ -55,6 +50,7 @@ contains
 !  them all allocated throughout .. not sure yet how that will work so
 !  keep this comment till it pans out
 
+  ! main solver
 
   subroutine mg_solve
 
@@ -77,6 +73,7 @@ contains
 
   end subroutine mg_solve
 
+  ! methods used in the main solver
 
   subroutine relax(this)
 
@@ -144,6 +141,8 @@ contains
     this%phi(:,this%ny+1) = this%phi(:,1)
 
   end subroutine bcs
+
+  ! check everything passed to the interface is as assumed
 
   subroutine sanity_checks(f,phi, nx,ny,dx,dy,nlevels)
     integer, intent(in) :: nx
@@ -220,7 +219,7 @@ contains
 
   end subroutine sanity_checks
 
-  ! stuff to do with the grid heirarchy below here
+  ! Methods relating to the grid heirarchy and setup below jere
 
   subroutine create_grid(new_grid)
     type(grid), pointer :: new_grid
@@ -235,7 +234,7 @@ contains
   end subroutine create_grid
 
   subroutine add_grid(new_grid)
-  ! add grid to a list / create a new list if 1st one
+    ! add grid to a list / create a new list if 1st one
     type(grid), pointer :: new_grid
     if (.not. associated(head)) then
       head=>new_grid

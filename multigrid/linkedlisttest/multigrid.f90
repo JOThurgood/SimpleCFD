@@ -60,8 +60,8 @@ contains
     new_grid%level = -1
     new_grid%nx = -1
     new_grid%ny = -1
-    new_grid%dx = -1
-    new_grid%dy = -1
+    new_grid%dx = -1.0_num
+    new_grid%dy = -1.0_num
   end subroutine create_grid
 
   subroutine add_grid(new_grid)

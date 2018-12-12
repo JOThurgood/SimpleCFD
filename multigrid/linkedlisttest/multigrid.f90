@@ -39,6 +39,7 @@ contains
 
     endif
 
+
     call mg_solve
 
   end subroutine mg_interface
@@ -57,7 +58,7 @@ contains
     current => head
 
     call relax(current) 
-
+    call residual(current)
   end subroutine mg_solve
 
 
@@ -91,6 +92,11 @@ contains
 
   end subroutine relax
 
+  subroutine residual(this)
+    type(grid), pointer(this)
+
+  end subroutine residual(this)
+
   subroutine bcs(this)
 
     type(grid), pointer :: this
@@ -99,6 +105,8 @@ contains
 
     ! some logic for if level 1 vs others for homo vs inhomo bc etc will be needed 
     ! eventually
+
+    ! Double periodic
 
     this%phi(0,:) = this%phi(this%nx,:)
     this%phi(this%nx+1,:) = this%phi(1,:)

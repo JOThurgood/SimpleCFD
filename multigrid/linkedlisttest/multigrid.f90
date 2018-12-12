@@ -8,6 +8,8 @@ module multigrid
   ! will need own private constants and parameters since entirely modular
   integer, parameter :: num=selected_real_kind(p=15)
 
+  integer :: ix, iy
+
   ! data object
   type grid
     integer :: level, nx, ny  
@@ -37,6 +39,8 @@ contains
 
     endif
 
+    call mg_solve
+
   end subroutine mg_interface
 
 !* in  practice, in CCAPS / multistep hydro codes might want to "first
@@ -44,6 +48,64 @@ contains
 !  them all allocated throughout .. not sure yet how that will work so
 !  keep this comment till it pans out
 
+
+  subroutine mg_solve
+
+    type(grid), pointer :: new_grid
+    type(grid), pointer :: current
+
+    current => head
+
+    call relax(current) 
+
+  end subroutine mg_solve
+
+
+  subroutine relax(this)
+
+    type(grid), pointer :: this
+
+    call bcs(this)
+
+    ! redblack / odd
+    do iy = 1, this%ny  
+    do ix = 1, this%nx  
+      if (modulo(ix+iy,2) == 1) then
+        this%phi(ix,iy) = 0.25_num * ( & 
+          & this%phi(ix+1,iy) + this%phi(ix-1,iy) + this%phi(ix,iy+1) + this%phi(ix,iy-1) &
+          - this%dx**2 * this%f(ix,iy) ) 
+      endif
+    end do
+    end do 
+    
+    ! even iteration
+    do iy = 1, this%ny  
+    do ix = 1, this%nx  
+      if (modulo(ix+iy,2) == 0) then
+        this%phi(ix,iy) = 0.25_num * ( & 
+          & this%phi(ix+1,iy) + this%phi(ix-1,iy) + this%phi(ix,iy+1) + this%phi(ix,iy-1) &
+          - this%dx**2 * this%f(ix,iy) )
+      endif
+    end do
+    end do 
+
+  end subroutine relax
+
+  subroutine bcs(this)
+
+    type(grid), pointer :: this
+
+    ! will need bc types eventually
+
+    ! some logic for if level 1 vs others for homo vs inhomo bc etc will be needed 
+    ! eventually
+
+    this%phi(0,:) = this%phi(this%nx,:)
+    this%phi(this%nx+1,:) = this%phi(1,:)
+    this%phi(:,0) = this%phi(:,this%ny)
+    this%phi(:,this%ny+1) = this%phi(:,1)
+
+  end subroutine bcs
 
   subroutine sanity_checks(f, nx,ny,dx,dy,nlevels)
     integer, intent(in) :: nx
@@ -127,6 +189,8 @@ contains
     type(grid), pointer :: new_grid
     allocate(new_grid%phi(0:new_grid%nx+1,0:new_grid%ny+1))
     allocate(new_grid%f(1:new_grid%nx,1:new_grid%ny))
+    new_grid%phi = 0.0_num
+    new_grid%f = 0.0_num
   end subroutine allocate_arrays
 
   subroutine grid_report(this)

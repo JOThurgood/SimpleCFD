@@ -1,6 +1,6 @@
 # SimpleCFD
 
-Simple CFD solvers written in Fortran (linear advection, burgers, compressible Euler equations, incompressible projection methods ...)  with python plotting routines. 
+Simple (and not-so-simple) CFD solvers written in Fortran with Python plotting routines.
 
 There is, in particular, a lot of code relating to Low Mach and sound-proof models, due to the relationship to my current employment. 
 

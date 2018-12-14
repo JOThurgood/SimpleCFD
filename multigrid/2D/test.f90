@@ -8,6 +8,7 @@ program test
   real(num) :: pi = 4.0_num * ATAN(1.0_num)
 
   integer :: nx, ny, ix, iy
+  integer :: nlevels
 
   real(num) :: dx, dy, L2, x_min, x_max, y_min, y_max
 
@@ -82,8 +83,8 @@ program test
 
 
   ! solve for phi
-
-  call mg_interface(f = divu, phi=phi, tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy,  nlevels = 9)
+  nlevels = -1 ! auto
+  call mg_interface(f = divu, phi=phi, tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy,  nlevels = nlevels)
 
   ! correct it 
    

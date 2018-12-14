@@ -24,16 +24,37 @@ module multigrid
 
 contains
 
+  integer function set_nlevels(nx,ny)
+    integer, intent(in) :: nx, ny
+
+    if (nx <= ny) then
+      set_nlevels = log2_int(nx) + 1 
+    else
+      set_nlevels = log2_int(nx) + 1
+    endif
+
+  end function set_nlevels
+
+  real(num) function log2_int(x)
+    implicit none
+    integer, intent(in) :: x
+  
+    log2_int = int( log(real(x,num)) / log(2.0_num))
+  end function log2_int
+
   subroutine mg_interface(f, phi, tol, nx,ny,dx,dy, nlevels)
     real(num), dimension(:,:), intent(in) :: f
     real(num), dimension(:,:), allocatable, intent(inout) :: phi
     integer, intent(in) :: nx 
     integer, intent(in) :: ny
-    integer, intent(in) :: nlevels
+    integer, intent(inout) :: nlevels
     real(num), intent(in) :: dx, dy
     real(num), intent(in) :: tol
     type(grid), pointer :: current 
     real(num) :: start, finish
+
+    if (nlevels == -1) nlevels = set_nlevels(nx,ny)
+    print *,'nlevels', nlevels
 
     call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 

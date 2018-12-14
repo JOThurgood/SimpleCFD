@@ -22,10 +22,16 @@ module multigrid
 
   type(grid), pointer :: head, tail
 
+  ! boundary conditions. The program calling mg_interface
+  ! is responsible for getting the integers correct
+  integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
+  integer, parameter :: periodic = 0
+
 contains
 
 
-  subroutine mg_interface(f, phi, tol, nx,ny,dx,dy, nlevels)
+  subroutine mg_interface(f, phi, tol, nx,ny,dx,dy, nlevels, &
+        & bc_xmin, bc_xmax, bc_ymin, bc_ymax)
     real(num), dimension(:,:), intent(in) :: f
     real(num), dimension(:,:), allocatable, intent(inout) :: phi
     integer, intent(in) :: nx 
@@ -33,6 +39,7 @@ contains
     integer, intent(inout) :: nlevels
     real(num), intent(in) :: dx, dy
     real(num), intent(in) :: tol
+    integer, intent(in) :: bc_xmin, bc_xmax, bc_ymin, bc_ymax
     type(grid), pointer :: current 
     real(num) :: start, finish
 
@@ -41,18 +48,22 @@ contains
 
     call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
+    print *,'*** Multigrid called'
+    print *,'****** nx = ',nx
+    print *,'****** ny = ',ny
+    print *,'****** nlevels ',nlevels
+    print *,'****** tolerance = ',tol
+
     call cpu_time(start)
-!    if (nlevels ==1) then  ! not sure about this, maybe more elegant handling of nlevels=1 with same loop
-!      call gs_solve        ! would be better for testing etc
-!    else 
     call mg_solve(tol)
-    
     call cpu_time(finish)
     print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
 
     ! set the inout(phi) = phi on finest grid to return to caller
     current => head
     phi = current%phi 
+
+    print *,'*** Multigrid finished'
 
   end subroutine mg_interface
 
@@ -131,8 +142,9 @@ contains
       enddo upcycle
 
     enddo mainloop
-
-  print *,'nsteps',nsteps
+    
+    print '(" ****** Finished in: ",i3.3," V cycles")',nsteps
+    print '(" ****** Fine grid residual: ",e20.8," (L2)")',L2 
 
   end subroutine mg_solve
 
@@ -314,12 +326,18 @@ contains
     ! some logic for if level 1 vs others for homo vs inhomo bc etc will be needed 
     ! eventually
 
-    ! Double periodic
-
-    this%phi(0,:) = this%phi(this%nx,:)
-    this%phi(this%nx+1,:) = this%phi(1,:)
-    this%phi(:,0) = this%phi(:,this%ny)
-    this%phi(:,this%ny+1) = this%phi(:,1)
+    if (bc_xmin == periodic) then
+      this%phi(0,:) = this%phi(this%nx,:)
+    endif
+    if (bc_xmax == periodic) then
+      this%phi(this%nx+1,:) = this%phi(1,:)
+    endif
+    if (bc_xmin == periodic) then
+      this%phi(:,0) = this%phi(:,this%ny)
+    endif
+    if (bc_xmax == periodic) then
+      this%phi(:,this%ny+1) = this%phi(:,1)
+    endif
 
   end subroutine bcs
 
@@ -470,7 +488,6 @@ contains
     nullify(tail)
 
     if (nlevels == -1) nlevels = set_nlevels(nx,ny)
-    print *,'nlevels', nlevels
 
     ! create a linked list of grids with blank / unallocated data
     do lev = 1, nlevels

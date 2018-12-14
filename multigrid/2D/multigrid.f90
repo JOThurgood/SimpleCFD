@@ -24,16 +24,20 @@ module multigrid
 
 contains
 
+
   subroutine mg_interface(f, phi, tol, nx,ny,dx,dy, nlevels)
     real(num), dimension(:,:), intent(in) :: f
     real(num), dimension(:,:), allocatable, intent(inout) :: phi
     integer, intent(in) :: nx 
     integer, intent(in) :: ny
-    integer, intent(in) :: nlevels
+    integer, intent(inout) :: nlevels
     real(num), intent(in) :: dx, dy
     real(num), intent(in) :: tol
     type(grid), pointer :: current 
     real(num) :: start, finish
+
+    if (nlevels == -1) nlevels = set_nlevels(nx,ny)
+    print *,'nlevels', nlevels
 
     call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
@@ -83,6 +87,8 @@ contains
       downcycle: do
         if (current%level == tail%level) exit downcycle
 
+        if (current%level /= 1) current%phi = 0.0_num ! reset initial guess on each cycle
+
         do c = 1, num_sweeps_down
           call relax(current) 
         enddo
@@ -100,23 +106,32 @@ contains
       enddo downcycle
 
       bottom_solve: do
+
+        current%phi = 0.0_num
+
         do c = 1, 50 ! for now only 
           call relax(current)
+          if (modulo(c-1,5)==0) then          
+            call residual(current)
+            L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
+            if (L2 < 1e-12) exit
+          endif
         enddo
         call inject(current)
         current => current%prev
         exit bottom_solve !not really a loop / readability. Possible performance hit?
+
       enddo bottom_solve
 
 ! I had this idea for the upcycle but L2 blows up - come back later
-!      upcycle: do
-!        if (current%level == 1) exit upcycle
-!        do c = 1, num_sweeps_up
-!          call relax(current)
-!        enddo
-!        call inject(current)
-!        current => current%prev
-!      enddo upcycle
+      upcycle: do
+        if (current%level == 1) exit upcycle
+        do c = 1, num_sweeps_up
+          call relax(current)
+        enddo
+        call inject(current)
+        current => current%prev
+      enddo upcycle
 
     enddo mainloop
 
@@ -311,6 +326,25 @@ contains
 
   end subroutine bcs
 
+  integer function set_nlevels(nx,ny)
+    integer, intent(in) :: nx, ny
+
+    if (nx <= ny) then
+      set_nlevels = log2_int(nx) + 1 
+    else
+      set_nlevels = log2_int(nx) + 1
+    endif
+
+  end function set_nlevels
+
+  real(num) function log2_int(x)
+    implicit none
+    integer, intent(in) :: x
+
+    log2_int = int( log(real(x,num)) / log(2.0_num))
+
+  end function log2_int
+
   ! check everything passed to the interface is as assumed
 
   subroutine sanity_checks(f,phi, nx,ny,dx,dy,nlevels)
@@ -476,12 +510,13 @@ contains
       current=>current%next
     enddo
 
-    ! cycle through the list for a report to check all is set up good
-    current => head
-    do while(associated(current))
-      call grid_report(current)
-      current=>current%next
-    enddo 
+! add to a debug / verbose option
+!    ! cycle through the list for a report to check all is set up good
+!    current => head
+!    do while(associated(current))
+!      call grid_report(current)
+!      current=>current%next
+!    enddo 
 
     ! set phi and f on the level-1 (finest) grid 
     current => head

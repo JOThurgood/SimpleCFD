@@ -83,6 +83,8 @@ contains
       downcycle: do
         if (current%level == tail%level) exit downcycle
 
+        if (current%level /= 1) current%phi = 0.0_num ! reset initial guess on each cycle
+
         do c = 1, num_sweeps_down
           call relax(current) 
         enddo
@@ -100,6 +102,9 @@ contains
       enddo downcycle
 
       bottom_solve: do
+
+        current%phi = 0.0_num
+
         do c = 1, 50 ! for now only 
           call relax(current)
         enddo

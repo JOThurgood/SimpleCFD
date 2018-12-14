@@ -26,9 +26,11 @@ module multigrid
   ! is responsible for getting the integers correct
   integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
   integer, parameter :: periodic = 0
+  integer, parameter :: zero_gradient = 1
+  integer, parameter :: no_slip = 2
+  integer, parameter :: driven = 3
 
 contains
-
 
   subroutine mg_interface(f, phi, tol, nx,ny,dx,dy, nlevels, &
         & bc_xmin, bc_xmax, bc_ymin, bc_ymax)
@@ -96,7 +98,7 @@ contains
       downcycle: do
         if (current%level == tail%level) exit downcycle
 
-        if (current%level /= 1) current%phi = 0.0_num ! reset initial guess on each cycle
+        if (current%level /= 1) current%phi = 0.0_num ! important
 
         do c = 1, num_sweeps_down
           call relax(current) 
@@ -214,7 +216,6 @@ contains
       do c = 1, 50 ! for now only 
         call relax(current)
       enddo
-!    call residual(current) 
       call inject(current)
       current => current%prev
 
@@ -225,7 +226,6 @@ contains
   print *,'nsteps',nsteps
 
   end subroutine mg_2level_solve
-
 
   ! methods used in the main solver
 
@@ -321,8 +321,6 @@ contains
 
     type(grid), pointer :: this
 
-    ! will need bc types eventually
-
     ! some logic for if level 1 vs others for homo vs inhomo bc etc will be needed 
     ! eventually
 
@@ -338,6 +336,33 @@ contains
     if (bc_xmax == periodic) then
       this%phi(:,this%ny+1) = this%phi(:,1)
     endif
+
+    if (bc_xmin == zero_gradient) then
+      this%phi(0,:) = this%phi(1,:)
+    endif
+    if (bc_xmax == zero_gradient) then
+      this%phi(this%nx+1,:) = this%phi(this%nx,:)
+    endif
+    if (bc_ymin == zero_gradient) then
+      this%phi(:,0) = this%phi(:,1)
+    endif
+    if (bc_ymax == zero_gradient) then
+      this%phi(:,this%ny+1) = this%phi(:,this%ny)
+    endif
+
+    if (bc_xmin == no_slip) then
+      this%phi(0,:) = this%phi(1,:)
+    endif
+    if (bc_xmax == no_slip) then
+      this%phi(this%nx+1,:) = this%phi(this%nx,:)
+    endif
+    if (bc_ymin == no_slip) then
+      this%phi(:,0) = this%phi(:,1)
+    endif
+    if ((bc_ymax == no_slip) .or. (bc_ymax == driven)) then
+      this%phi(:,this%ny+1) = this%phi(:,this%ny)
+    endif
+
 
   end subroutine bcs
 

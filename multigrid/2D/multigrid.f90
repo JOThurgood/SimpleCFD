@@ -24,23 +24,6 @@ module multigrid
 
 contains
 
-  integer function set_nlevels(nx,ny)
-    integer, intent(in) :: nx, ny
-
-    if (nx <= ny) then
-      set_nlevels = log2_int(nx) + 1 
-    else
-      set_nlevels = log2_int(nx) + 1
-    endif
-
-  end function set_nlevels
-
-  real(num) function log2_int(x)
-    implicit none
-    integer, intent(in) :: x
-  
-    log2_int = int( log(real(x,num)) / log(2.0_num))
-  end function log2_int
 
   subroutine mg_interface(f, phi, tol, nx,ny,dx,dy, nlevels)
     real(num), dimension(:,:), intent(in) :: f
@@ -342,6 +325,25 @@ contains
     this%phi(:,this%ny+1) = this%phi(:,1)
 
   end subroutine bcs
+
+  integer function set_nlevels(nx,ny)
+    integer, intent(in) :: nx, ny
+
+    if (nx <= ny) then
+      set_nlevels = log2_int(nx) + 1 
+    else
+      set_nlevels = log2_int(nx) + 1
+    endif
+
+  end function set_nlevels
+
+  real(num) function log2_int(x)
+    implicit none
+    integer, intent(in) :: x
+
+    log2_int = int( log(real(x,num)) / log(2.0_num))
+
+  end function log2_int
 
   ! check everything passed to the interface is as assumed
 

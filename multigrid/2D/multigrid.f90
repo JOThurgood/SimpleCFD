@@ -107,21 +107,27 @@ contains
 
         do c = 1, 50 ! for now only 
           call relax(current)
+          if (modulo(c-1,5)==0) then          
+            call residual(current)
+            L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
+            if (L2 < 1e-12) exit
+          endif
         enddo
         call inject(current)
         current => current%prev
         exit bottom_solve !not really a loop / readability. Possible performance hit?
+
       enddo bottom_solve
 
 ! I had this idea for the upcycle but L2 blows up - come back later
-!      upcycle: do
-!        if (current%level == 1) exit upcycle
-!        do c = 1, num_sweeps_up
-!          call relax(current)
-!        enddo
-!        call inject(current)
-!        current => current%prev
-!      enddo upcycle
+      upcycle: do
+        if (current%level == 1) exit upcycle
+        do c = 1, num_sweeps_up
+          call relax(current)
+        enddo
+        call inject(current)
+        current => current%prev
+      enddo upcycle
 
     enddo mainloop
 
@@ -481,12 +487,13 @@ contains
       current=>current%next
     enddo
 
-    ! cycle through the list for a report to check all is set up good
-    current => head
-    do while(associated(current))
-      call grid_report(current)
-      current=>current%next
-    enddo 
+! add to a debug / verbose option
+!    ! cycle through the list for a report to check all is set up good
+!    current => head
+!    do while(associated(current))
+!      call grid_report(current)
+!      current=>current%next
+!    enddo 
 
     ! set phi and f on the level-1 (finest) grid 
     current => head

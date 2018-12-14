@@ -121,7 +121,6 @@ contains
 
       enddo bottom_solve
 
-! I had this idea for the upcycle but L2 blows up - come back later
       upcycle: do
         if (current%level == 1) exit upcycle
         do c = 1, num_sweeps_up

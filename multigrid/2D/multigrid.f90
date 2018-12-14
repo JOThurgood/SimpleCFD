@@ -36,8 +36,6 @@ contains
     type(grid), pointer :: current 
     real(num) :: start, finish
 
-    if (nlevels == -1) nlevels = set_nlevels(nx,ny)
-    print *,'nlevels', nlevels
 
     call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
@@ -326,24 +324,6 @@ contains
 
   end subroutine bcs
 
-  integer function set_nlevels(nx,ny)
-    integer, intent(in) :: nx, ny
-
-    if (nx <= ny) then
-      set_nlevels = log2_int(nx) + 1 
-    else
-      set_nlevels = log2_int(nx) + 1
-    endif
-
-  end function set_nlevels
-
-  real(num) function log2_int(x)
-    implicit none
-    integer, intent(in) :: x
-
-    log2_int = int( log(real(x,num)) / log(2.0_num))
-
-  end function log2_int
 
   ! check everything passed to the interface is as assumed
 
@@ -479,7 +459,7 @@ contains
     real(num), dimension(:,:), intent(in) :: f
     integer, intent(in) :: nx
     integer, intent(in) :: ny
-    integer, intent(in) :: nlevels
+    integer, intent(inout) :: nlevels
     real(num), intent(in) :: dx, dy
     integer :: lev
 
@@ -489,6 +469,9 @@ contains
     nullify(current)
     nullify(head)
     nullify(tail)
+
+    if (nlevels == -1) nlevels = set_nlevels(nx,ny)
+    print *,'nlevels', nlevels
 
     ! create a linked list of grids with blank / unallocated data
     do lev = 1, nlevels
@@ -524,6 +507,25 @@ contains
     current%phi = 0.0_num 
 
   end subroutine initialise_grids
+
+  integer function set_nlevels(nx,ny)
+    integer, intent(in) :: nx, ny
+
+    if (nx <= ny) then
+      set_nlevels = log2_int(nx) + 1 
+    else
+      set_nlevels = log2_int(nx) + 1
+    endif
+
+  end function set_nlevels
+
+  real(num) function log2_int(x)
+    implicit none
+    integer, intent(in) :: x
+
+    log2_int = int( log(real(x,num)) / log(2.0_num))
+
+  end function log2_int
 
 
 end module multigrid

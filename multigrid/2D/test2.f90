@@ -8,7 +8,6 @@ program test2
 !  real(num) :: pi = 4.0_num * ATAN(1.0_num)
 
   integer :: nx, ny, ix, iy
-  integer :: nlevels
 
   real(num) :: dx, dy, L2, x_min, x_max, y_min, y_max
 
@@ -16,9 +15,6 @@ program test2
   real(num), dimension(:,:), allocatable :: f,analytic, phi
   real(num), dimension(:), allocatable :: L2_arr, n_arr
 
-!  integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
-  integer, parameter :: fixed = 2
-  
   integer :: power, power_min, power_max
 
   type(mg_input) :: input

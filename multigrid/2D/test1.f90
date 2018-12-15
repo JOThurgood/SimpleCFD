@@ -8,7 +8,6 @@ program test1
   real(num) :: pi = 4.0_num * ATAN(1.0_num)
 
   integer :: nx, ny, ix, iy
-  integer :: nlevels
 
   real(num) :: dx, dy, L2, x_min, x_max, y_min, y_max
 
@@ -18,12 +17,10 @@ program test1
   real(num), dimension(:,:), allocatable :: upol, vpol
   real(num), dimension(:,:), allocatable :: divu, phi
 
-!  integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
-  integer, parameter :: periodic = 0
-  
+  type(mg_input) :: input 
+
   ! setup a test problem 
 
-  type(mg_input) :: input 
 
   nx = 256
   ny = nx

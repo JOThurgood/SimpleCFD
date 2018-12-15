@@ -51,13 +51,7 @@ module multigrid
 
   type(mg_input) :: mg_state
 
-  ! boundary conditions. The program calling mg_interface
-  ! is responsible for getting the integers correct
-  integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
-!  integer, parameter :: periodic = 0
-!  integer, parameter :: zero_gradient = 1 ! Neumann 
-!  integer, parameter :: fixed = 2 ! Dirichlet
-
+  ! characters for comparison to input bc names
   character(len=20), parameter :: periodic = 'periodic'
   character(len=20), parameter :: fixed = 'fixed'
   character(len=20), parameter :: zero_gradient = 'zero_gradient'
@@ -71,8 +65,8 @@ contains
     real(num) :: start, finish
     mg_state = this ! all other subroutines in module should be able to access
 
-    call sanity_checks_new
-    call initialise_grids_new 
+    call sanity_checks
+    call initialise_grids
     call welcome
 
     call cpu_time(start)
@@ -99,72 +93,6 @@ contains
     print *,'****** bc_ymax = ', mg_state%bc_ymax
     print *,'****** variable coefficient eta',mg_state%eta_present
   end subroutine welcome
-
-!!!
-!!!  subroutine mg_interface(f, phi, eta, tol, &
-!!!        &  nx,ny,dx,dy, nlevels, &
-!!!        & bc_xmin_in, bc_xmax_in, bc_ymin_in, bc_ymax_in)
-!!!    real(num), dimension(:,:), intent(in) :: f
-!!!    real(num), dimension(:,:), allocatable, intent(inout) :: phi
-!!!    real(num), dimension(:,:), allocatable, optional, intent(in) :: eta
-!!!    integer, intent(in) :: nx 
-!!!    integer, intent(in) :: ny
-!!!    integer, intent(inout) :: nlevels
-!!!    real(num), intent(in) :: dx, dy
-!!!    real(num), intent(in) :: tol
-!!!    integer, intent(in) :: bc_xmin_in, bc_xmax_in, bc_ymin_in, bc_ymax_in !***
-!!!    type(grid), pointer :: current 
-!!!    real(num) :: start, finish
-!!!
-!!!    !*** this is a bit annoying but the alternative seems to be passing a single type
-!!!    ! as the input
-!!! 
-!!!    bc_xmin = bc_xmin_in
-!!!    bc_xmax = bc_xmax_in
-!!!    bc_ymin = bc_ymin_in
-!!!    bc_ymax = bc_ymax_in
-!!!
-!!!    if (present(eta)) then
-!!!      eta_present = .true.
-!!!      call sanity_checks(f=f, eta=eta, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
-!!!      call initialise_grids(f=f, eta=eta, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
-!!!    else 
-!!!      eta_present = .false.
-!!!      call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
-!!!      call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
-!!!    endif
-!!!
-!!!
-!!!
-!!!    print *,'*** Multigrid called'
-!!!    print *,'****** nx = ',nx
-!!!    print *,'****** ny = ',ny
-!!!    print *,'****** nlevels ',nlevels
-!!!    print *,'****** tolerance = ',tol
-!!!    print *,'****** bc_xmin = ', bc_xmin
-!!!    print *,'****** bc_xmax = ', bc_xmax
-!!!    print *,'****** bc_ymin = ', bc_ymin
-!!!    print *,'****** bc_ymax = ', bc_ymax
-!!!
-!!!    call cpu_time(start)
-!!!    !call mg_solve(tol)
-!!!    call cpu_time(finish)
-!!!    print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
-!!!
-!!!    ! set the inout(phi) = phi on finest grid to return to caller
-!!!    current => head
-!!!    phi = current%phi 
-!!!
-!!!    print *,'*** Multigrid finished'
-!!!
-!!!  end subroutine mg_interface
-
-!* in  practice, in CCAPS / multistep hydro codes might want to "first
-!  call" this only to keep
-!  them all allocated throughout .. not sure yet how that will work so
-!  keep this comment till it pans out
-
-  ! main solver
 
   subroutine mg_solve
     type(grid), pointer :: current
@@ -246,82 +174,84 @@ contains
     ! ratio, this could cause an issue
   end subroutine mg_solve
 
-  subroutine gs_solve ! for comparison
 
-    type(grid), pointer :: current
-                        
-    real(num) :: L2, L2_old
-
-    integer :: nsteps 
-                        
-    L2_old = 1e6_num 
-    current => head  
-    nsteps = 0                        
-    do        
-      nsteps = nsteps + 1       
-      call relax(current) 
-      call residual(current)
-                        
-      L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
-      if (abs(L2-L2_old) < 1e-12_num) exit ! should replace with user chosen tol eventually
-      L2_old = L2       
-    enddo               
-                    
-    print *,'nsteps',nsteps
-  end subroutine gs_solve
-
-  subroutine mg_2level_solve(tol) ! for debugging, dont call with more than 2 levels
-    real(num), intent(in) :: tol
-    type(grid), pointer :: current
-
-    real(num) :: L2, L2_old
-    
-    integer :: nsteps
-    integer :: c
-    integer :: num_sweeps_down = 3
-
-    L2_old = 1e6_num
-    current => head
-
-    nsteps = 0
-
-    mainloop: do
-      nsteps = nsteps +1
-
-      downcycle: do
-        if (current%level == tail%level) exit
-
-        do c = 1, num_sweeps_down
-          call relax(current) 
-        enddo
-
-        if (current%level == 1) then
-          call residual(current) 
-          L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
-          if (abs(L2-L2_old) <= tol) exit mainloop
-          L2_old = L2
-        endif
-        call residual(current)
-        call restrict(current) 
-        current=>current%next
-
-      enddo downcycle
-
-
-      ! bottom solve
-      do c = 1, 50 ! for now only 
-        call relax(current)
-      enddo
-      call inject(current)
-      current => current%prev
-
-      ! upcycle goes here , currently unnecessary as two level
-
-    enddo mainloop
-
-  print *,'nsteps',nsteps
-
-  end subroutine mg_2level_solve
+! these next two havent been updated to use the mg_interface with object input
+!  subroutine gs_solve ! for comparison
+!
+!    type(grid), pointer :: current
+!                        
+!    real(num) :: L2, L2_old
+!
+!    integer :: nsteps 
+!                        
+!    L2_old = 1e6_num 
+!    current => head  
+!    nsteps = 0                        
+!    do        
+!      nsteps = nsteps + 1       
+!      call relax(current) 
+!      call residual(current)
+!                        
+!      L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
+!      if (abs(L2-L2_old) < 1e-12_num) exit ! should replace with user chosen tol eventually
+!      L2_old = L2       
+!    enddo               
+!                    
+!    print *,'nsteps',nsteps
+!  end subroutine gs_solve
+!
+!  subroutine mg_2level_solve(tol) ! for debugging, dont call with more than 2 levels
+!    real(num), intent(in) :: tol
+!    type(grid), pointer :: current
+!
+!    real(num) :: L2, L2_old
+!    
+!    integer :: nsteps
+!    integer :: c
+!    integer :: num_sweeps_down = 3
+!
+!    L2_old = 1e6_num
+!    current => head
+!
+!    nsteps = 0
+!
+!    mainloop: do
+!      nsteps = nsteps +1
+!
+!      downcycle: do
+!        if (current%level == tail%level) exit
+!
+!        do c = 1, num_sweeps_down
+!          call relax(current) 
+!        enddo
+!
+!        if (current%level == 1) then
+!          call residual(current) 
+!          L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
+!          if (abs(L2-L2_old) <= tol) exit mainloop
+!          L2_old = L2
+!        endif
+!        call residual(current)
+!        call restrict(current) 
+!        current=>current%next
+!
+!      enddo downcycle
+!
+!
+!      ! bottom solve
+!      do c = 1, 50 ! for now only 
+!        call relax(current)
+!      enddo
+!      call inject(current)
+!      current => current%prev
+!
+!      ! upcycle goes here , currently unnecessary as two level
+!
+!    enddo mainloop
+!
+!  print *,'nsteps',nsteps
+!
+!  end subroutine mg_2level_solve
 
   ! methods used in the main solver
 
@@ -622,7 +552,7 @@ contains
 
   ! check everything passed to the interface is as assumed
 
-  subroutine sanity_checks_new
+  subroutine sanity_checks
 
     if (mg_state%dx /= mg_state%dy) then
       print *,'multigrid: dx =/ dy, terminating'
@@ -714,109 +644,8 @@ contains
         stop
       endif 
     endif
-  end subroutine sanity_checks_new
-
-
-  subroutine sanity_checks(f,phi, eta, nx,ny,dx,dy,nlevels)
-    integer, intent(in) :: nx
-    integer, intent(in) :: ny
-    real(num), dimension(:,:), intent(in) :: f
-    real(num), dimension(:,:), allocatable, intent(inout) :: phi
-    real(num), dimension(:,:), allocatable, optional, intent(in) :: eta
-    integer, intent(in) :: nlevels
-    real(num), intent(in) :: dx, dy
-
-    if (dx /= dy) then
-      print *,'multigrid: dx =/ dy, terminating'
-      stop
-    endif
-
-    if (size(f,1) /= nx) then 
-      print *, 'wrong size on f input'
-      print *,'size(f,1)=',size(f,1)
-      stop
-    endif 
-
-    if (size(f,2) /= ny) then 
-      print *, 'wrong size on f input'
-      print *,'size(f,2)=',size(f,2)
-      stop
-    endif 
-
-    if (lbound(f,1) /= 1) then 
-      print *, 'wrong lbound on allocatable f input to MG'
-      print *,'lbound(f,1)=',lbound(f,1)
-      stop
-    endif 
-
-    if (lbound(f,2) /= 1) then 
-      print *, 'wrong lbound on allocatable f input to MG'
-      print *,'lbound(f,2)=',lbound(f,2)
-      stop
-    endif 
-
-    if (ubound(f,1) /= nx) then 
-      print *, 'wrong ubound on allocatable f input to MG'
-      print *,'ubound(f,1)=',ubound(f,1)
-      stop
-    endif 
-
-    if (ubound(f,2) /= ny) then 
-      print *, 'wrong ubound on allocatable f input to MG'
-      print *,'ubound(f,2)=',ubound(f,2)
-      stop
-    endif 
-
-    if (lbound(phi,1) /= -1) then 
-      print *, 'wrong lbound on allocatable phi input to MG'
-      print *,'lbound(phi,1)=',lbound(phi,1)
-      stop
-    endif 
-
-    if (lbound(phi,2) /= -1) then 
-      print *, 'wrong lbound on allocatable phi input to MG'
-      print *,'lbound(phi,2)=',lbound(phi,2)
-      stop
-    endif 
-
-    if (ubound(phi,1) /= nx+2) then 
-      print *, 'wrong ubound on allocatable phi input to MG'
-      print *,'ubound(phi,1)=',ubound(phi,1)
-      stop
-    endif 
-
-    if (ubound(phi,2) /= ny+2) then 
-      print *, 'wrong ubound on allocatable phi input to MG'
-      print *,'ubound(phi,2)=',ubound(phi,2)
-      stop
-    endif 
-
-    if (eta_present) then
-      if (lbound(eta,1) /= 1 ) then 
-        print *, 'wrong lbound on allocatable eta input to MG'
-        print *,'lbound(eta,1)=',lbound(eta,1)
-        stop
-      endif 
-  
-      if (lbound(eta,2) /= 1 ) then 
-        print *, 'wrong lbound on allocatable eta input to MG'
-        print *,'lbound(eta,2)=',lbound(eta,2)
-        stop
-      endif 
-  
-      if (ubound(eta,1) /= nx) then 
-        print *, 'wrong ubound on allocatable eta input to MG'
-        print *,'ubound(eta,1)=',ubound(eta,1)
-        stop
-      endif 
-  
-      if (ubound(eta,2) /= ny) then 
-        print *, 'wrong ubound on allocatable eta input to MG'
-         print *,'ubound(eta,2)=',ubound(eta,2)
-        stop
-      endif 
-    endif
   end subroutine sanity_checks
+
 
   ! Methods relating to the grid heirarchy and setup below jere
 
@@ -890,7 +719,7 @@ contains
       print *,'******'
   end subroutine grid_report
 
-  subroutine initialise_grids_new
+  subroutine initialise_grids
 
     integer :: lev
     type(grid), pointer :: new
@@ -940,64 +769,8 @@ contains
       call grid_report(current)
       current=>current%next
     enddo
-  end subroutine initialise_grids_new
-
-  subroutine initialise_grids(f,eta, nx,ny,dx,dy, nlevels)
-
-    real(num), dimension(:,:), intent(in) :: f
-    real(num), dimension(:,:), allocatable, optional, intent(in) :: eta
-    integer, intent(in) :: nx
-    integer, intent(in) :: ny
-    integer, intent(inout) :: nlevels
-    real(num), intent(in) :: dx, dy
-    integer :: lev
-    type(grid), pointer :: new
-    type(grid), pointer :: current
-    nullify(new)
-    nullify(current)
-    nullify(head)
-    nullify(tail)
-
-    if (nlevels == -1) nlevels = set_nlevels(nx,ny)
-
-    ! create a linked list of grids with blank / unallocated data
-    do lev = 1, nlevels
-      call create_grid(new)
-      call add_grid(new)
-    enddo
-
-    ! go through the list and set up the arrays 
-    current =>head
-    lev = 0
-    do while(associated(current))
-      lev = lev + 1
-      current%level = lev 
-      current%nx = nx / (2**(lev-1)) 
-      current%ny = ny / (2**(lev-1)) 
-      current%dx = dx * real(2**(lev-1),num) 
-      current%dy = dy * real(2**(lev-1),num)
-      call allocate_arrays(current)
-      current=>current%next
-    enddo
-
-
-    ! set phi and f on the level-1 (finest) grid 
-    current => head
-    current%f = f
-    current%phi = 0.0_num 
-    if (eta_present) then
-      current%eta(1:nx,1:ny) = eta
-      call eta_initialise
-    endif
-
-! add to a debug / verbose option
-!    ! cycle through the list for a report to check all is set up good
-    current => head
-    do while(associated(current))
-      call grid_report(current)
-      current=>current%next
-    enddo
   end subroutine initialise_grids
+
 
   integer function set_nlevels(nx,ny)
     integer, intent(in) :: nx, ny

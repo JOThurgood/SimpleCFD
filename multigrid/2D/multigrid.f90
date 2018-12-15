@@ -124,11 +124,13 @@ contains
         do c = 1, num_sweeps_down
           call relax(current) 
         enddo
-
-        if (current%level == 1) then
+ 
+       if (current%level == 1) then
           call residual(current) 
           L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
+!print *, L2
           if (abs(L2-L2_old) <= tol) exit mainloop
+          if (isnan(L2)) STOP
           L2_old = L2
         endif
         call residual(current)
@@ -145,8 +147,11 @@ contains
           call relax(current)
           if (modulo(c-1,5)==0) then          
             call residual(current)
+!print *, current%residue
             L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
+!print *,'L2bot',L2
             if (L2 < tol) exit
+          if (isnan(L2)) STOP
           endif
         enddo
         call inject(current)
@@ -305,23 +310,45 @@ contains
 
     type(grid), pointer :: this
     integer :: odd_then_even
+    real(num) :: eta_ip, eta_im, eta_jp, eta_jm
 
     call bcs(this)
 
-    ! redblack / odd
+    if (eta_present) then
+ 
+      do odd_then_even = 1, 0, -1 
+        do iy = 1, this%ny  
+        do ix = 1, this%nx  
+          if (modulo(ix+iy,2) == odd_then_even) then
+            eta_ip = 0.5_num * (this%eta(ix,iy)+this%eta(ix+1,iy)) / this%dx**2
+            eta_im = 0.5_num * (this%eta(ix,iy)+this%eta(ix-1,iy)) / this%dx**2
+            eta_jp = 0.5_num * (this%eta(ix,iy)+this%eta(ix,iy+1)) / this%dy**2
+            eta_jm = 0.5_num * (this%eta(ix,iy)+this%eta(ix,iy-1)) / this%dy**2
 
-    red_blk: do odd_then_even = 1, 0, -1 
-      do iy = 1, this%ny  
-      do ix = 1, this%nx  
-        if (modulo(ix+iy,2) == odd_then_even) then
-          this%phi(ix,iy) = 0.25_num * ( & 
-            & this%phi(ix+1,iy) + this%phi(ix-1,iy) + this%phi(ix,iy+1) + this%phi(ix,iy-1) &
-            - this%dx**2 * this%f(ix,iy) ) 
-        endif
-      end do
-      end do 
-    enddo red_blk
+            this%phi(ix,iy) = eta_ip * this%phi(ix+1,iy) + eta_im*this%phi(ix-1,iy) &
+              & + eta_jp * this%phi(ix,iy+1) + eta_jm * this%phi(ix,iy-1) - this%f(ix,iy)
+            this%phi(ix,iy) = this%phi(ix,iy) / ( eta_ip + eta_im + eta_jp + eta_jm )
+          endif
+        end do
+        end do 
+      enddo
 
+    else ! eta not present
+  
+      do odd_then_even = 1, 0, -1 
+        do iy = 1, this%ny  
+        do ix = 1, this%nx  
+          if (modulo(ix+iy,2) == odd_then_even) then
+  
+            this%phi(ix,iy) = 0.25_num * ( & 
+              & this%phi(ix+1,iy) + this%phi(ix-1,iy) + this%phi(ix,iy+1) + this%phi(ix,iy-1) &
+              - this%dx**2 * this%f(ix,iy) ) 
+          endif
+        end do
+        end do 
+      enddo
+
+    endif
   end subroutine relax
 
   subroutine residual(this)
@@ -329,17 +356,39 @@ contains
     type(grid), pointer :: this 
 
     real(num) :: Lap ! 5 point discrete laplacian at a cell center 
+    real(num) :: eta_ip, eta_im, eta_jp, eta_jm
 
     call bcs(this)
 
-    do iy = 1, this%ny   
-    do ix = 1, this%nx   
-      Lap = (this%phi(ix+1,iy) - 2.0_num*this%phi(ix,iy) + this%phi(ix-1,iy)) / this%dx**2 + & 
-          & (this%phi(ix,iy+1) - 2.0_num*this%phi(ix,iy) + this%phi(ix,iy-1)) / this%dy**2 
-      this%residue(ix,iy) = Lap - this%f(ix,iy)
-    enddo              
-    enddo        
+    if (eta_present) then
 
+      do iy = 1, this%ny   
+      do ix = 1, this%nx   
+        eta_ip = 0.5_num * (this%eta(ix,iy)+this%eta(ix+1,iy))! / this%dx**2
+        eta_im = 0.5_num * (this%eta(ix,iy)+this%eta(ix-1,iy))! / this%dx**2
+        eta_jp = 0.5_num * (this%eta(ix,iy)+this%eta(ix,iy+1))! / this%dy**2
+        eta_jm = 0.5_num * (this%eta(ix,iy)+this%eta(ix,iy-1))! / this%dy**2
+
+        Lap = ( eta_ip * (this%phi(ix+1,iy)-this%phi(ix,iy)) &
+              &    -  eta_im * (this%phi(ix,iy)-this%phi(ix-1,iy)) ) / this%dx**2 + &
+              & ( eta_jp * (this%phi(ix,iy+1)-this%phi(ix,iy)) &
+              &    -  eta_jm * (this%phi(ix,iy)-this%phi(ix,iy-1)) ) / this%dy**2
+
+        this%residue(ix,iy) = Lap - this%f(ix,iy)
+      enddo              
+      enddo        
+
+    else
+
+      do iy = 1, this%ny   
+      do ix = 1, this%nx   
+        Lap = (this%phi(ix+1,iy) - 2.0_num*this%phi(ix,iy) + this%phi(ix-1,iy)) / this%dx**2 + & 
+            & (this%phi(ix,iy+1) - 2.0_num*this%phi(ix,iy) + this%phi(ix,iy-1)) / this%dy**2 
+        this%residue(ix,iy) = Lap - this%f(ix,iy)
+      enddo              
+      enddo        
+
+    endif
 
   end subroutine residual
 
@@ -375,9 +424,22 @@ contains
       ! fill the boundaries 
       call eta_bcs(current)
       ! fill the x_face and y_face arrays
+!      do iy = 0, current%ny
+!      do ix = 0, current%nx
+!        ! xface
+!        if (iy /= 0) then
+!          current%eta_xface(ix,iy) = 0.5_num * (current%eta(ix,iy) + current%eta(ix+1,iy)) 
+!        endif
+!        ! yface
+!        if (ix /= 0) then
+!          current%eta_yface(ix,iy) = 0.5_num * (current%eta(ix,iy) + current%eta(ix,iy+1)) 
+!        endif
+!      enddo
+!      enddo
+!      ! next level
       current => current%next
     enddo 
-STOP
+
   end subroutine eta_initialise
 
   subroutine eta_bcs(this)
@@ -420,16 +482,20 @@ STOP
     endif
 
     if (bc_xmin == fixed) then
-      this%eta(0,:) = -this%eta(1,:)
+!      this%eta(0,:) = -this%eta(1,:)
+      this%eta(0,:) = this%eta(1,:)
     endif
     if (bc_xmax == fixed) then
-      this%eta(this%nx+1,:) = -this%eta(this%nx,:)
+!      this%eta(this%nx+1,:) = -this%eta(this%nx,:)
+      this%eta(this%nx+1,:) = this%eta(this%nx,:)
     endif
     if (bc_ymin == fixed) then
-      this%eta(:,0) = -this%eta(:,1)
+!      this%eta(:,0) = -this%eta(:,1)
+      this%eta(:,0) = this%eta(:,1)
     endif
     if (bc_ymax == fixed) then
-      this%eta(:,this%ny+1) = -this%eta(:,this%ny)
+!      this%eta(:,this%ny+1) = -this%eta(:,this%ny)
+      this%eta(:,this%ny+1) = this%eta(:,this%ny)
     endif
 
 
@@ -703,13 +769,6 @@ STOP
       current=>current%next
     enddo
 
-! add to a debug / verbose option
-!    ! cycle through the list for a report to check all is set up good
-    current => head
-    do while(associated(current))
-      call grid_report(current)
-      current=>current%next
-    enddo 
 
     ! set phi and f on the level-1 (finest) grid 
     current => head
@@ -718,8 +777,15 @@ STOP
     if (eta_present) then
       current%eta(1:nx,1:ny) = eta
       call eta_initialise
-! call handle eta on other levels and faces
     endif
+
+! add to a debug / verbose option
+!    ! cycle through the list for a report to check all is set up good
+    current => head
+    do while(associated(current))
+      call grid_report(current)
+      current=>current%next
+    enddo
   end subroutine initialise_grids
 
   integer function set_nlevels(nx,ny)

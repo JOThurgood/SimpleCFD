@@ -1,4 +1,4 @@
-program test2
+program test3
 
   use multigrid
 
@@ -12,7 +12,7 @@ program test2
   real(num) :: dx, dy, L2, x_min, x_max, y_min, y_max
 
   real(num), dimension(:), allocatable :: xc, yc
-  real(num), dimension(:,:), allocatable :: f,analytic, phi
+  real(num), dimension(:,:), allocatable :: f,analytic, phi, eta
   real(num), dimension(:), allocatable :: L2_arr, n_arr
 
   integer :: power, power_min, power_max
@@ -22,7 +22,7 @@ program test2
   ! setup a test problem 
 
   
-  print *,'Test2: This does something'
+  print *,'Test3: This does something'
 
   power_min = 5
   power_max = 10
@@ -72,22 +72,27 @@ program test2
     enddo
     enddo
   
+    allocate(eta(1:nx,1:ny)) ! again, redundant ghosts but for comparison to CCAPS
+    eta = 1.0_num 
   
-!    ! Solve for phi
-!    nlevels = -1 ! auto
-!    call mg_interface(f = f, phi=phi, tol = 1e-12_num, &
+    ! solve for phi
+!    nlevels = -1!-1 ! auto
+!    call mg_interface(f = f, phi=phi, eta=eta, tol = 1e-12_num, &
 !                    & nx = nx, ny = ny, dx = dx, dy = dy, &
 !                    &  nlevels = nlevels, &
 !    & bc_xmin_in = fixed, bc_ymin_in = fixed, bc_xmax_in = fixed, bc_ymax_in = fixed)
+  
 
 
   input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
-            & bc_xmin = 'fixed', bc_ymin='fixed', bc_xmax='fixed', bc_ymax = 'fixed')
+            & bc_xmin = 'fixed', bc_ymin='fixed', bc_xmax='fixed', bc_ymax = 'fixed', &
+            eta = eta, eta_present = .true., & 
+            & eta_bc_xmin = 'fixed', eta_bc_ymin='fixed', eta_bc_xmax='fixed', eta_bc_ymax = 'fixed')
 
   call mg_interface(input)
 
   phi = input%phi
-  
+
     ! test against analytical solution
      
     do iy = 1, ny
@@ -111,26 +116,27 @@ program test2
     deallocate(f)
     deallocate(phi)
     deallocate(analytic)
+    deallocate(eta)
 
   enddo different_resolutions
 
   print *, 'L2 _arr',L2_arr
   print *, 'n _arr',n_arr
 
-  call execute_command_line("rm -rf test2_l2.dat")
-  call execute_command_line("rm -rf test2_nx.dat")
+  call execute_command_line("rm -rf test3_l2.dat")
+  call execute_command_line("rm -rf test3_nx.dat")
 
-  open(10, file="test2_l2.dat", access="stream")
+  open(10, file="test3_l2.dat", access="stream")
   write(10) L2_arr
   close(10)
 
-  open(10, file="test2_nx.dat", access="stream")
+  open(10, file="test3_nx.dat", access="stream")
   write(10) n_arr
   close(10)
 
-  call execute_command_line("python test2_plots.py")
-  call execute_command_line("rm test2_l2.dat")
-  call execute_command_line("rm test2_nx.dat")
+  call execute_command_line("python test3_plots.py")
+  call execute_command_line("rm test3_l2.dat")
+  call execute_command_line("rm test3_nx.dat")
 
 
-end program test2
+end program test3

@@ -8,7 +8,6 @@ program test1
   real(num) :: pi = 4.0_num * ATAN(1.0_num)
 
   integer :: nx, ny, ix, iy
-  integer :: nlevels
 
   real(num) :: dx, dy, L2, x_min, x_max, y_min, y_max
 
@@ -18,10 +17,10 @@ program test1
   real(num), dimension(:,:), allocatable :: upol, vpol
   real(num), dimension(:,:), allocatable :: divu, phi
 
-  integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
-  integer, parameter :: periodic = 0
-  
+  type(mg_input) :: input 
+
   ! setup a test problem 
+
 
   nx = 256
   ny = nx
@@ -88,13 +87,25 @@ program test1
   L2 = sqrt(sum(abs(vtrue(1:nx,1:ny)-vpol(1:nx,1:ny))**2) / real(nx*ny,num))
   print *, 'L2 (vtrue vs vpol) before cleaning',L2
 
+  ! create the input state object
+
+  input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = divu, phi = phi, &
+            & bc_xmin = 'periodic', bc_ymin='periodic', bc_xmax='periodic', bc_ymax = 'periodic')
+
+  call mg_interface(input)
+
+  phi = input%phi
+
+!STOP
 
   ! solve for phi
-  nlevels = -1 ! auto
-  call mg_interface(f = divu, phi=phi, tol = 1e-12_num, &
-                  & nx = nx, ny = ny, dx = dx, dy = dy, &
-                  &  nlevels = nlevels, &
-  & bc_xmin = periodic, bc_ymin = periodic, bc_xmax = periodic, bc_ymax=periodic)
+!  nlevels = -1 ! auto
+!  call mg_interface(f = divu, phi=phi, tol = 1e-12_num, &
+!                  & nx = nx, ny = ny, dx = dx, dy = dy, &
+!                  &  nlevels = nlevels, &
+!  & bc_xmin_in = periodic, bc_ymin_in = periodic, bc_xmax_in = periodic, bc_ymax_in=periodic)
+
+  
 
   ! correct it 
    

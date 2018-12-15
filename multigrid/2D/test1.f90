@@ -18,7 +18,7 @@ program test1
   real(num), dimension(:,:), allocatable :: upol, vpol
   real(num), dimension(:,:), allocatable :: divu, phi
 
-  integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
+!  integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
   integer, parameter :: periodic = 0
   
   ! setup a test problem 
@@ -94,7 +94,7 @@ program test1
   call mg_interface(f = divu, phi=phi, tol = 1e-12_num, &
                   & nx = nx, ny = ny, dx = dx, dy = dy, &
                   &  nlevels = nlevels, &
-  & bc_xmin = periodic, bc_ymin = periodic, bc_xmax = periodic, bc_ymax=periodic)
+  & bc_xmin_in = periodic, bc_ymin_in = periodic, bc_xmax_in = periodic, bc_ymax_in=periodic)
 
   ! correct it 
    

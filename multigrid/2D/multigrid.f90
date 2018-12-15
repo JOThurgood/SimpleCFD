@@ -26,16 +26,17 @@ module multigrid
   ! is responsible for getting the integers correct
   integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
   integer, parameter :: periodic = 0
-  integer, parameter :: zero_gradient = 1
-  integer, parameter :: no_slip = 2
-  integer, parameter :: driven = 3
+  integer, parameter :: zero_gradient = 1 ! Neumann 
+  integer, parameter :: fixed = 2 ! Dirichlet
 
 contains
 
-  subroutine mg_interface(f, phi, tol, nx,ny,dx,dy, nlevels, &
+  subroutine mg_interface(f, phi, eta, tol, &
+        &  nx,ny,dx,dy, nlevels, &
         & bc_xmin, bc_xmax, bc_ymin, bc_ymax)
     real(num), dimension(:,:), intent(in) :: f
     real(num), dimension(:,:), allocatable, intent(inout) :: phi
+    real(num), dimension(:,:), allocatable, optional, intent(in) :: eta
     integer, intent(in) :: nx 
     integer, intent(in) :: ny
     integer, intent(inout) :: nlevels
@@ -47,6 +48,7 @@ contains
 
 
     call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+    if (present(eta)) call sanity_checks(f=f, phi=phi, eta=eta, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
     call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
@@ -55,6 +57,10 @@ contains
     print *,'****** ny = ',ny
     print *,'****** nlevels ',nlevels
     print *,'****** tolerance = ',tol
+    print *,'****** bc_xmin = ', bc_xmin
+    print *,'****** bc_xmax = ', bc_xmax
+    print *,'****** bc_ymin = ', bc_ymin
+    print *,'****** bc_ymax = ', bc_ymax
 
     call cpu_time(start)
     call mg_solve(tol)
@@ -120,12 +126,12 @@ contains
 
         current%phi = 0.0_num
 
-        do c = 1, 50 ! for now only 
+        do c = 1, 50 !**
           call relax(current)
           if (modulo(c-1,5)==0) then          
             call residual(current)
             L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
-            if (L2 < 1e-12) exit
+            if (L2 < tol) exit
           endif
         enddo
         call inject(current)
@@ -148,6 +154,11 @@ contains
     print '(" ****** Finished in: ",i3.3," V cycles")',nsteps
     print '(" ****** Fine grid residual: ",e20.8," (L2)")',L2 
 
+    !** if not refining to ideal case (nx=ny=1 + ghosts) this wont automagically
+    ! be solved exactly (discretely). If so, do an arbitary amount of
+    ! relaxations, checking the residual, up to a max of 50. Perhaps in some
+    ! problems, if you can't refine very much because of a large Lx/=Ly asoect
+    ! ratio, this could cause an issue
   end subroutine mg_solve
 
   subroutine gs_solve ! for comparison
@@ -320,7 +331,12 @@ contains
   subroutine bcs(this)
 
     type(grid), pointer :: this
-
+    print *, 'test inside subroutine bcs'
+    print *,'****** bc_xmin = ', bc_xmin
+    print *,'****** bc_xmax = ', bc_xmax
+    print *,'****** bc_ymin = ', bc_ymin
+    print *,'****** bc_ymax = ', bc_ymax
+STOP
     ! some logic for if level 1 vs others for homo vs inhomo bc etc will be needed 
     ! eventually
 
@@ -330,10 +346,10 @@ contains
     if (bc_xmax == periodic) then
       this%phi(this%nx+1,:) = this%phi(1,:)
     endif
-    if (bc_xmin == periodic) then
+    if (bc_ymin == periodic) then
       this%phi(:,0) = this%phi(:,this%ny)
     endif
-    if (bc_xmax == periodic) then
+    if (bc_ymax == periodic) then
       this%phi(:,this%ny+1) = this%phi(:,1)
     endif
 
@@ -350,17 +366,17 @@ contains
       this%phi(:,this%ny+1) = this%phi(:,this%ny)
     endif
 
-    if (bc_xmin == no_slip) then
-      this%phi(0,:) = this%phi(1,:)
+    if (bc_xmin == fixed) then
+      this%phi(0,:) = -this%phi(1,:)
     endif
-    if (bc_xmax == no_slip) then
-      this%phi(this%nx+1,:) = this%phi(this%nx,:)
+    if (bc_xmax == fixed) then
+      this%phi(this%nx+1,:) = -this%phi(this%nx,:)
     endif
-    if (bc_ymin == no_slip) then
-      this%phi(:,0) = this%phi(:,1)
+    if (bc_ymin == fixed) then
+      this%phi(:,0) = -this%phi(:,1)
     endif
-    if ((bc_ymax == no_slip) .or. (bc_ymax == driven)) then
-      this%phi(:,this%ny+1) = this%phi(:,this%ny)
+    if (bc_ymax == fixed) then
+      this%phi(:,this%ny+1) = -this%phi(:,this%ny)
     endif
 
 
@@ -369,11 +385,12 @@ contains
 
   ! check everything passed to the interface is as assumed
 
-  subroutine sanity_checks(f,phi, nx,ny,dx,dy,nlevels)
+  subroutine sanity_checks(f,phi, eta, nx,ny,dx,dy,nlevels)
     integer, intent(in) :: nx
     integer, intent(in) :: ny
     real(num), dimension(:,:), intent(in) :: f
     real(num), dimension(:,:), allocatable, intent(inout) :: phi
+    real(num), dimension(:,:), allocatable, optional, intent(in) :: eta
     integer, intent(in) :: nlevels
     real(num), intent(in) :: dx, dy
 
@@ -442,6 +459,31 @@ contains
       stop
     endif 
 
+    if (present(eta)) then
+      if (lbound(eta,1) /= 0 ) then 
+        print *, 'wrong lbound on allocatable eta input to MG'
+        print *,'lbound(eta,1)=',lbound(eta,1)
+        stop
+      endif 
+  
+      if (lbound(eta,2) /= 0 ) then 
+        print *, 'wrong lbound on allocatable eta input to MG'
+        print *,'lbound(eta,2)=',lbound(eta,2)
+        stop
+      endif 
+  
+      if (ubound(eta,1) /= nx+1) then 
+        print *, 'wrong ubound on allocatable eta input to MG'
+        print *,'ubound(eta,1)=',ubound(eta,1)
+        stop
+      endif 
+  
+      if (ubound(eta,2) /= ny+1) then 
+        print *, 'wrong ubound on allocatable eta input to MG'
+         print *,'ubound(eta,2)=',ubound(eta,2)
+        stop
+      endif 
+    endif
   end subroutine sanity_checks
 
   ! Methods relating to the grid heirarchy and setup below jere
@@ -555,7 +597,7 @@ contains
     if (nx <= ny) then
       set_nlevels = log2_int(nx) + 1 
     else
-      set_nlevels = log2_int(nx) + 1
+      set_nlevels = log2_int(ny) + 1
     endif
 
   end function set_nlevels

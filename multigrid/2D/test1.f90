@@ -1,4 +1,4 @@
-program test
+program test1
 
   use multigrid
 
@@ -29,6 +29,10 @@ program test
   x_max = 1.0_num
   y_min = x_min
   y_max = x_max
+
+  print *,'Test1: Projection test, periodic, constant coeffs Poission'
+  print *,'This tests the ability of MG to solve L(phi) = div(U)'
+  print *,'in order to clean divergence from a polluted velocity field' 
 
   allocate(xc(-1:nx+2))
   allocate(yc(-1:ny+2))
@@ -126,4 +130,4 @@ program test
 
 
 
-end program test
+end program test1

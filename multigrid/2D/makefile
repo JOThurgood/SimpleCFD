@@ -13,12 +13,13 @@ FCFLAGS += -I/usr/include
 #LDFLAGS = -li_need_this_lib
 
 # List of executables to be built within the package
-PROGRAMS = test 
+PROGRAMS = test1 test2 
 
 # "make" builds all
 all: $(PROGRAMS)
 
-test: multigrid.o
+test1: multigrid.o
+test2: multigrid.o
 
 
 # ======================================================================

@@ -23,7 +23,7 @@ program test1
   
   ! setup a test problem 
 
-  type(mg_state) :: mg_input
+  type(mg_input) :: input 
 
   nx = 16
   ny = nx
@@ -92,10 +92,10 @@ program test1
 
   ! create the input state object
 
-  mg_input = mg_state(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = divu, phi = phi, &
+  input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = divu, phi = phi, &
             & bc_xmin = 'periodic', bc_ymin='periodic', bc_xmax='periodic', bc_ymax = 'periodic')
-print *,allocated(mg_input%f)
-print *,allocated(mg_input%eta)
+
+  call new_mg_interface(input)
 STOP
 
   ! solve for phi

@@ -3,7 +3,7 @@ module multigrid
   implicit none
 
   private
-  public :: mg_interface
+  public :: mg_interface, new_mg_interface
 
   ! will need own private constants and parameters since entirely modular
   integer, parameter :: num=selected_real_kind(p=15)
@@ -12,8 +12,8 @@ module multigrid
 
   logical :: eta_present = .false.
 
-  ! data object
-  type grid
+  ! data object for grid hierarchy
+  type grid 
     integer :: level, nx, ny  
     real(num) :: dx, dy
     real(num),dimension(:,:), allocatable :: phi
@@ -28,7 +28,7 @@ module multigrid
   ! public state object - used for better handling of optional inputs than a big list of dummies
   ! in mg_interface 
 
-  type, public :: mg_state
+  type, public :: mg_input
     ! required in constructor a=mg_state(nx = ... etc)
     integer :: nx
     integer :: ny
@@ -43,9 +43,9 @@ module multigrid
     ! optional allocatables
     real(num),dimension(:,:), allocatable :: eta
 
-  end type mg_state
+  end type mg_input
 
-  type(mg_state) :: module_state
+  type(mg_input) :: mg_state
 
   ! boundary conditions. The program calling mg_interface
   ! is responsible for getting the integers correct
@@ -56,10 +56,19 @@ module multigrid
 
 contains
 
-  subroutine mg_state_constructor(this)
-    type(grid) :: this
-    print *,'stub'
-  end subroutine mg_state_constructor
+  subroutine new_mg_interface(this)
+
+    type(mg_input), intent(inout) :: this
+    mg_state = this ! all other subroutines in module should be able to access
+
+    call sanity_checks_new
+    call initialise_grids_new 
+
+    ! to modify phi and return it can just modify elements of this e.g. ]
+    !this%phi = 99.0_num
+ 
+  end subroutine new_mg_interface
+
 
   subroutine mg_interface(f, phi, eta, tol, &
         &  nx,ny,dx,dy, nlevels, &
@@ -583,6 +592,101 @@ contains
 
   ! check everything passed to the interface is as assumed
 
+  subroutine sanity_checks_new
+
+    if (mg_state%dx /= mg_state%dy) then
+      print *,'multigrid: dx =/ dy, terminating'
+      stop
+    endif
+
+    if (size(mg_state%f,1) /= mg_state%nx) then 
+      print *, 'wrong size on f input'
+      print *,'size(f,1)=',size(mg_state%f,1)
+      stop
+    endif 
+
+    if (size(mg_state%f,2) /= mg_state%ny) then 
+      print *, 'wrong size on f input'
+      print *,'size(f,2)=',size(mg_state%f,2)
+      stop
+    endif 
+
+    if (lbound(mg_state%f,1) /= 1) then 
+      print *, 'wrong lbound on allocatable f input to MG'
+      print *,'lbound(f,1)=',lbound(mg_state%f,1)
+      stop
+    endif 
+
+    if (lbound(mg_state%f,2) /= 1) then 
+      print *, 'wrong lbound on allocatable f input to MG'
+      print *,'lbound(f,2)=',lbound(mg_state%f,2)
+      stop
+    endif 
+
+    if (ubound(mg_state%f,1) /= mg_state%nx) then 
+      print *, 'wrong ubound on allocatable f input to MG'
+      print *,'ubound(f,1)=',ubound(mg_state%f,1)
+      stop
+    endif 
+
+    if (ubound(mg_state%f,2) /= mg_state%ny) then 
+      print *, 'wrong ubound on allocatable f input to MG'
+      print *,'ubound(f,2)=',ubound(mg_state%f,2)
+      stop
+    endif 
+
+    if (lbound(mg_state%phi,1) /= -1) then 
+      print *, 'wrong lbound on allocatable phi input to MG'
+      print *,'lbound(phi,1)=',lbound(mg_state%phi,1)
+      stop
+    endif 
+
+    if (lbound(mg_state%phi,2) /= -1) then 
+      print *, 'wrong lbound on allocatable phi input to MG'
+      print *,'lbound(phi,2)=',lbound(mg_state%phi,2)
+      stop
+    endif 
+
+    if (ubound(mg_state%phi,1) /= mg_state%nx+2) then 
+      print *, 'wrong ubound on allocatable phi input to MG'
+      print *,'ubound(phi,1)=',ubound(mg_state%phi,1)
+      stop
+    endif 
+
+    if (ubound(mg_state%phi,2) /= mg_state%ny+2) then 
+      print *, 'wrong ubound on allocatable phi input to MG'
+      print *,'ubound(phi,2)=',ubound(mg_state%phi,2)
+      stop
+    endif 
+
+    if (mg_state%eta_present) then
+      if (lbound(mg_state%eta,1) /= 1 ) then 
+        print *, 'wrong lbound on allocatable eta input to MG'
+        print *,'lbound(eta,1)=',lbound(mg_state%eta,1)
+        stop
+      endif 
+  
+      if (lbound(mg_state%eta,2) /= 1 ) then 
+        print *, 'wrong lbound on allocatable eta input to MG'
+        print *,'lbound(eta,2)=',lbound(mg_state%eta,2)
+        stop
+      endif 
+  
+      if (ubound(mg_state%eta,1) /= mg_state%nx) then 
+        print *, 'wrong ubound on allocatable eta input to MG'
+        print *,'ubound(eta,1)=',ubound(mg_state%eta,1)
+        stop
+      endif 
+  
+      if (ubound(mg_state%eta,2) /= mg_state%ny) then 
+        print *, 'wrong ubound on allocatable eta input to MG'
+         print *,'ubound(eta,2)=',ubound(mg_state%eta,2)
+        stop
+      endif 
+    endif
+  end subroutine sanity_checks_new
+
+
   subroutine sanity_checks(f,phi, eta, nx,ny,dx,dy,nlevels)
     integer, intent(in) :: nx
     integer, intent(in) :: ny
@@ -753,6 +857,58 @@ contains
       print *,'******'
   end subroutine grid_report
 
+  subroutine initialise_grids_new
+
+    integer :: lev
+    type(grid), pointer :: new
+    type(grid), pointer :: current
+    nullify(new)
+    nullify(current)
+    nullify(head)
+    nullify(tail)
+
+    if (mg_state%nlevels == -1) mg_state%nlevels = set_nlevels(mg_state%nx,mg_state%ny)
+
+
+!    create a linked list of grids with blank / unallocated data
+    do lev = 1, mg_state%nlevels
+      call create_grid(new)
+      call add_grid(new)
+    enddo
+
+    ! go through the list and set up the arrays 
+    current =>head
+    lev = 0
+    do while(associated(current))
+      lev = lev + 1
+      current%level = lev 
+      current%nx = mg_state%nx / (2**(lev-1)) 
+      current%ny = mg_state%ny / (2**(lev-1)) 
+      current%dx = mg_state%dx * real(2**(lev-1),num) 
+      current%dy = mg_state%dy * real(2**(lev-1),num)
+      call allocate_arrays(current)
+      current=>current%next
+    enddo
+!
+!
+!    ! set phi and f on the level-1 (finest) grid 
+!    current => head
+!    current%f = f
+!    current%phi = 0.0_num 
+!    if (eta_present) then
+!      current%eta(1:nx,1:ny) = eta
+!      call eta_initialise
+!    endif
+!
+!! add to a debug / verbose option
+!!    ! cycle through the list for a report to check all is set up good
+!    current => head
+!    do while(associated(current))
+!      call grid_report(current)
+!      current=>current%next
+!    enddo
+  end subroutine initialise_grids_new
+
   subroutine initialise_grids(f,eta, nx,ny,dx,dy, nlevels)
 
     real(num), dimension(:,:), intent(in) :: f
@@ -762,7 +918,6 @@ contains
     integer, intent(inout) :: nlevels
     real(num), intent(in) :: dx, dy
     integer :: lev
-
     type(grid), pointer :: new
     type(grid), pointer :: current
     nullify(new)

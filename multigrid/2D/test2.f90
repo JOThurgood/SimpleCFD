@@ -88,7 +88,7 @@ program test2
   input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
             & bc_xmin = 'fixed', bc_ymin='fixed', bc_xmax='fixed', bc_ymax = 'fixed')
 
-  call new_mg_interface(input)
+  call mg_interface(input)
 
   phi = input%phi
   

@@ -95,7 +95,7 @@ program test1
   input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = divu, phi = phi, &
             & bc_xmin = 'periodic', bc_ymin='periodic', bc_xmax='periodic', bc_ymax = 'periodic')
 
-  call new_mg_interface(input)
+  call mg_interface(input)
 
   phi = input%phi
 

@@ -3,7 +3,7 @@ module multigrid
   implicit none
 
   private
-  public :: mg_interface, new_mg_interface
+  public :: mg_interface
 
   ! will need own private constants and parameters since entirely modular
   integer, parameter :: num=selected_real_kind(p=15)
@@ -64,7 +64,7 @@ module multigrid
 
 contains
 
-  subroutine new_mg_interface(this)
+  subroutine mg_interface(this)
 
     type(mg_input), intent(inout) :: this
     type(grid), pointer :: current 
@@ -85,7 +85,7 @@ contains
     this%phi = current%phi 
     print *,'*** Multigrid finished'
 
-  end subroutine new_mg_interface
+  end subroutine mg_interface
 
   subroutine welcome
     print *,'*** Multigrid called'
@@ -100,64 +100,64 @@ contains
     print *,'****** variable coefficient eta',mg_state%eta_present
   end subroutine welcome
 
-
-  subroutine mg_interface(f, phi, eta, tol, &
-        &  nx,ny,dx,dy, nlevels, &
-        & bc_xmin_in, bc_xmax_in, bc_ymin_in, bc_ymax_in)
-    real(num), dimension(:,:), intent(in) :: f
-    real(num), dimension(:,:), allocatable, intent(inout) :: phi
-    real(num), dimension(:,:), allocatable, optional, intent(in) :: eta
-    integer, intent(in) :: nx 
-    integer, intent(in) :: ny
-    integer, intent(inout) :: nlevels
-    real(num), intent(in) :: dx, dy
-    real(num), intent(in) :: tol
-    integer, intent(in) :: bc_xmin_in, bc_xmax_in, bc_ymin_in, bc_ymax_in !***
-    type(grid), pointer :: current 
-    real(num) :: start, finish
-
-    !*** this is a bit annoying but the alternative seems to be passing a single type
-    ! as the input
- 
-    bc_xmin = bc_xmin_in
-    bc_xmax = bc_xmax_in
-    bc_ymin = bc_ymin_in
-    bc_ymax = bc_ymax_in
-
-    if (present(eta)) then
-      eta_present = .true.
-      call sanity_checks(f=f, eta=eta, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
-      call initialise_grids(f=f, eta=eta, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
-    else 
-      eta_present = .false.
-      call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
-      call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
-    endif
-
-
-
-    print *,'*** Multigrid called'
-    print *,'****** nx = ',nx
-    print *,'****** ny = ',ny
-    print *,'****** nlevels ',nlevels
-    print *,'****** tolerance = ',tol
-    print *,'****** bc_xmin = ', bc_xmin
-    print *,'****** bc_xmax = ', bc_xmax
-    print *,'****** bc_ymin = ', bc_ymin
-    print *,'****** bc_ymax = ', bc_ymax
-
-    call cpu_time(start)
-    !call mg_solve(tol)
-    call cpu_time(finish)
-    print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
-
-    ! set the inout(phi) = phi on finest grid to return to caller
-    current => head
-    phi = current%phi 
-
-    print *,'*** Multigrid finished'
-
-  end subroutine mg_interface
+!!!
+!!!  subroutine mg_interface(f, phi, eta, tol, &
+!!!        &  nx,ny,dx,dy, nlevels, &
+!!!        & bc_xmin_in, bc_xmax_in, bc_ymin_in, bc_ymax_in)
+!!!    real(num), dimension(:,:), intent(in) :: f
+!!!    real(num), dimension(:,:), allocatable, intent(inout) :: phi
+!!!    real(num), dimension(:,:), allocatable, optional, intent(in) :: eta
+!!!    integer, intent(in) :: nx 
+!!!    integer, intent(in) :: ny
+!!!    integer, intent(inout) :: nlevels
+!!!    real(num), intent(in) :: dx, dy
+!!!    real(num), intent(in) :: tol
+!!!    integer, intent(in) :: bc_xmin_in, bc_xmax_in, bc_ymin_in, bc_ymax_in !***
+!!!    type(grid), pointer :: current 
+!!!    real(num) :: start, finish
+!!!
+!!!    !*** this is a bit annoying but the alternative seems to be passing a single type
+!!!    ! as the input
+!!! 
+!!!    bc_xmin = bc_xmin_in
+!!!    bc_xmax = bc_xmax_in
+!!!    bc_ymin = bc_ymin_in
+!!!    bc_ymax = bc_ymax_in
+!!!
+!!!    if (present(eta)) then
+!!!      eta_present = .true.
+!!!      call sanity_checks(f=f, eta=eta, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+!!!      call initialise_grids(f=f, eta=eta, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+!!!    else 
+!!!      eta_present = .false.
+!!!      call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+!!!      call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+!!!    endif
+!!!
+!!!
+!!!
+!!!    print *,'*** Multigrid called'
+!!!    print *,'****** nx = ',nx
+!!!    print *,'****** ny = ',ny
+!!!    print *,'****** nlevels ',nlevels
+!!!    print *,'****** tolerance = ',tol
+!!!    print *,'****** bc_xmin = ', bc_xmin
+!!!    print *,'****** bc_xmax = ', bc_xmax
+!!!    print *,'****** bc_ymin = ', bc_ymin
+!!!    print *,'****** bc_ymax = ', bc_ymax
+!!!
+!!!    call cpu_time(start)
+!!!    !call mg_solve(tol)
+!!!    call cpu_time(finish)
+!!!    print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
+!!!
+!!!    ! set the inout(phi) = phi on finest grid to return to caller
+!!!    current => head
+!!!    phi = current%phi 
+!!!
+!!!    print *,'*** Multigrid finished'
+!!!
+!!!  end subroutine mg_interface
 
 !* in  practice, in CCAPS / multistep hydro codes might want to "first
 !  call" this only to keep

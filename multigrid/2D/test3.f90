@@ -93,7 +93,7 @@ program test3
             eta = eta, eta_present = .true., & 
             & eta_bc_xmin = 'fixed', eta_bc_ymin='fixed', eta_bc_xmax='fixed', eta_bc_ymax = 'fixed')
 
-  call new_mg_interface(input)
+  call mg_interface(input)
 
   phi = input%phi
 

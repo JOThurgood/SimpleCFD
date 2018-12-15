@@ -25,6 +25,25 @@ module multigrid
 
   type(grid), pointer :: head, tail
 
+  ! state object - used for better handling of optional inputs than a big list of dummies
+  ! in mg_interface 
+
+  type, public :: mg_state
+    ! required in constructor
+    integer :: nx
+    integer :: ny
+    real(num) :: dx, dy
+    real(num),dimension(:,:), allocatable :: phi
+    real(num),dimension(:,:), allocatable :: f
+    ! optional non-allocatable variables just set to a default
+    logical :: eta_present = .false.
+    ! optional allocatables
+    real(num),dimension(:,:), allocatable :: eta
+
+  end type mg_state
+
+  type(mg_state) :: module_state
+
   ! boundary conditions. The program calling mg_interface
   ! is responsible for getting the integers correct
   integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
@@ -33,6 +52,11 @@ module multigrid
   integer, parameter :: fixed = 2 ! Dirichlet
 
 contains
+
+  subroutine mg_state_constructor(this)
+    type(grid) :: this
+    print *,'stub'
+  end subroutine mg_state_constructor
 
   subroutine mg_interface(f, phi, eta, tol, &
         &  nx,ny,dx,dy, nlevels, &
@@ -49,7 +73,9 @@ contains
     type(grid), pointer :: current 
     real(num) :: start, finish
 
-    !*** have asked how to to this better, this will do for now
+    !*** this is a bit annoying but the alternative seems to be passing a single type
+    ! as the input
+ 
     bc_xmin = bc_xmin_in
     bc_xmax = bc_xmax_in
     bc_ymin = bc_ymin_in
@@ -128,9 +154,8 @@ contains
        if (current%level == 1) then
           call residual(current) 
           L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
-!print *, L2
           if (abs(L2-L2_old) <= tol) exit mainloop
-          if (isnan(L2)) STOP
+!          if (isnan(L2)) STOP
           L2_old = L2
         endif
         call residual(current)
@@ -147,11 +172,9 @@ contains
           call relax(current)
           if (modulo(c-1,5)==0) then          
             call residual(current)
-!print *, current%residue
             L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
-!print *,'L2bot',L2
             if (L2 < tol) exit
-          if (isnan(L2)) STOP
+!          if (isnan(L2)) STOP
           endif
         enddo
         call inject(current)

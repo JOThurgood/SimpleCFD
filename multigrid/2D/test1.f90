@@ -23,7 +23,9 @@ program test1
   
   ! setup a test problem 
 
-  nx = 256
+  type(mg_state) :: mg_input
+
+  nx = 16
   ny = nx
   x_min = 0.0_num
   x_max = 1.0_num
@@ -88,6 +90,12 @@ program test1
   L2 = sqrt(sum(abs(vtrue(1:nx,1:ny)-vpol(1:nx,1:ny))**2) / real(nx*ny,num))
   print *, 'L2 (vtrue vs vpol) before cleaning',L2
 
+  ! create the input state object
+
+  mg_input = mg_state(nx=nx, ny = ny, dx=dx, dy=dy, f = divu, phi = phi)
+print *,allocated(mg_input%f)
+print *,allocated(mg_input%eta)
+STOP
 
   ! solve for phi
   nlevels = -1 ! auto

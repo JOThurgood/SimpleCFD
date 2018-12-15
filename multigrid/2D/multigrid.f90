@@ -120,12 +120,12 @@ contains
 
         current%phi = 0.0_num
 
-        do c = 1, 50 ! for now only 
+        do c = 1, 50 !**
           call relax(current)
           if (modulo(c-1,5)==0) then          
             call residual(current)
             L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
-            if (L2 < 1e-12) exit
+            if (L2 < tol) exit
           endif
         enddo
         call inject(current)
@@ -148,6 +148,11 @@ contains
     print '(" ****** Finished in: ",i3.3," V cycles")',nsteps
     print '(" ****** Fine grid residual: ",e20.8," (L2)")',L2 
 
+    !** if not refining to ideal case (nx=ny=1 + ghosts) this wont automagically
+    ! be solved exactly (discretely). If so, do an arbitary amount of
+    ! relaxations, checking the residual, up to a max of 50. Perhaps in some
+    ! problems, if you can't refine very much because of a large Lx/=Ly asoect
+    ! ratio, this could cause an issue
   end subroutine mg_solve
 
   subroutine gs_solve ! for comparison

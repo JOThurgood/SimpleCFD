@@ -10,6 +10,8 @@ module multigrid
 
   integer :: ix, iy
 
+  logical :: eta_present = .false.
+
   ! data object
   type grid
     integer :: level, nx, ny  
@@ -17,6 +19,7 @@ module multigrid
     real(num),dimension(:,:), allocatable :: phi
     real(num),dimension(:,:), allocatable :: f
     real(num),dimension(:,:), allocatable :: residue
+    real(num),dimension(:,:), allocatable :: eta, eta_xface, eta_yface
     type(grid), pointer :: next, prev
   end type grid
 
@@ -52,11 +55,17 @@ contains
     bc_ymin = bc_ymin_in
     bc_ymax = bc_ymax_in
 
+    if (present(eta)) then
+      eta_present = .true.
+      call sanity_checks(f=f, eta=eta, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+      call initialise_grids(f=f, eta=eta, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+    else 
+      eta_present = .false.
+      call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+      call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+    endif
 
-    call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
-    if (present(eta)) call sanity_checks(f=f, phi=phi, eta=eta, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
-    call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
     print *,'*** Multigrid called'
     print *,'****** nx = ',nx
@@ -334,6 +343,99 @@ contains
 
   end subroutine residual
 
+  subroutine eta_initialise
+    ! restrict the residual at level "this" (this%residue)
+    ! to be the rhs of the next level (next%f) 
+
+    type(grid), pointer :: current
+    type(grid), pointer :: next
+    integer :: ixc, iyc
+
+    current => head
+    next => current%next
+
+    ! do the restrictions of cc eta
+    do while( associated(next))
+      iy=  1
+      do iyc = 1, next%ny 
+      ix = 1
+      do ixc = 1, next%nx
+        next%eta(ixc,iyc) = 0.25_num * (current%eta(ix,iy) + current%eta(ix+1,iy) &
+          & + current%eta(ix,iy+1) + current%eta(ix+1,iy+1) ) 
+        ix = ix + 2 
+      enddo
+      iy = iy + 2 
+      enddo
+      current => current%next
+      next => current%next
+    enddo
+
+    current => head
+    do while( associated(current))
+      ! fill the boundaries 
+      call eta_bcs(current)
+      ! fill the x_face and y_face arrays
+      current => current%next
+    enddo 
+STOP
+  end subroutine eta_initialise
+
+  subroutine eta_bcs(this)
+
+    type(grid), pointer :: this
+!    print *, 'test inside subroutine bcs'
+!    print *,'****** bc_xmin = ', bc_xmin
+!    print *,'****** bc_xmax = ', bc_xmax
+!    print *,'****** bc_ymin = ', bc_ymin
+!    print *,'****** bc_ymax = ', bc_ymax
+!STOP
+    ! some logic for if level 1 vs others for homo vs inhomo bc etc will be needed 
+    ! eventually
+
+    if (bc_xmin == periodic) then
+      this%eta(0,:) = this%eta(this%nx,:)
+    endif
+    if (bc_xmax == periodic) then
+      this%eta(this%nx+1,:) = this%eta(1,:)
+    endif
+    if (bc_ymin == periodic) then
+      this%eta(:,0) = this%eta(:,this%ny)
+    endif
+    if (bc_ymax == periodic) then
+      this%eta(:,this%ny+1) = this%eta(:,1)
+    endif
+
+    if (bc_xmin == zero_gradient) then
+      this%eta(0,:) = this%eta(1,:)
+    endif
+
+    if (bc_xmax == zero_gradient) then
+      this%eta(this%nx+1,:) = this%eta(this%nx,:)
+    endif
+    if (bc_ymin == zero_gradient) then
+      this%eta(:,0) = this%eta(:,1)
+    endif
+    if (bc_ymax == zero_gradient) then
+      this%eta(:,this%ny+1) = this%eta(:,this%ny)
+    endif
+
+    if (bc_xmin == fixed) then
+      this%eta(0,:) = -this%eta(1,:)
+    endif
+    if (bc_xmax == fixed) then
+      this%eta(this%nx+1,:) = -this%eta(this%nx,:)
+    endif
+    if (bc_ymin == fixed) then
+      this%eta(:,0) = -this%eta(:,1)
+    endif
+    if (bc_ymax == fixed) then
+      this%eta(:,this%ny+1) = -this%eta(:,this%ny)
+    endif
+
+
+  end subroutine eta_bcs
+
+
   subroutine bcs(this)
 
     type(grid), pointer :: this
@@ -362,6 +464,7 @@ contains
     if (bc_xmin == zero_gradient) then
       this%phi(0,:) = this%phi(1,:)
     endif
+
     if (bc_xmax == zero_gradient) then
       this%phi(this%nx+1,:) = this%phi(this%nx,:)
     endif
@@ -465,26 +568,26 @@ contains
       stop
     endif 
 
-    if (present(eta)) then
-      if (lbound(eta,1) /= 0 ) then 
+    if (eta_present) then
+      if (lbound(eta,1) /= 1 ) then 
         print *, 'wrong lbound on allocatable eta input to MG'
         print *,'lbound(eta,1)=',lbound(eta,1)
         stop
       endif 
   
-      if (lbound(eta,2) /= 0 ) then 
+      if (lbound(eta,2) /= 1 ) then 
         print *, 'wrong lbound on allocatable eta input to MG'
         print *,'lbound(eta,2)=',lbound(eta,2)
         stop
       endif 
   
-      if (ubound(eta,1) /= nx+1) then 
+      if (ubound(eta,1) /= nx) then 
         print *, 'wrong ubound on allocatable eta input to MG'
         print *,'ubound(eta,1)=',ubound(eta,1)
         stop
       endif 
   
-      if (ubound(eta,2) /= ny+1) then 
+      if (ubound(eta,2) /= ny) then 
         print *, 'wrong ubound on allocatable eta input to MG'
          print *,'ubound(eta,2)=',ubound(eta,2)
         stop
@@ -527,6 +630,13 @@ contains
     new_grid%phi = 0.0_num
     new_grid%f = 0.0_num
     new_grid%residue = 0.0_num
+
+    if (eta_present) then
+      allocate(new_grid%eta(0:new_grid%nx+1,0:new_grid%ny+1))
+      allocate(new_grid%eta_xface(0:new_grid%nx,1:new_grid%ny))
+      allocate(new_grid%eta_yface(1:new_grid%nx,0:new_grid%ny))
+    endif
+
   end subroutine allocate_arrays
 
   subroutine grid_report(this)
@@ -541,12 +651,23 @@ contains
       print *,'ubound phi',ubound(this%phi)
       print *,'lbound f',lbound(this%f)
       print *,'ubound f',ubound(this%f)
+
+      if (eta_present) then
+        print *,'lbound eta',lbound(this%eta)
+        print *,'ubound eta',ubound(this%eta)
+        print *,'lbound eta_xface',lbound(this%eta_xface)
+        print *,'ubound eta_xface',ubound(this%eta_xface)
+        print *,'lbound eta_yface',lbound(this%eta_yface)
+        print *,'ubound eta_yface',ubound(this%eta_yface)
+      endif
+
       print *,'******'
   end subroutine grid_report
 
-  subroutine initialise_grids(f,nx,ny,dx,dy, nlevels)
+  subroutine initialise_grids(f,eta, nx,ny,dx,dy, nlevels)
 
     real(num), dimension(:,:), intent(in) :: f
+    real(num), dimension(:,:), allocatable, optional, intent(in) :: eta
     integer, intent(in) :: nx
     integer, intent(in) :: ny
     integer, intent(inout) :: nlevels
@@ -584,17 +705,21 @@ contains
 
 ! add to a debug / verbose option
 !    ! cycle through the list for a report to check all is set up good
-!    current => head
-!    do while(associated(current))
-!      call grid_report(current)
-!      current=>current%next
-!    enddo 
+    current => head
+    do while(associated(current))
+      call grid_report(current)
+      current=>current%next
+    enddo 
 
     ! set phi and f on the level-1 (finest) grid 
     current => head
     current%f = f
     current%phi = 0.0_num 
-
+    if (eta_present) then
+      current%eta(1:nx,1:ny) = eta
+      call eta_initialise
+! call handle eta on other levels and faces
+    endif
   end subroutine initialise_grids
 
   integer function set_nlevels(nx,ny)

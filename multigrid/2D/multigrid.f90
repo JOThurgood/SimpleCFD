@@ -10,8 +10,6 @@ module multigrid
 
   integer :: ix, iy
 
-  logical :: eta_present = .false.
-
   ! data object for grid hierarchy
   type grid 
     integer :: level, nx, ny  
@@ -309,8 +307,7 @@ contains
 
     call bcs(this)
 
-    if (eta_present) then
- 
+    if (mg_state%eta_present) then
       do odd_then_even = 1, 0, -1 
         do iy = 1, this%ny  
         do ix = 1, this%nx  
@@ -355,8 +352,7 @@ contains
 
     call bcs(this)
 
-    if (eta_present) then
-
+    if (mg_state%eta_present) then
       do iy = 1, this%ny   
       do ix = 1, this%nx   
         eta_ip = 0.5_num * (this%eta(ix,iy)+this%eta(ix+1,iy))! / this%dx**2
@@ -433,7 +429,7 @@ contains
 !        endif
 !      enddo
 !      enddo
-!      ! next level
+      ! next level
       current => current%next
     enddo 
 
@@ -688,7 +684,7 @@ contains
 !      allocate(new_grid%eta_xface(0:new_grid%nx,1:new_grid%ny))
 !      allocate(new_grid%eta_yface(1:new_grid%nx,0:new_grid%ny))
     endif
-!print *, new_grid%ny
+
 !print*, lbound(new_grid%eta)
 !print*, ubound(new_grid%eta)
 !STOP
@@ -707,13 +703,14 @@ contains
       print *,'lbound f',lbound(this%f)
       print *,'ubound f',ubound(this%f)
 
-      if (eta_present) then
+      if (mg_state%eta_present) then
         print *,'lbound eta',lbound(this%eta)
         print *,'ubound eta',ubound(this%eta)
         print *,'lbound eta_xface',lbound(this%eta_xface)
         print *,'ubound eta_xface',ubound(this%eta_xface)
         print *,'lbound eta_yface',lbound(this%eta_yface)
         print *,'ubound eta_yface',ubound(this%eta_yface)
+!        print *, 'eta', this%eta
       endif
 
       print *,'******'
@@ -763,13 +760,15 @@ contains
     endif
 
 ! add to a debug / verbose option
-!    ! cycle through the list for a report to check all is set up good
+    ! cycle through the list for a report to check all is set up good
     current => head
     do while(associated(current))
-      call grid_report(current)
+!      call grid_report(current)
       current=>current%next
     enddo
-  end subroutine initialise_grids
+ 
+
+end subroutine initialise_grids
 
 
   integer function set_nlevels(nx,ny)

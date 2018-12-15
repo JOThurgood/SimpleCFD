@@ -1,15 +1,16 @@
-program test3
+program test4
 
   use multigrid
 
   implicit none
 
   integer, parameter :: num=selected_real_kind(p=15)
-!  real(num) :: pi = 4.0_num * ATAN(1.0_num)
+  real(num) :: pi = 4.0_num * ATAN(1.0_num)
+  real(num) :: pi2 = 8.0_num * ATAN(1.0_num)
 
   integer :: nx, ny, ix, iy
 
-  real(num) :: dx, dy, L2, x_min, x_max, y_min, y_max
+  real(num) :: x,y,  dx, dy, L2, x_min, x_max, y_min, y_max
 
   real(num), dimension(:), allocatable :: xc, yc
   real(num), dimension(:,:), allocatable :: f,analytic, phi, eta
@@ -21,8 +22,7 @@ program test3
 
   ! setup a test problem 
 
-  
-  print *,'Test3: This does something'
+  print *,'Test4: This does something'
 
   power_min = 3
   power_max = 10
@@ -67,27 +67,27 @@ program test3
    
     do iy = 1, ny
     do ix = 1, nx
-      f(ix,iy) = -2.0_num * ((1.0_num-6.0_num*xc(ix)**2)*(yc(iy)**2)*(1.0_num-yc(iy)**2) &
-        & + (1.0_num-6.0_num*yc(iy)**2)*(xc(ix)**2)*(1.0_num-xc(ix)**2))
+      x = xc(ix)
+      y = yc(iy)
+      f(ix,iy) = -16.0_num * pi**2 * (cos(pi2*x)*cos(pi2*y) +1.0_num) * sin(pi2*x) * sin(pi2*y)
+!      f(ix,iy) = -4.0_num * pi**2 * ( 4.0_num * sin(pi2 * x) * sin(pi2 * y) + sin(2.0_num * pi2 *x) * sin(2.0_num * pi2 *y))
     enddo
     enddo
   
     allocate(eta(1:nx,1:ny)) ! again, redundant ghosts but for comparison to CCAPS
-    eta = 1.0_num 
-  
+    do iy = 1, ny
+    do ix = 1, nx
+     eta(ix,iy) = 2.0_num + cos(2.0_num * pi * xc(ix)) * cos(2.0_num * pi * yc(iy)) 
+    enddo
+    enddo 
     ! solve for phi
-!    nlevels = -1!-1 ! auto
-!    call mg_interface(f = f, phi=phi, eta=eta, tol = 1e-12_num, &
-!                    & nx = nx, ny = ny, dx = dx, dy = dy, &
-!                    &  nlevels = nlevels, &
-!    & bc_xmin_in = fixed, bc_ymin_in = fixed, bc_xmax_in = fixed, bc_ymax_in = fixed)
   
 
 
   input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
-            & bc_xmin = 'fixed', bc_ymin='fixed', bc_xmax='fixed', bc_ymax = 'fixed', &
+            & bc_xmin = 'periodic', bc_ymin='periodic', bc_xmax='periodic', bc_ymax = 'periodic', &
             eta = eta, eta_present = .true., & 
-            & eta_bc_xmin = 'fixed', eta_bc_ymin='fixed', eta_bc_xmax='fixed', eta_bc_ymax = 'fixed')
+            & eta_bc_xmin = 'periodic', eta_bc_ymin='periodic', eta_bc_xmax='periodic', eta_bc_ymax = 'periodic')
 
   call mg_interface(input)
 
@@ -97,12 +97,18 @@ program test3
      
     do iy = 1, ny
     do ix = 1, nx
-      analytic(ix,iy) = (xc(ix)**2-xc(ix)**4) * (yc(iy)**4-yc(iy)**2)
+      x = xc(ix)
+      y = yc(iy)
+      analytic(ix,iy) = sin(pi2*x)*sin(pi2*y)
     enddo
     enddo
-  
-    L2 = sqrt(sum(abs(analytic(1:nx,1:ny)-phi(1:nx,1:ny))**2) / real(nx*ny,num))
+
+    ! subtract the average of phi since there is nothing to anchor the solution
+    phi = phi- sum(phi(1:nx,1:ny)) / real(nx*ny,num)  
     
+    L2 = sqrt(sum(abs(analytic(1:nx,1:ny)-phi(1:nx,1:ny))**2) / real(nx*ny,num))
+   
+ 
     print *,'L2',L2
  
     L2_arr(power-power_min+1) = L2
@@ -123,20 +129,20 @@ program test3
   print *, 'L2 _arr',L2_arr
   print *, 'n _arr',n_arr
 
-  call execute_command_line("rm -rf test3_l2.dat")
-  call execute_command_line("rm -rf test3_nx.dat")
+  call execute_command_line("rm -rf test4_l2.dat")
+  call execute_command_line("rm -rf test4_nx.dat")
 
-  open(10, file="test3_l2.dat", access="stream")
+  open(10, file="test4_l2.dat", access="stream")
   write(10) L2_arr
   close(10)
 
-  open(10, file="test3_nx.dat", access="stream")
+  open(10, file="test4_nx.dat", access="stream")
   write(10) n_arr
   close(10)
 
-  call execute_command_line("python test3_plots.py")
-  call execute_command_line("rm test3_l2.dat")
-  call execute_command_line("rm test3_nx.dat")
+  call execute_command_line("python test4_plots.py")
+  call execute_command_line("rm test4_l2.dat")
+  call execute_command_line("rm test4_nx.dat")
 
 
-end program test3
+end program test4

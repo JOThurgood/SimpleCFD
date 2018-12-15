@@ -24,7 +24,7 @@ program test3
   
   print *,'Test3: This does something'
 
-  power_min = 5
+  power_min = 3
   power_max = 10
 
   allocate(L2_arr(1:1+power_max-power_min))

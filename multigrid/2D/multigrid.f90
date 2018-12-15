@@ -33,7 +33,7 @@ contains
 
   subroutine mg_interface(f, phi, eta, tol, &
         &  nx,ny,dx,dy, nlevels, &
-        & bc_xmin, bc_xmax, bc_ymin, bc_ymax)
+        & bc_xmin_in, bc_xmax_in, bc_ymin_in, bc_ymax_in)
     real(num), dimension(:,:), intent(in) :: f
     real(num), dimension(:,:), allocatable, intent(inout) :: phi
     real(num), dimension(:,:), allocatable, optional, intent(in) :: eta
@@ -42,9 +42,15 @@ contains
     integer, intent(inout) :: nlevels
     real(num), intent(in) :: dx, dy
     real(num), intent(in) :: tol
-    integer, intent(in) :: bc_xmin, bc_xmax, bc_ymin, bc_ymax
+    integer, intent(in) :: bc_xmin_in, bc_xmax_in, bc_ymin_in, bc_ymax_in !***
     type(grid), pointer :: current 
     real(num) :: start, finish
+
+    !*** have asked how to to this better, this will do for now
+    bc_xmin = bc_xmin_in
+    bc_xmax = bc_xmax_in
+    bc_ymin = bc_ymin_in
+    bc_ymax = bc_ymax_in
 
 
     call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
@@ -331,12 +337,12 @@ contains
   subroutine bcs(this)
 
     type(grid), pointer :: this
-    print *, 'test inside subroutine bcs'
-    print *,'****** bc_xmin = ', bc_xmin
-    print *,'****** bc_xmax = ', bc_xmax
-    print *,'****** bc_ymin = ', bc_ymin
-    print *,'****** bc_ymax = ', bc_ymax
-STOP
+!    print *, 'test inside subroutine bcs'
+!    print *,'****** bc_xmin = ', bc_xmin
+!    print *,'****** bc_xmax = ', bc_xmax
+!    print *,'****** bc_ymin = ', bc_ymin
+!    print *,'****** bc_ymax = ', bc_ymax
+!STOP
     ! some logic for if level 1 vs others for homo vs inhomo bc etc will be needed 
     ! eventually
 
@@ -602,7 +608,7 @@ STOP
 
   end function set_nlevels
 
-  real(num) function log2_int(x)
+  integer function log2_int(x)
     implicit none
     integer, intent(in) :: x
 

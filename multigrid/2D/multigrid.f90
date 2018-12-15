@@ -423,6 +423,8 @@ contains
     do while( associated(current))
       ! fill the boundaries 
       call eta_bcs(current)
+
+! could be some saving by doing this once, at the start. Look into it later
       ! fill the x_face and y_face arrays
 !      do iy = 0, current%ny
 !      do ix = 0, current%nx
@@ -445,12 +447,7 @@ contains
   subroutine eta_bcs(this)
 
     type(grid), pointer :: this
-!    print *, 'test inside subroutine bcs'
-!    print *,'****** bc_xmin = ', bc_xmin
-!    print *,'****** bc_xmax = ', bc_xmax
-!    print *,'****** bc_ymin = ', bc_ymin
-!    print *,'****** bc_ymax = ', bc_ymax
-!STOP
+
     ! some logic for if level 1 vs others for homo vs inhomo bc etc will be needed 
     ! eventually
 

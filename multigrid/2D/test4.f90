@@ -25,8 +25,8 @@ program test4
   
   print *,'Test4: This does something'
 
-  power_min = 6
-  power_max = 6
+  power_min = 5
+  power_max = 9
 
   allocate(L2_arr(1:1+power_max-power_min))
   allocate(n_arr(1:1+power_max-power_min))
@@ -78,7 +78,7 @@ program test4
     allocate(eta(1:nx,1:ny)) ! again, redundant ghosts but for comparison to CCAPS
     do iy = 1, ny
     do ix = 1, nx
-     eta = 2.0_num + cos(2.0_num * pi * xc(ix)) * cos(2.0_num * pi * yc(iy)) 
+     eta(ix,iy) = 2.0_num + cos(2.0_num * pi * xc(ix)) * cos(2.0_num * pi * yc(iy)) 
     enddo
     enddo 
     ! solve for phi

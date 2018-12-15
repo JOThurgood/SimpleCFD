@@ -77,7 +77,7 @@ program test2
     enddo
   
   
-!    ! olve for phi
+!    ! Solve for phi
 !    nlevels = -1 ! auto
 !    call mg_interface(f = f, phi=phi, tol = 1e-12_num, &
 !                    & nx = nx, ny = ny, dx = dx, dy = dy, &

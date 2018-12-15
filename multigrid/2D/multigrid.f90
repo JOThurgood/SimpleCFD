@@ -40,6 +40,10 @@ module multigrid
     ! optional non-allocatable variables just set to a default
     integer :: nlevels = -1 !-1 is "auto"
     logical :: eta_present = .false.
+    character(len=20) :: eta_bc_xmin ='none'
+    character(len=20) :: eta_bc_ymin ='none'
+    character(len=20) :: eta_bc_xmax ='none'
+    character(len=20) :: eta_bc_ymax ='none'
     ! optional allocatables
     real(num),dimension(:,:), allocatable :: eta
 
@@ -512,49 +516,49 @@ contains
     ! some logic for if level 1 vs others for homo vs inhomo bc etc will be needed 
     ! eventually
 
- !!   if (bc_xmin == periodic) then
- !!     this%eta(0,:) = this%eta(this%nx,:)
- !!   endif
- !!   if (bc_xmax == periodic) then
- !!     this%eta(this%nx+1,:) = this%eta(1,:)
- !!   endif
- !!   if (bc_ymin == periodic) then
- !!     this%eta(:,0) = this%eta(:,this%ny)
- !!   endif
- !!   if (bc_ymax == periodic) then
- !!     this%eta(:,this%ny+1) = this%eta(:,1)
- !!   endif
+   if (mg_state%eta_bc_xmin == periodic) then
+     this%eta(0,:) = this%eta(this%nx,:)
+   endif
+   if (mg_state%eta_bc_xmax == periodic) then
+     this%eta(this%nx+1,:) = this%eta(1,:)
+   endif
+   if (mg_state%eta_bc_ymin == periodic) then
+     this%eta(:,0) = this%eta(:,this%ny)
+   endif
+   if (mg_state%eta_bc_ymax == periodic) then
+     this%eta(:,this%ny+1) = this%eta(:,1)
+   endif
 
- !!   if (bc_xmin == zero_gradient) then
- !!     this%eta(0,:) = this%eta(1,:)
- !!   endif
+   if (mg_state%eta_bc_xmin == zero_gradient) then
+     this%eta(0,:) = this%eta(1,:)
+   endif
 
- !!   if (bc_xmax == zero_gradient) then
- !!     this%eta(this%nx+1,:) = this%eta(this%nx,:)
- !!   endif
- !!   if (bc_ymin == zero_gradient) then
- !!     this%eta(:,0) = this%eta(:,1)
- !!   endif
- !!   if (bc_ymax == zero_gradient) then
- !!     this%eta(:,this%ny+1) = this%eta(:,this%ny)
- !!   endif
+   if (mg_state%eta_bc_xmax == zero_gradient) then
+     this%eta(this%nx+1,:) = this%eta(this%nx,:)
+   endif
+   if (mg_state%eta_bc_ymin == zero_gradient) then
+     this%eta(:,0) = this%eta(:,1)
+   endif
+   if (mg_state%eta_bc_ymax == zero_gradient) then
+     this%eta(:,this%ny+1) = this%eta(:,this%ny)
+   endif
 
- !!   if (bc_xmin == fixed) then
-!!!      this%eta(0,:) = -this%eta(1,:)
- !!     this%eta(0,:) = this%eta(1,:)
- !!   endif
- !!   if (bc_xmax == fixed) then
-!!!      this%eta(this%nx+1,:) = -this%eta(this%nx,:)
- !!     this%eta(this%nx+1,:) = this%eta(this%nx,:)
- !!   endif
- !!   if (bc_ymin == fixed) then
-!!!      this%eta(:,0) = -this%eta(:,1)
- !!     this%eta(:,0) = this%eta(:,1)
- !!   endif
- !!   if (bc_ymax == fixed) then
-!!!      this%eta(:,this%ny+1) = -this%eta(:,this%ny)
- !!     this%eta(:,this%ny+1) = this%eta(:,this%ny)
- !!   endif
+   if (mg_state%eta_bc_xmin == fixed) then
+!      this%eta(0,:) = -this%eta(1,:)
+     this%eta(0,:) = this%eta(1,:)
+   endif
+   if (mg_state%eta_bc_xmax == fixed) then
+!      this%eta(this%nx+1,:) = -this%eta(this%nx,:)
+     this%eta(this%nx+1,:) = this%eta(this%nx,:)
+   endif
+   if (mg_state%eta_bc_ymin == fixed) then
+!      this%eta(:,0) = -this%eta(:,1)
+     this%eta(:,0) = this%eta(:,1)
+   endif
+   if (mg_state%eta_bc_ymax == fixed) then
+!      this%eta(:,this%ny+1) = -this%eta(:,this%ny)
+     this%eta(:,this%ny+1) = this%eta(:,this%ny)
+   endif
 
 
   end subroutine eta_bcs
@@ -850,12 +854,15 @@ contains
     new_grid%f = 0.0_num
     new_grid%residue = 0.0_num
 
-    if (eta_present) then
+    if (mg_state%eta_present) then
       allocate(new_grid%eta(0:new_grid%nx+1,0:new_grid%ny+1))
-      allocate(new_grid%eta_xface(0:new_grid%nx,1:new_grid%ny))
-      allocate(new_grid%eta_yface(1:new_grid%nx,0:new_grid%ny))
+!      allocate(new_grid%eta_xface(0:new_grid%nx,1:new_grid%ny))
+!      allocate(new_grid%eta_yface(1:new_grid%nx,0:new_grid%ny))
     endif
-
+!print *, new_grid%ny
+!print*, lbound(new_grid%eta)
+!print*, ubound(new_grid%eta)
+!STOP
   end subroutine allocate_arrays
 
   subroutine grid_report(this)

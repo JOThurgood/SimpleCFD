@@ -21,6 +21,8 @@ program test3
   
   integer :: power, power_min, power_max
 
+  type(mg_input) :: input
+
   ! setup a test problem 
 
   
@@ -78,12 +80,23 @@ program test3
     eta = 1.0_num 
   
     ! solve for phi
-    nlevels = -1!-1 ! auto
-    call mg_interface(f = f, phi=phi, eta=eta, tol = 1e-12_num, &
-                    & nx = nx, ny = ny, dx = dx, dy = dy, &
-                    &  nlevels = nlevels, &
-    & bc_xmin_in = fixed, bc_ymin_in = fixed, bc_xmax_in = fixed, bc_ymax_in = fixed)
+!    nlevels = -1!-1 ! auto
+!    call mg_interface(f = f, phi=phi, eta=eta, tol = 1e-12_num, &
+!                    & nx = nx, ny = ny, dx = dx, dy = dy, &
+!                    &  nlevels = nlevels, &
+!    & bc_xmin_in = fixed, bc_ymin_in = fixed, bc_xmax_in = fixed, bc_ymax_in = fixed)
   
+
+
+  input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
+            & bc_xmin = 'fixed', bc_ymin='fixed', bc_xmax='fixed', bc_ymax = 'fixed', &
+            eta = eta, eta_present = .true., & 
+            & eta_bc_xmin = 'fixed', eta_bc_ymin='fixed', eta_bc_xmax='fixed', eta_bc_ymax = 'fixed')
+
+  call new_mg_interface(input)
+
+  phi = input%phi
+
     ! test against analytical solution
      
     do iy = 1, ny

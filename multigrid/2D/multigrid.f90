@@ -32,10 +32,12 @@ module multigrid
 
 contains
 
-  subroutine mg_interface(f, phi, tol, nx,ny,dx,dy, nlevels, &
+  subroutine mg_interface(f, phi, eta, tol, &
+        &  nx,ny,dx,dy, nlevels, &
         & bc_xmin, bc_xmax, bc_ymin, bc_ymax)
     real(num), dimension(:,:), intent(in) :: f
     real(num), dimension(:,:), allocatable, intent(inout) :: phi
+    real(num), dimension(:,:), allocatable, optional, intent(in) :: eta
     integer, intent(in) :: nx 
     integer, intent(in) :: ny
     integer, intent(inout) :: nlevels
@@ -47,6 +49,7 @@ contains
 
 
     call sanity_checks(f=f, phi=phi, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
+    if (present(eta)) call sanity_checks(f=f, phi=phi, eta=eta, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
     call initialise_grids(f=f, nx=nx,ny=ny,nlevels=nlevels,dx=dx,dy=dy) !*
 
@@ -374,11 +377,12 @@ contains
 
   ! check everything passed to the interface is as assumed
 
-  subroutine sanity_checks(f,phi, nx,ny,dx,dy,nlevels)
+  subroutine sanity_checks(f,phi, eta, nx,ny,dx,dy,nlevels)
     integer, intent(in) :: nx
     integer, intent(in) :: ny
     real(num), dimension(:,:), intent(in) :: f
     real(num), dimension(:,:), allocatable, intent(inout) :: phi
+    real(num), dimension(:,:), allocatable, optional, intent(in) :: eta
     integer, intent(in) :: nlevels
     real(num), intent(in) :: dx, dy
 
@@ -447,6 +451,31 @@ contains
       stop
     endif 
 
+    if (present(eta)) then
+      if (lbound(eta,1) /= 0 ) then 
+        print *, 'wrong lbound on allocatable eta input to MG'
+        print *,'lbound(eta,1)=',lbound(eta,1)
+        stop
+      endif 
+  
+      if (lbound(eta,2) /= 0 ) then 
+        print *, 'wrong lbound on allocatable eta input to MG'
+        print *,'lbound(eta,2)=',lbound(eta,2)
+        stop
+      endif 
+  
+      if (ubound(eta,1) /= nx+1) then 
+        print *, 'wrong ubound on allocatable eta input to MG'
+        print *,'ubound(eta,1)=',ubound(eta,1)
+        stop
+      endif 
+  
+      if (ubound(eta,2) /= ny+1) then 
+        print *, 'wrong ubound on allocatable eta input to MG'
+         print *,'ubound(eta,2)=',ubound(eta,2)
+        stop
+      endif 
+    endif
   end subroutine sanity_checks
 
   ! Methods relating to the grid heirarchy and setup below jere

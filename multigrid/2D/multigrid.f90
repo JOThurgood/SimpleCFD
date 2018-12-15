@@ -589,7 +589,7 @@ contains
     if (nx <= ny) then
       set_nlevels = log2_int(nx) + 1 
     else
-      set_nlevels = log2_int(nx) + 1
+      set_nlevels = log2_int(ny) + 1
     endif
 
   end function set_nlevels

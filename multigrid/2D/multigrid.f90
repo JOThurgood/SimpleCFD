@@ -26,9 +26,8 @@ module multigrid
   ! is responsible for getting the integers correct
   integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
   integer, parameter :: periodic = 0
-  integer, parameter :: zero_gradient = 1
-  integer, parameter :: no_slip = 2
-  integer, parameter :: driven = 3
+  integer, parameter :: zero_gradient = 1 ! Neumann 
+  integer, parameter :: fixed = 2 ! Dirichlet
 
 contains
 
@@ -358,16 +357,16 @@ contains
       this%phi(:,this%ny+1) = this%phi(:,this%ny)
     endif
 
-    if (bc_xmin == no_slip) then
+    if (bc_xmin == fixed) then
       this%phi(0,:) = this%phi(1,:)
     endif
-    if (bc_xmax == no_slip) then
+    if (bc_xmax == fixed) then
       this%phi(this%nx+1,:) = this%phi(this%nx,:)
     endif
-    if (bc_ymin == no_slip) then
+    if (bc_ymin == fixed) then
       this%phi(:,0) = this%phi(:,1)
     endif
-    if ((bc_ymax == no_slip) .or. (bc_ymax == driven)) then
+    if (bc_ymax == fixed) then
       this%phi(:,this%ny+1) = this%phi(:,this%ny)
     endif
 

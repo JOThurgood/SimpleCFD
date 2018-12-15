@@ -57,6 +57,10 @@ contains
     print *,'****** ny = ',ny
     print *,'****** nlevels ',nlevels
     print *,'****** tolerance = ',tol
+    print *,'****** bc_xmin = ', bc_xmin
+    print *,'****** bc_xmax = ', bc_xmax
+    print *,'****** bc_ymin = ', bc_ymin
+    print *,'****** bc_ymax = ', bc_ymax
 
     call cpu_time(start)
     call mg_solve(tol)
@@ -327,7 +331,12 @@ contains
   subroutine bcs(this)
 
     type(grid), pointer :: this
-
+    print *, 'test inside subroutine bcs'
+    print *,'****** bc_xmin = ', bc_xmin
+    print *,'****** bc_xmax = ', bc_xmax
+    print *,'****** bc_ymin = ', bc_ymin
+    print *,'****** bc_ymax = ', bc_ymax
+STOP
     ! some logic for if level 1 vs others for homo vs inhomo bc etc will be needed 
     ! eventually
 
@@ -337,10 +346,10 @@ contains
     if (bc_xmax == periodic) then
       this%phi(this%nx+1,:) = this%phi(1,:)
     endif
-    if (bc_xmin == periodic) then
+    if (bc_ymin == periodic) then
       this%phi(:,0) = this%phi(:,this%ny)
     endif
-    if (bc_xmax == periodic) then
+    if (bc_ymax == periodic) then
       this%phi(:,this%ny+1) = this%phi(:,1)
     endif
 
@@ -358,16 +367,16 @@ contains
     endif
 
     if (bc_xmin == fixed) then
-      this%phi(0,:) = this%phi(1,:)
+      this%phi(0,:) = -this%phi(1,:)
     endif
     if (bc_xmax == fixed) then
-      this%phi(this%nx+1,:) = this%phi(this%nx,:)
+      this%phi(this%nx+1,:) = -this%phi(this%nx,:)
     endif
     if (bc_ymin == fixed) then
-      this%phi(:,0) = this%phi(:,1)
+      this%phi(:,0) = -this%phi(:,1)
     endif
     if (bc_ymax == fixed) then
-      this%phi(:,this%ny+1) = this%phi(:,this%ny)
+      this%phi(:,this%ny+1) = -this%phi(:,this%ny)
     endif
 
 

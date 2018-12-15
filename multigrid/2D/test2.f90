@@ -111,8 +111,8 @@ program test2
   print *, 'L2 _arr',L2_arr
   print *, 'n _arr',n_arr
 
-  call execute_command_line("rm test2_l2.dat")
-  call execute_command_line("rm test2_nx.dat")
+  call execute_command_line("rm -rf test2_l2.dat")
+  call execute_command_line("rm -rf test2_nx.dat")
 
   open(10, file="test2_l2.dat", access="stream")
   write(10) L2_arr

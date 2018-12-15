@@ -22,11 +22,10 @@ program test4
 
   ! setup a test problem 
 
-  
   print *,'Test4: This does something'
 
-  power_min = 5
-  power_max = 9
+  power_min = 3
+  power_max = 10
 
   allocate(L2_arr(1:1+power_max-power_min))
   allocate(n_arr(1:1+power_max-power_min))
@@ -103,9 +102,13 @@ program test4
       analytic(ix,iy) = sin(pi2*x)*sin(pi2*y)
     enddo
     enddo
-  
-    L2 = sqrt(sum(abs(analytic(1:nx,1:ny)-phi(1:nx,1:ny))**2) / real(nx*ny,num))
+
+    ! subtract the average of phi since there is nothing to anchor the solution
+    phi = phi- sum(phi(1:nx,1:ny)) / real(nx*ny,num)  
     
+    L2 = sqrt(sum(abs(analytic(1:nx,1:ny)-phi(1:nx,1:ny))**2) / real(nx*ny,num))
+   
+ 
     print *,'L2',L2
  
     L2_arr(power-power_min+1) = L2

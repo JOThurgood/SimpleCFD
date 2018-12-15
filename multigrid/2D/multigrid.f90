@@ -50,24 +50,51 @@ module multigrid
   ! boundary conditions. The program calling mg_interface
   ! is responsible for getting the integers correct
   integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
-  integer, parameter :: periodic = 0
-  integer, parameter :: zero_gradient = 1 ! Neumann 
-  integer, parameter :: fixed = 2 ! Dirichlet
+!  integer, parameter :: periodic = 0
+!  integer, parameter :: zero_gradient = 1 ! Neumann 
+!  integer, parameter :: fixed = 2 ! Dirichlet
+
+  character(len=20), parameter :: periodic = 'periodic'
+  character(len=20), parameter :: fixed = 'fixed'
+  character(len=20), parameter :: zero_gradient = 'zero_gradient'
 
 contains
 
   subroutine new_mg_interface(this)
 
     type(mg_input), intent(inout) :: this
+    type(grid), pointer :: current 
+    real(num) :: start, finish
     mg_state = this ! all other subroutines in module should be able to access
 
     call sanity_checks_new
     call initialise_grids_new 
+    call welcome
 
-    ! to modify phi and return it can just modify elements of this e.g. ]
-    !this%phi = 99.0_num
- 
+    call cpu_time(start)
+    call mg_solve
+    call cpu_time(finish)
+    print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
+
+    ! set the inout(phi) = phi on finest grid to return to caller
+    current => head
+    this%phi = current%phi 
+    print *,'*** Multigrid finished'
+
   end subroutine new_mg_interface
+
+  subroutine welcome
+    print *,'*** Multigrid called'
+    print *,'****** nx = ',mg_state%nx
+    print *,'****** ny = ',mg_state%ny
+    print *,'****** nlevels ',mg_state%nlevels
+    print *,'****** tolerance = ',mg_state%tol
+    print *,'****** bc_xmin = ', mg_state%bc_xmin
+    print *,'****** bc_xmax = ', mg_state%bc_xmax
+    print *,'****** bc_ymin = ', mg_state%bc_ymin
+    print *,'****** bc_ymax = ', mg_state%bc_ymax
+    print *,'****** variable coefficient eta',mg_state%eta_present
+  end subroutine welcome
 
 
   subroutine mg_interface(f, phi, eta, tol, &
@@ -116,7 +143,7 @@ contains
     print *,'****** bc_ymax = ', bc_ymax
 
     call cpu_time(start)
-    call mg_solve(tol)
+    !call mg_solve(tol)
     call cpu_time(finish)
     print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
 
@@ -135,8 +162,7 @@ contains
 
   ! main solver
 
-  subroutine mg_solve(tol)
-    real(num), intent(in) :: tol
+  subroutine mg_solve
     type(grid), pointer :: current
 
     real(num) :: L2, L2_old
@@ -166,7 +192,7 @@ contains
        if (current%level == 1) then
           call residual(current) 
           L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
-          if (abs(L2-L2_old) <= tol) exit mainloop
+          if (abs(L2-L2_old) <= mg_state%tol) exit mainloop
 !          if (isnan(L2)) STOP
           L2_old = L2
         endif
@@ -185,7 +211,7 @@ contains
           if (modulo(c-1,5)==0) then          
             call residual(current)
             L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
-            if (L2 < tol) exit
+            if (L2 < mg_state%tol) exit
 !          if (isnan(L2)) STOP
           endif
         enddo
@@ -486,49 +512,49 @@ contains
     ! some logic for if level 1 vs others for homo vs inhomo bc etc will be needed 
     ! eventually
 
-    if (bc_xmin == periodic) then
-      this%eta(0,:) = this%eta(this%nx,:)
-    endif
-    if (bc_xmax == periodic) then
-      this%eta(this%nx+1,:) = this%eta(1,:)
-    endif
-    if (bc_ymin == periodic) then
-      this%eta(:,0) = this%eta(:,this%ny)
-    endif
-    if (bc_ymax == periodic) then
-      this%eta(:,this%ny+1) = this%eta(:,1)
-    endif
+ !!   if (bc_xmin == periodic) then
+ !!     this%eta(0,:) = this%eta(this%nx,:)
+ !!   endif
+ !!   if (bc_xmax == periodic) then
+ !!     this%eta(this%nx+1,:) = this%eta(1,:)
+ !!   endif
+ !!   if (bc_ymin == periodic) then
+ !!     this%eta(:,0) = this%eta(:,this%ny)
+ !!   endif
+ !!   if (bc_ymax == periodic) then
+ !!     this%eta(:,this%ny+1) = this%eta(:,1)
+ !!   endif
 
-    if (bc_xmin == zero_gradient) then
-      this%eta(0,:) = this%eta(1,:)
-    endif
+ !!   if (bc_xmin == zero_gradient) then
+ !!     this%eta(0,:) = this%eta(1,:)
+ !!   endif
 
-    if (bc_xmax == zero_gradient) then
-      this%eta(this%nx+1,:) = this%eta(this%nx,:)
-    endif
-    if (bc_ymin == zero_gradient) then
-      this%eta(:,0) = this%eta(:,1)
-    endif
-    if (bc_ymax == zero_gradient) then
-      this%eta(:,this%ny+1) = this%eta(:,this%ny)
-    endif
+ !!   if (bc_xmax == zero_gradient) then
+ !!     this%eta(this%nx+1,:) = this%eta(this%nx,:)
+ !!   endif
+ !!   if (bc_ymin == zero_gradient) then
+ !!     this%eta(:,0) = this%eta(:,1)
+ !!   endif
+ !!   if (bc_ymax == zero_gradient) then
+ !!     this%eta(:,this%ny+1) = this%eta(:,this%ny)
+ !!   endif
 
-    if (bc_xmin == fixed) then
-!      this%eta(0,:) = -this%eta(1,:)
-      this%eta(0,:) = this%eta(1,:)
-    endif
-    if (bc_xmax == fixed) then
-!      this%eta(this%nx+1,:) = -this%eta(this%nx,:)
-      this%eta(this%nx+1,:) = this%eta(this%nx,:)
-    endif
-    if (bc_ymin == fixed) then
-!      this%eta(:,0) = -this%eta(:,1)
-      this%eta(:,0) = this%eta(:,1)
-    endif
-    if (bc_ymax == fixed) then
-!      this%eta(:,this%ny+1) = -this%eta(:,this%ny)
-      this%eta(:,this%ny+1) = this%eta(:,this%ny)
-    endif
+ !!   if (bc_xmin == fixed) then
+!!!      this%eta(0,:) = -this%eta(1,:)
+ !!     this%eta(0,:) = this%eta(1,:)
+ !!   endif
+ !!   if (bc_xmax == fixed) then
+!!!      this%eta(this%nx+1,:) = -this%eta(this%nx,:)
+ !!     this%eta(this%nx+1,:) = this%eta(this%nx,:)
+ !!   endif
+ !!   if (bc_ymin == fixed) then
+!!!      this%eta(:,0) = -this%eta(:,1)
+ !!     this%eta(:,0) = this%eta(:,1)
+ !!   endif
+ !!   if (bc_ymax == fixed) then
+!!!      this%eta(:,this%ny+1) = -this%eta(:,this%ny)
+ !!     this%eta(:,this%ny+1) = this%eta(:,this%ny)
+ !!   endif
 
 
   end subroutine eta_bcs
@@ -546,43 +572,43 @@ contains
     ! some logic for if level 1 vs others for homo vs inhomo bc etc will be needed 
     ! eventually
 
-    if (bc_xmin == periodic) then
+    if (mg_state%bc_xmin == periodic) then
       this%phi(0,:) = this%phi(this%nx,:)
     endif
-    if (bc_xmax == periodic) then
+    if (mg_state%bc_xmax == periodic) then
       this%phi(this%nx+1,:) = this%phi(1,:)
     endif
-    if (bc_ymin == periodic) then
+    if (mg_state%bc_ymin == periodic) then
       this%phi(:,0) = this%phi(:,this%ny)
     endif
-    if (bc_ymax == periodic) then
+    if (mg_state%bc_ymax == periodic) then
       this%phi(:,this%ny+1) = this%phi(:,1)
     endif
 
-    if (bc_xmin == zero_gradient) then
+    if (mg_state%bc_xmin == zero_gradient) then
       this%phi(0,:) = this%phi(1,:)
     endif
 
-    if (bc_xmax == zero_gradient) then
+    if (mg_state%bc_xmax == zero_gradient) then
       this%phi(this%nx+1,:) = this%phi(this%nx,:)
     endif
-    if (bc_ymin == zero_gradient) then
+    if (mg_state%bc_ymin == zero_gradient) then
       this%phi(:,0) = this%phi(:,1)
     endif
-    if (bc_ymax == zero_gradient) then
+    if (mg_state%bc_ymax == zero_gradient) then
       this%phi(:,this%ny+1) = this%phi(:,this%ny)
     endif
 
-    if (bc_xmin == fixed) then
+    if (mg_state%bc_xmin == fixed) then
       this%phi(0,:) = -this%phi(1,:)
     endif
-    if (bc_xmax == fixed) then
+    if (mg_state%bc_xmax == fixed) then
       this%phi(this%nx+1,:) = -this%phi(this%nx,:)
     endif
-    if (bc_ymin == fixed) then
+    if (mg_state%bc_ymin == fixed) then
       this%phi(:,0) = -this%phi(:,1)
     endif
-    if (bc_ymax == fixed) then
+    if (mg_state%bc_ymax == fixed) then
       this%phi(:,this%ny+1) = -this%phi(:,this%ny)
     endif
 
@@ -889,24 +915,24 @@ contains
       call allocate_arrays(current)
       current=>current%next
     enddo
-!
-!
-!    ! set phi and f on the level-1 (finest) grid 
-!    current => head
-!    current%f = f
-!    current%phi = 0.0_num 
-!    if (eta_present) then
-!      current%eta(1:nx,1:ny) = eta
-!      call eta_initialise
-!    endif
-!
-!! add to a debug / verbose option
-!!    ! cycle through the list for a report to check all is set up good
-!    current => head
-!    do while(associated(current))
-!      call grid_report(current)
-!      current=>current%next
-!    enddo
+
+
+    ! set phi and f on the level-1 (finest) grid 
+    current => head
+    current%f = mg_state%f
+    current%phi = 0.0_num 
+    if (mg_state%eta_present) then
+      current%eta(1:current%nx,1:current%ny) = mg_state%eta
+      call eta_initialise
+    endif
+
+! add to a debug / verbose option
+!    ! cycle through the list for a report to check all is set up good
+    current => head
+    do while(associated(current))
+      call grid_report(current)
+      current=>current%next
+    enddo
   end subroutine initialise_grids_new
 
   subroutine initialise_grids(f,eta, nx,ny,dx,dy, nlevels)

@@ -25,7 +25,7 @@ program test1
 
   type(mg_input) :: input 
 
-  nx = 16
+  nx = 256
   ny = nx
   x_min = 0.0_num
   x_max = 1.0_num
@@ -96,14 +96,19 @@ program test1
             & bc_xmin = 'periodic', bc_ymin='periodic', bc_xmax='periodic', bc_ymax = 'periodic')
 
   call new_mg_interface(input)
-STOP
+
+  phi = input%phi
+
+!STOP
 
   ! solve for phi
-  nlevels = -1 ! auto
-  call mg_interface(f = divu, phi=phi, tol = 1e-12_num, &
-                  & nx = nx, ny = ny, dx = dx, dy = dy, &
-                  &  nlevels = nlevels, &
-  & bc_xmin_in = periodic, bc_ymin_in = periodic, bc_xmax_in = periodic, bc_ymax_in=periodic)
+!  nlevels = -1 ! auto
+!  call mg_interface(f = divu, phi=phi, tol = 1e-12_num, &
+!                  & nx = nx, ny = ny, dx = dx, dy = dy, &
+!                  &  nlevels = nlevels, &
+!  & bc_xmin_in = periodic, bc_ymin_in = periodic, bc_xmax_in = periodic, bc_ymax_in=periodic)
+
+  
 
   ! correct it 
    

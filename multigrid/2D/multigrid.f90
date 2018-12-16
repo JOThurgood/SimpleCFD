@@ -23,8 +23,8 @@ module multigrid
 
   type(grid), pointer :: head, tail
 
-  ! public state object - used for better handling of optional inputs than a big list of dummies
-  ! in mg_interface 
+  ! public state object - used for better handling of optional inputs
+  ! as opposed to a big list of dummies in mg_interface 
 
   type, public :: mg_input
     ! required in constructor a=mg_state(nx = ... etc)
@@ -44,6 +44,11 @@ module multigrid
     character(len=20) :: eta_bc_ymax ='none'
     ! optional allocatables
     real(num),dimension(:,:), allocatable :: eta
+    ! optionals for constant helmholtz equation
+    !(alpha - beta del**2) phi = f
+    logical :: const_helmholtz = .false.
+    real(num) :: ch_alpha = 0.0_num
+    real(num) :: ch_beta = 0.0_num
 
   end type mg_input
 
@@ -74,10 +79,17 @@ contains
 
     ! set the inout(phi) = phi on finest grid to return to caller
     current => head
-    this%phi = current%phi 
+    this%phi(0:this%nx+1,0:this%ny+1) = current%phi 
     print *,'*** Multigrid finished'
 
+    ! deallocate the grids to avoid a memory leak
+    ! but repeated allocate / deallocate is an expense that can be avoided 
+    ! if the type of call doesn't change, it would be better to "first call"
+    ! so that the list of grids is only made once.
+    call deallocate_grids
+
   end subroutine mg_interface
+
 
   subroutine welcome
     print *,'*** Multigrid called'
@@ -171,7 +183,6 @@ contains
     ! problems, if you can't refine very much because of a large Lx/=Ly asoect
     ! ratio, this could cause an issue
   end subroutine mg_solve
-
 
 ! these next two havent been updated to use the mg_interface with object input
 !  subroutine gs_solve ! for comparison
@@ -325,8 +336,24 @@ contains
         end do 
       enddo
 
-    else ! eta not present
+    else if (mg_state%const_helmholtz) then
+
+      do odd_then_even = 1, 0, -1 
+        do iy = 1, this%ny  
+        do ix = 1, this%nx  
+          if (modulo(ix+iy,2) == odd_then_even) then
   
+            this%phi(ix,iy) = this%phi(ix+1,iy) + this%phi(ix-1,iy) + &
+                            & this%phi(ix,iy+1) + this%phi(ix,iy-1)
+            this%phi(ix,iy) = (this%f(ix,iy) + mg_state%ch_beta * this%phi(ix,iy) / this%dx**2) &
+                          & / (mg_state%ch_alpha + 4.0_num * mg_state%ch_beta / this%dx**2)
+          endif
+        end do
+        end do 
+      enddo
+
+    else 
+ 
       do odd_then_even = 1, 0, -1 
         do iy = 1, this%ny  
         do ix = 1, this%nx  
@@ -368,6 +395,17 @@ contains
         this%residue(ix,iy) = Lap - this%f(ix,iy)
       enddo              
       enddo        
+
+    else if (mg_state%const_helmholtz) then
+      
+      do iy = 1, this%ny   
+      do ix = 1, this%nx   
+        Lap = (this%phi(ix+1,iy) - 2.0_num*this%phi(ix,iy) + this%phi(ix-1,iy)) / this%dx**2 + & 
+            & (this%phi(ix,iy+1) - 2.0_num*this%phi(ix,iy) + this%phi(ix,iy-1)) / this%dy**2 
+        Lap = (mg_state%ch_alpha*this%phi(ix,iy) - mg_state%ch_beta * Lap)
+        this%residue(ix,iy) = Lap - this%f(ix,iy)
+      enddo
+      enddo
 
     else
 
@@ -640,6 +678,13 @@ contains
         stop
       endif 
     endif
+
+    if ((mg_state%eta_present) .and. (mg_state%const_helmholtz)) then
+      print *, 'both eta_present and const_helmholtz are true'
+      print *, 'its one or the other at the moment, bucko'
+      print *, 'stop'
+      stop
+    endif 
   end subroutine sanity_checks
 
 
@@ -768,7 +813,7 @@ contains
     enddo
  
 
-end subroutine initialise_grids
+  end subroutine initialise_grids
 
 
   integer function set_nlevels(nx,ny)
@@ -789,6 +834,21 @@ end subroutine initialise_grids
     log2_int = int( log(real(x,num)) / log(2.0_num))
 
   end function log2_int
+
+  subroutine deallocate_grids
+
+    type(grid), pointer :: current, next
+
+    current => head
+    next => current%next
+    do
+      deallocate(current)
+      if (.not. associated(next)) exit
+      current => next
+      next => current%next
+    enddo
+
+  endsubroutine deallocate_grids
 
 
 end module multigrid

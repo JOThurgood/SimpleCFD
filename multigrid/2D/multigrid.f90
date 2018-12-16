@@ -79,7 +79,7 @@ contains
 
     ! set the inout(phi) = phi on finest grid to return to caller
     current => head
-    this%phi = current%phi 
+    this%phi(0:this%nx+1,0:this%ny+1) = current%phi 
     print *,'*** Multigrid finished'
 
   end subroutine mg_interface

@@ -23,8 +23,8 @@ module multigrid
 
   type(grid), pointer :: head, tail
 
-  ! public state object - used for better handling of optional inputs than a big list of dummies
-  ! in mg_interface 
+  ! public state object - used for better handling of optional inputs
+  ! as opposed to a big list of dummies in mg_interface 
 
   type, public :: mg_input
     ! required in constructor a=mg_state(nx = ... etc)
@@ -44,6 +44,11 @@ module multigrid
     character(len=20) :: eta_bc_ymax ='none'
     ! optional allocatables
     real(num),dimension(:,:), allocatable :: eta
+    ! optionals for constant helmholtz equation
+    !(alpha - beta del**2) phi = f
+    logical :: const_helmholtz = .false.
+    real(num) :: ch_alpha = 0.0_num
+    real(num) :: ch_beta = 0.0_num
 
   end type mg_input
 

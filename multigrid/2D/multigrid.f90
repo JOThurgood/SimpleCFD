@@ -330,8 +330,24 @@ contains
         end do 
       enddo
 
-    else ! eta not present
+    else if (mg_state%const_helmholtz) then
+
+      do odd_then_even = 1, 0, -1 
+        do iy = 1, this%ny  
+        do ix = 1, this%nx  
+          if (modulo(ix+iy,2) == odd_then_even) then
   
+            this%phi(ix,iy) = this%phi(ix+1,iy) + this%phi(ix-1,iy) + &
+                            & this%phi(ix,iy+1) + this%phi(ix,iy-1)
+            this%phi(ix,iy) = (this%f(ix,iy) + mg_state%ch_beta * this%phi(ix,iy) / this%dx**2) &
+                          & / (mg_state%ch_alpha + 4.0_num * mg_state%ch_beta / this%dx**2)
+          endif
+        end do
+        end do 
+      enddo
+
+    else 
+ 
       do odd_then_even = 1, 0, -1 
         do iy = 1, this%ny  
         do ix = 1, this%nx  

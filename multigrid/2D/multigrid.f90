@@ -390,6 +390,17 @@ contains
       enddo              
       enddo        
 
+    else if (mg_state%const_helmholtz) then
+      
+      do iy = 1, this%ny   
+      do ix = 1, this%nx   
+        Lap = (this%phi(ix+1,iy) - 2.0_num*this%phi(ix,iy) + this%phi(ix-1,iy)) / this%dx**2 + & 
+            & (this%phi(ix,iy+1) - 2.0_num*this%phi(ix,iy) + this%phi(ix,iy-1)) / this%dy**2 
+        Lap = (mg_state%ch_alpha*this%phi(ix,iy) - mg_state%ch_beta * Lap)
+        this%residue(ix,iy) = Lap - this%f(ix,iy)
+      enddo
+      enddo
+
     else
 
       do iy = 1, this%ny   

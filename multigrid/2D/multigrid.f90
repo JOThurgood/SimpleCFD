@@ -82,7 +82,14 @@ contains
     this%phi(0:this%nx+1,0:this%ny+1) = current%phi 
     print *,'*** Multigrid finished'
 
+    ! deallocate the grids if you want. This helps avoid a memory leak
+    ! but i think repeated allocate / deallocate is an expense. 
+    ! if the type of call doesn't change, it would be better to "first call"
+    ! so that the list of grids is only made once.
+    call deallocate_grids
+
   end subroutine mg_interface
+
 
   subroutine welcome
     print *,'*** Multigrid called'
@@ -176,7 +183,6 @@ contains
     ! problems, if you can't refine very much because of a large Lx/=Ly asoect
     ! ratio, this could cause an issue
   end subroutine mg_solve
-
 
 ! these next two havent been updated to use the mg_interface with object input
 !  subroutine gs_solve ! for comparison
@@ -807,7 +813,7 @@ contains
     enddo
  
 
-end subroutine initialise_grids
+  end subroutine initialise_grids
 
 
   integer function set_nlevels(nx,ny)
@@ -828,6 +834,21 @@ end subroutine initialise_grids
     log2_int = int( log(real(x,num)) / log(2.0_num))
 
   end function log2_int
+
+  subroutine deallocate_grids
+
+    type(grid), pointer :: current, next
+
+    current => head
+    next => current%next
+    do
+      deallocate(current)
+      if (.not. associated(next)) exit
+      current => next
+      next => current%next
+    enddo
+
+  endsubroutine deallocate_grids
 
 
 end module multigrid

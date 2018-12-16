@@ -82,8 +82,8 @@ contains
     this%phi(0:this%nx+1,0:this%ny+1) = current%phi 
     print *,'*** Multigrid finished'
 
-    ! deallocate the grids if you want. This helps avoid a memory leak
-    ! but i think repeated allocate / deallocate is an expense. 
+    ! deallocate the grids to avoid a memory leak
+    ! but repeated allocate / deallocate is an expense that can be avoided 
     ! if the type of call doesn't change, it would be better to "first call"
     ! so that the list of grids is only made once.
     call deallocate_grids

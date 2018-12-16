@@ -645,6 +645,13 @@ contains
         stop
       endif 
     endif
+
+    if ((mg_state%eta_present) .and. (mg_state%const_helmholtz)) then
+      print *, 'both eta_present and const_helmholtz are true'
+      print *, 'its one or the other at the moment, bucko'
+      print *, 'stop'
+      stop
+    endif 
   end subroutine sanity_checks
 
 

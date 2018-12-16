@@ -13,7 +13,7 @@ FCFLAGS += -I/usr/include
 #LDFLAGS = -li_need_this_lib
 
 # List of executables to be built within the package
-PROGRAMS = test1 test2 test3 test4 
+PROGRAMS = test1 test2 test3 test4 test5
 
 # "make" builds all
 all: $(PROGRAMS)
@@ -22,6 +22,7 @@ test1: multigrid.o
 test2: multigrid.o
 test3: multigrid.o
 test4: multigrid.o
+test5: multigrid.o
 
 # ======================================================================
 # And now the general rules, these should not require modification

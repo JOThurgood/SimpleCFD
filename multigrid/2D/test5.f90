@@ -11,8 +11,8 @@ program test5
   integer, parameter :: num = selected_real_kind(p=15)
   integer :: out_unit = 10
 
-  integer :: nx = 256
-  integer :: ny = 256
+  integer :: nx = 512
+  integer :: ny = 512
 
   real(num) :: x_min = 0.0_num
   real(num) :: x_max = 1.0_num

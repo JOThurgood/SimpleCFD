@@ -52,6 +52,21 @@ module setup
     if (bc_ymin == periodic) mg_bc_ymin = 'periodic'
     if (bc_ymax == periodic) mg_bc_ymax = 'periodic'
 
+    if (bc_xmin == zero_gradient) mg_bc_xmin = 'zero_gradient'
+    if (bc_xmax == zero_gradient) mg_bc_xmax = 'zero_gradient'
+    if (bc_ymin == zero_gradient) mg_bc_ymin = 'zero_gradient'
+    if (bc_ymax == zero_gradient) mg_bc_ymax = 'zero_gradient'
+
+    if (bc_xmin == driven) mg_bc_xmin = 'fixed'
+    if (bc_xmax == driven) mg_bc_xmax = 'fixed'
+    if (bc_ymin == driven) mg_bc_ymin = 'fixed'
+    if (bc_ymax == driven) mg_bc_ymax = 'fixed'
+
+    if (bc_xmin == dirichlet) mg_bc_xmin = 'fixed'
+    if (bc_xmax == dirichlet) mg_bc_xmax = 'fixed'
+    if (bc_ymin == dirichlet) mg_bc_ymin = 'fixed'
+    if (bc_ymax == dirichlet) mg_bc_ymax = 'fixed'
+
   end subroutine setup_mg
 
 

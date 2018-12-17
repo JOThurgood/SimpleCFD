@@ -459,6 +459,16 @@ print *,'warning hardcoded perodic for MG, needs general handling'
         print *,'TERMINATING'
         STOP 
       else
+
+!        input = mg_input(tol = 1e-16_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+!              & f = f, phi=ustar, &
+!              & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
+!              & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ,&
+!              & const_helmholtz = .true. , ch_alpha = 1.0_num, ch_beta = dt*visc/2.0_num) 
+!  
+!        call mg_interface(input)
+!        ustar(1:nx,1:ny) = input%phi
+
         call solve_const_Helmholtz(phigs = ustar, f = f, &
           alpha = 1.0_num, beta = dt*visc/2.0_num, &
           & use_old_phi = .true., tol = 1e-16_num) 

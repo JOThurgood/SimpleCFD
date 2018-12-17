@@ -346,8 +346,8 @@ module advance_module
 
       input = mg_input(tol = 1e-18_num, nx = nx, ny = ny, dx = dx, dy = dy, &
             & f = divu(1:nx,1:ny), phi=phi, &
-            & bc_xmin = 'periodic', bc_xmax = 'periodic', &
-            & bc_ymin = 'periodic', bc_ymax = 'periodic' ) 
+            & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
+            & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ) 
 
       call mg_interface(input)
       phi = input%phi
@@ -522,8 +522,8 @@ print *,'warning hardcoded perodic for MG, needs general handling'
 
       input = mg_input(tol = 1e-16_num, nx = nx, ny = ny, dx = dx, dy = dy, &
             & f = divu(1:nx,1:ny), phi=phi, &
-            & bc_xmin = 'periodic', bc_xmax = 'periodic', &
-            & bc_ymin = 'periodic', bc_ymax = 'periodic' ) 
+            & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
+            & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ) 
 
       call mg_interface(input)
       phi = input%phi

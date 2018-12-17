@@ -37,11 +37,23 @@ module setup
     if (rti1_test) call rti1_ic
     if (blob1_test) call blob1_ic
 
+    call setup_mg
+
     time = 0.0_num
 
     call setup_report
 
   end subroutine initial_setup
+
+  subroutine setup_mg
+
+    if (bc_xmin == periodic) mg_bc_xmin = 'periodic'
+    if (bc_xmax == periodic) mg_bc_xmax = 'periodic'
+    if (bc_ymin == periodic) mg_bc_ymin = 'periodic'
+    if (bc_ymax == periodic) mg_bc_ymax = 'periodic'
+
+  end subroutine setup_mg
+
 
   subroutine bootstrap
 

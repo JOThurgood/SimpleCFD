@@ -22,7 +22,8 @@ program test2
   ! setup a test problem 
 
   
-  print *,'Test2: This does something'
+  print *,'Test2: Compare Lphi=f with fixed homogeneous boundaries against'
+  print *,'       analytical for range of nx to test convergence'
 
   power_min = 3
   power_max = 10
@@ -82,7 +83,8 @@ program test2
 
 
   input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
-            & bc_xmin = 'fixed', bc_ymin='fixed', bc_xmax='fixed', bc_ymax = 'fixed')
+            & bc_xmin = 'fixed', bc_ymin='fixed', bc_xmax='fixed', bc_ymax = 'fixed', &
+            & deallocate_after = .true.)
 
   call mg_interface(input)
 

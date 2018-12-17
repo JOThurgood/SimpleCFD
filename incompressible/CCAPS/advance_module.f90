@@ -4,12 +4,15 @@ module advance_module
   use boundary_conditions
   use diagnostics
   use gauss_seidel
+  use multigrid
 
   implicit none
 
   private 
 
   public :: advance_dt 
+
+  type(mg_input) :: input
 
   contains
 
@@ -337,9 +340,22 @@ module advance_module
         & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
         & use_old_phi = .false., tol = 1e-18_num) 
     else
-      call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
-        & alpha = 0.0_num, beta = -1.0_num, &
-        & use_old_phi = .false., tol = 1e-18_num) 
+!      call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
+!        & alpha = 0.0_num, beta = -1.0_num, &
+!        & use_old_phi = .false., tol = 1e-18_num) 
+
+      input = mg_input(tol = 1e-18_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+            & f = divu(1:nx,1:ny), phi=phi, &
+            & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
+            & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ) 
+
+      call mg_interface(input)
+      phi = input%phi
+
+print *,'warning hardcoded perodic for MG, needs general handling'
+
+
+
     endif
 
     print *, '*** max divu before cleaning',maxval(abs(divu))
@@ -443,6 +459,16 @@ module advance_module
         print *,'TERMINATING'
         STOP 
       else
+
+!        input = mg_input(tol = 1e-16_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+!              & f = f, phi=ustar, &
+!              & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
+!              & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ,&
+!              & const_helmholtz = .true. , ch_alpha = 1.0_num, ch_beta = dt*visc/2.0_num) 
+!  
+!        call mg_interface(input)
+!        ustar(1:nx,1:ny) = input%phi
+
         call solve_const_Helmholtz(phigs = ustar, f = f, &
           alpha = 1.0_num, beta = dt*visc/2.0_num, &
           & use_old_phi = .true., tol = 1e-16_num) 
@@ -500,9 +526,19 @@ module advance_module
         & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
         & use_old_phi = .true., tol = 1e-18_num) 
     else
-      call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
-        alpha = 0.0_num, beta = -1.0_num, &
-        & use_old_phi = .true., tol = 1e-16_num) 
+!      call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
+!        alpha = 0.0_num, beta = -1.0_num, &
+!        & use_old_phi = .true., tol = 1e-16_num) 
+
+      input = mg_input(tol = 1e-16_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+            & f = divu(1:nx,1:ny), phi=phi, &
+            & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
+            & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ) 
+
+      call mg_interface(input)
+      phi = input%phi
+
+print *,'warning hardcoded perodic for MG, needs general handling'
     endif
 
     print *, '*** max divu before cleaning',maxval(abs(divu)*dt)

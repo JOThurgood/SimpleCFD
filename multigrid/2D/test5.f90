@@ -1,6 +1,6 @@
 ! test sln of 2d diffusion equation
 ! under Crank-Nicholson discritisation
-! and Gauss Seidel relaxation 
+! and MMG 
 
 program test5
 
@@ -46,6 +46,9 @@ program test5
   real(num) :: L2
 
   type(mg_input) :: input
+
+  real(num) :: start
+  real(num) :: finish
    
   allocate(x(0:nx+1))  ! cell center (cc) - counts from 1 to nx
   allocate(y(0:ny+1))  ! cell center (cc) - counts from 1 to ny
@@ -87,7 +90,7 @@ program test5
   ! evolution loop
 
   time = 0.0_num
-
+  call cpu_time(start)
   do
     tstep = tstep + 1
     if (time > t_end) exit
@@ -111,36 +114,24 @@ program test5
     enddo
     enddo
 
-  input = mg_input(tol = tol, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
-            & bc_xmin = 'periodic', bc_ymin='periodic', bc_xmax='periodic', bc_ymax = 'periodic', &
+    input = mg_input(tol = tol, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
+            & bc_xmin = 'zero_gradient', bc_ymin='zero_gradient', &
+            & bc_xmax='zero_gradient', bc_ymax = 'zero_gradient', &
+!            & deallocate_after = .true., &
+            & quiet = .true., & 
             & const_helmholtz = .true., ch_alpha = alpha, ch_beta = beta)
-  call mg_interface(input)
-
-  phi = input%phi
-
-!      L2 = 0.0_num
-!      do iy = 1, ny 
-!      do ix = 1, nx 
-!
-!        !Laplacian of phi at new time level / this relaxaed state
-!
-!        L_phi = (phi(ix+1,iy) - 2.0_num*phi(ix,iy) + phi(ix-1,iy)) / dx**2 + &
-!          & (phi(ix,iy+1) - 2.0_num*phi(ix,iy) + phi(ix,iy-1)) / dy**2 
-!     
-!        !residual
-!        L2 = L2 + abs(f(ix,iy)-(alpha*phi(ix,iy)-beta*L_phi))**2
-!      end do
-!      end do 
-!      L2 = sqrt( L2 / REAL(nx*ny,num))
- 
-!      print *,'time',time,'rstep',rstep,'L2',L2
+    call mg_interface(input)
+    phi = input%phi
 
     print *,'time', time,'tstep',tstep, 'done'
-!    print *,'took', rstep,'iterations to converge to (residual) L2=',L2
 
     time = time + dt
   enddo
 
+1 CONTINUE
+
+  call cpu_time(finish)
+  print '(" test 5 total cpu_time: ",f20.3," seconds.")',finish-start
 
 
   !the analytical solution
@@ -167,7 +158,6 @@ program test5
 
   print *,'L2 error norm agains analtical solution is',L2
 
-1 CONTINUE
 
 
   call execute_command_line("rm -rf *.dat test5_*.png")

@@ -37,11 +37,43 @@ module setup
     if (rti1_test) call rti1_ic
     if (blob1_test) call blob1_ic
 
+    call setup_mg
+
     time = 0.0_num
 
     call setup_report
 
   end subroutine initial_setup
+
+  subroutine setup_mg
+
+    if (bc_xmin == periodic) mg_bc_xmin = 'periodic'
+    if (bc_xmax == periodic) mg_bc_xmax = 'periodic'
+    if (bc_ymin == periodic) mg_bc_ymin = 'periodic'
+    if (bc_ymax == periodic) mg_bc_ymax = 'periodic'
+
+    if (bc_xmin == zero_gradient) mg_bc_xmin = 'zero_gradient'
+    if (bc_xmax == zero_gradient) mg_bc_xmax = 'zero_gradient'
+    if (bc_ymin == zero_gradient) mg_bc_ymin = 'zero_gradient'
+    if (bc_ymax == zero_gradient) mg_bc_ymax = 'zero_gradient'
+
+    if (bc_xmin == driven) mg_bc_xmin = 'zero_gradient'
+    if (bc_xmax == driven) mg_bc_xmax = 'zero_gradient'
+    if (bc_ymin == driven) mg_bc_ymin = 'zero_gradient'
+    if (bc_ymax == driven) mg_bc_ymax = 'zero_gradient'
+
+    if (bc_xmin == no_slip) mg_bc_xmin = 'zero_gradient'
+    if (bc_xmax == no_slip) mg_bc_xmax = 'zero_gradient'
+    if (bc_ymin == no_slip) mg_bc_ymin = 'zero_gradient'
+    if (bc_ymax == no_slip) mg_bc_ymax = 'zero_gradient'
+
+    if (bc_xmin == dirichlet) mg_bc_xmin = 'fixed'
+    if (bc_xmax == dirichlet) mg_bc_xmax = 'fixed'
+    if (bc_ymin == dirichlet) mg_bc_ymin = 'fixed'
+    if (bc_ymax == dirichlet) mg_bc_ymax = 'none' !* this is a fudge for the driven lid test and should be fixed
+
+  end subroutine setup_mg
+
 
   subroutine bootstrap
 

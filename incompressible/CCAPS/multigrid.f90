@@ -1,3 +1,12 @@
+!!!!!! !DO NOT EDIT THIS if any bugs, edit multigrid/2D, pass the tests, then put here
+
+!!! EDIT THE MASTER COPY AND PLOP IT HERE
+
+!!! THIS IS A TEMPORARY MEASURE UNTIL I HAVE TIME TO WRITE A BETTER MAKEFILE THAT
+
+!!! WILL JUST LINK OUT TO THE "multigrid/2D" directory
+
+
 module multigrid
 
   implicit none

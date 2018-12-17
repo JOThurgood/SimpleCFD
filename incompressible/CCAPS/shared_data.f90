@@ -93,4 +93,11 @@ module shared_data
   integer, parameter :: driven = 3
   integer, parameter :: dirichlet = 4
 
+  ! to pass bcs to mg
+  character(len=20) :: mg_bc_xmin = 'none'
+  character(len=20) :: mg_bc_xmax = 'none'
+  character(len=20) :: mg_bc_ymin = 'none'
+  character(len=20) :: mg_bc_ymax = 'none'
+
+
 end module shared_data

@@ -8,3 +8,13 @@ Solves 2D Navier-Stokes equations in one of the following regimes:
 using a cell-centred approximate projection approach, with optional gradient limiting etc.
 
 See the wiki for full details of usage and test data: https://github.com/JOThurgood/SimpleCFD/wiki/CCAPS-:-Cell-Centred-Approximate-Projection-Solver 
+
+## Compiling
+
+Use cmake to make a makefile. Call cmake in "build" for an out of source build, because it generates a ton of rubbish so you dont that mixed in with src.
+
+cd build
+cmake ..
+make
+cd ..
+./bin/CCAPS

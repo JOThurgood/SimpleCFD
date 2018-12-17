@@ -38,6 +38,7 @@ module multigrid
     ! optional non-allocatable variables just set to a default
     integer :: nlevels = -1 !-1 is "auto"
     logical :: eta_present = .false.
+    logical :: quiet = .false.
     character(len=20) :: eta_bc_xmin ='none'
     character(len=20) :: eta_bc_ymin ='none'
     character(len=20) :: eta_bc_xmax ='none'
@@ -66,7 +67,7 @@ contains
     type(mg_input), intent(inout) :: this
     type(grid), pointer :: current 
     real(num) :: start, finish
-    mg_state = this ! all other subroutines in module should be able to access
+    mg_state = this ! all other subroutines access input via mg_state
 
     call sanity_checks
     call initialise_grids
@@ -75,23 +76,26 @@ contains
     call cpu_time(start)
     call mg_solve
     call cpu_time(finish)
-    print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
 
     ! set the inout(phi) = phi on finest grid to return to caller
     current => head
     this%phi(0:this%nx+1,0:this%ny+1) = current%phi 
-    print *,'*** Multigrid finished'
 
-    ! deallocate the grids to avoid a memory leak
-    ! but repeated allocate / deallocate is an expense that can be avoided 
-    ! if the type of call doesn't change, it would be better to "first call"
-    ! so that the list of grids is only made once.
+    if (.not.(mg_state%quiet)) then
+      print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
+      print *,'*** Multigrid finished'
+    endif
+
+    ! always deallocate the grids to avoid a memory leak. Inefficient
     call deallocate_grids
 
   end subroutine mg_interface
 
 
   subroutine welcome
+
+    if (mg_state%quiet) return
+
     print *,'*** Multigrid called'
     print *,'****** nx = ',mg_state%nx
     print *,'****** ny = ',mg_state%ny
@@ -173,9 +177,11 @@ contains
       enddo upcycle
 
     enddo mainloop
-    
-    print '(" ****** Finished in: ",i3.3," V cycles")',nsteps
-    print '(" ****** Fine grid residual: ",e20.8," (L2)")',L2 
+
+    if (.not.(mg_state%quiet)) then    
+      print '(" ****** Finished in: ",i3.3," V cycles")',nsteps
+      print '(" ****** Fine grid residual: ",e20.8," (L2)")',L2 
+    endif 
 
     !** if not refining to ideal case (nx=ny=1 + ghosts) this wont automagically
     ! be solved exactly (discretely). If so, do an arbitary amount of

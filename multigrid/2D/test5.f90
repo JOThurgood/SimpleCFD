@@ -11,8 +11,8 @@ program test5
   integer, parameter :: num = selected_real_kind(p=15)
   integer :: out_unit = 10
 
-  integer :: nx = 64
-  integer :: ny = 64
+  integer :: nx = 128
+  integer :: ny = 128
 
   real(num) :: x_min = 0.0_num
   real(num) :: x_max = 1.0_num
@@ -46,6 +46,9 @@ program test5
   real(num) :: L2
 
   type(mg_input) :: input
+
+  real(num) :: start
+  real(num) :: finish
    
   allocate(x(0:nx+1))  ! cell center (cc) - counts from 1 to nx
   allocate(y(0:ny+1))  ! cell center (cc) - counts from 1 to ny
@@ -87,7 +90,7 @@ program test5
   ! evolution loop
 
   time = 0.0_num
-
+  call cpu_time(start)
   do
     tstep = tstep + 1
     if (time > t_end) exit
@@ -112,17 +115,22 @@ program test5
     enddo
 
     input = mg_input(tol = tol, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
-            & bc_xmin = 'zero_gradient', bc_ymin='zero_gradient', bc_xmax='zero_gradient', bc_ymax = 'zero_gradient', &
+            & bc_xmin = 'zero_gradient', bc_ymin='zero_gradient', &
+            & bc_xmax='zero_gradient', bc_ymax = 'zero_gradient', &
+            & quiet = .true., & 
             & const_helmholtz = .true., ch_alpha = alpha, ch_beta = beta)
     call mg_interface(input)
     phi = input%phi
 
-    print *,'time', time,'tstep',tstep, 'done'
+!    print *,'time', time,'tstep',tstep, 'done'
 
     time = time + dt
   enddo
 
 1 CONTINUE
+
+  call cpu_time(finish)
+  print '(" test 5 total cpu_time: ",f20.3," seconds.")',finish-start
 
 
   !the analytical solution

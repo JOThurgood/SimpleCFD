@@ -4,12 +4,15 @@ module advance_module
   use boundary_conditions
   use diagnostics
   use gauss_seidel
+  use multigrid
 
   implicit none
 
   private 
 
   public :: advance_dt 
+
+  type(mg_input) :: input
 
   contains
 
@@ -337,9 +340,22 @@ module advance_module
         & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
         & use_old_phi = .false., tol = 1e-18_num) 
     else
-      call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
-        & alpha = 0.0_num, beta = -1.0_num, &
-        & use_old_phi = .false., tol = 1e-18_num) 
+!      call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
+!        & alpha = 0.0_num, beta = -1.0_num, &
+!        & use_old_phi = .false., tol = 1e-18_num) 
+
+      input = mg_input(tol = 1e-18_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+            & f = divu(1:nx,1:ny), phi=phi, &
+            & bc_xmin = 'periodic', bc_xmax = 'periodic', &
+            & bc_ymin = 'periodic', bc_ymax = 'periodic' ) 
+
+      call mg_interface(input)
+      phi = input%phi
+
+print *,'warning hardcoded perodic for MG, needs general handling'
+
+
+
     endif
 
     print *, '*** max divu before cleaning',maxval(abs(divu))
@@ -500,9 +516,19 @@ module advance_module
         & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
         & use_old_phi = .true., tol = 1e-18_num) 
     else
-      call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
-        alpha = 0.0_num, beta = -1.0_num, &
-        & use_old_phi = .true., tol = 1e-16_num) 
+!      call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
+!        alpha = 0.0_num, beta = -1.0_num, &
+!        & use_old_phi = .true., tol = 1e-16_num) 
+
+      input = mg_input(tol = 1e-16_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+            & f = divu(1:nx,1:ny), phi=phi, &
+            & bc_xmin = 'periodic', bc_xmax = 'periodic', &
+            & bc_ymin = 'periodic', bc_ymax = 'periodic' ) 
+
+      call mg_interface(input)
+      phi = input%phi
+
+print *,'warning hardcoded perodic for MG, needs general handling'
     endif
 
     print *, '*** max divu before cleaning',maxval(abs(divu)*dt)

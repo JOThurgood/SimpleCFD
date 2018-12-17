@@ -39,6 +39,7 @@ module multigrid
     integer :: nlevels = -1 !-1 is "auto"
     logical :: eta_present = .false.
     logical :: quiet = .false.
+    logical :: deallocate_after = .false.
     character(len=20) :: eta_bc_xmin ='none'
     character(len=20) :: eta_bc_ymin ='none'
     character(len=20) :: eta_bc_xmax ='none'
@@ -59,6 +60,10 @@ module multigrid
   character(len=20), parameter :: periodic = 'periodic'
   character(len=20), parameter :: fixed = 'fixed'
   character(len=20), parameter :: zero_gradient = 'zero_gradient'
+
+  ! logical for first_call options
+
+  logical :: first_call = .true.
 
 contains
 
@@ -86,8 +91,11 @@ contains
       print *,'*** Multigrid finished'
     endif
 
-    ! always deallocate the grids to avoid a memory leak. Inefficient
-    call deallocate_grids
+    if (mg_state%deallocate_after) then 
+     call deallocate_grids
+     first_call = .true.
+     print *,'*** deallocated grids'
+    endif 
 
   end subroutine mg_interface
 
@@ -774,32 +782,35 @@ contains
     type(grid), pointer :: current
     nullify(new)
     nullify(current)
-    nullify(head)
-    nullify(tail)
+!    nullify(head)
+!    nullify(tail)
 
     if (mg_state%nlevels == -1) mg_state%nlevels = set_nlevels(mg_state%nx,mg_state%ny)
 
 
-!    create a linked list of grids with blank / unallocated data
-    do lev = 1, mg_state%nlevels
-      call create_grid(new)
-      call add_grid(new)
-    enddo
+    if (first_call) then 
 
-    ! go through the list and set up the arrays 
-    current =>head
-    lev = 0
-    do while(associated(current))
-      lev = lev + 1
-      current%level = lev 
-      current%nx = mg_state%nx / (2**(lev-1)) 
-      current%ny = mg_state%ny / (2**(lev-1)) 
-      current%dx = mg_state%dx * real(2**(lev-1),num) 
-      current%dy = mg_state%dy * real(2**(lev-1),num)
-      call allocate_arrays(current)
-      current=>current%next
-    enddo
+      ! create a linked list of grids with blank / unallocated data
+      do lev = 1, mg_state%nlevels
+        call create_grid(new)
+        call add_grid(new)
+      enddo
+  
+      ! go through the list and set up the arrays 
+      current =>head
+      lev = 0
+      do while(associated(current))
+        lev = lev + 1
+        current%level = lev 
+        current%nx = mg_state%nx / (2**(lev-1)) 
+        current%ny = mg_state%ny / (2**(lev-1)) 
+        current%dx = mg_state%dx * real(2**(lev-1),num) 
+        current%dy = mg_state%dy * real(2**(lev-1),num)
+        call allocate_arrays(current)
+        current=>current%next
+      enddo
 
+    endif ! first_call = .true.
 
     ! set phi and f on the level-1 (finest) grid 
     current => head
@@ -810,14 +821,14 @@ contains
       call eta_initialise
     endif
 
-! add to a debug / verbose option
-    ! cycle through the list for a report to check all is set up good
-    current => head
-    do while(associated(current))
+!    ! cycle through the list for a report to check all is set up good
+!    current => head
+!    do while(associated(current))
 !      call grid_report(current)
-      current=>current%next
-    enddo
+!      current=>current%next
+!    enddo
  
+    first_call = .false.
 
   end subroutine initialise_grids
 
@@ -853,6 +864,9 @@ contains
       current => next
       next => current%next
     enddo
+
+    nullify(head) !important
+    nullify(tail) 
 
   endsubroutine deallocate_grids
 

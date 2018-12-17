@@ -22,7 +22,7 @@ program test3
   ! setup a test problem 
 
   
-  print *,'Test3: This does something'
+  print *,'Test3: As test two but for D(eta G(phi)) = f with eta=1 uniformly'
 
   power_min = 3
   power_max = 10
@@ -86,7 +86,8 @@ program test3
 
   input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
             & bc_xmin = 'fixed', bc_ymin='fixed', bc_xmax='fixed', bc_ymax = 'fixed', &
-            eta = eta, eta_present = .true., & 
+            & deallocate_after = .true., &
+            & eta = eta, eta_present = .true., & 
             & eta_bc_xmin = 'fixed', eta_bc_ymin='fixed', eta_bc_xmax='fixed', eta_bc_ymax = 'fixed')
 
   call mg_interface(input)

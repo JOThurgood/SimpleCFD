@@ -22,7 +22,7 @@ program test4
 
   ! setup a test problem 
 
-  print *,'Test4: This does something'
+  print *,'Test4: True test of D(eta G(phi)) = f , where eta is spatially varying'
 
   power_min = 3
   power_max = 10
@@ -86,7 +86,8 @@ program test4
 
   input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
             & bc_xmin = 'periodic', bc_ymin='periodic', bc_xmax='periodic', bc_ymax = 'periodic', &
-            eta = eta, eta_present = .true., & 
+            & deallocate_after = .true., &
+            & eta = eta, eta_present = .true., & 
             & eta_bc_xmin = 'periodic', eta_bc_ymin='periodic', eta_bc_xmax='periodic', eta_bc_ymax = 'periodic')
 
   call mg_interface(input)

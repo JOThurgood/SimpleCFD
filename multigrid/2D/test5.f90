@@ -11,8 +11,8 @@ program test5
   integer, parameter :: num = selected_real_kind(p=15)
   integer :: out_unit = 10
 
-  integer :: nx = 128
-  integer :: ny = 128
+  integer :: nx = 256
+  integer :: ny = 256
 
   real(num) :: x_min = 0.0_num
   real(num) :: x_max = 1.0_num
@@ -117,12 +117,13 @@ program test5
     input = mg_input(tol = tol, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
             & bc_xmin = 'zero_gradient', bc_ymin='zero_gradient', &
             & bc_xmax='zero_gradient', bc_ymax = 'zero_gradient', &
+!            & deallocate_after = .true., &
             & quiet = .true., & 
             & const_helmholtz = .true., ch_alpha = alpha, ch_beta = beta)
     call mg_interface(input)
     phi = input%phi
 
-!    print *,'time', time,'tstep',tstep, 'done'
+    print *,'time', time,'tstep',tstep, 'done'
 
     time = time + dt
   enddo

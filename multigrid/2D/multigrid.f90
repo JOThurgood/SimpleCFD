@@ -51,6 +51,12 @@ module multigrid
     logical :: const_helmholtz = .false.
     real(num) :: ch_alpha = 0.0_num
     real(num) :: ch_beta = 0.0_num
+    ! optional values for fixed phi values for inhomogeneous boundaries on the
+    ! their default is zero, so simply dont set for homogeneous 
+    ! (currently only implemented for diriclet / 'fixed', but same variables
+    ! could be used for inhomo Neumann / gradient bc)
+    real(num) :: phi_bc_xmin = 0.0_num
+    real(num) :: phi_bc_xmax = 0.0_num
 
   end type mg_input
 
@@ -583,9 +589,17 @@ contains
 
     if (mg_state%bc_xmin == fixed) then
       this%phi(0,:) = -this%phi(1,:)
+      if (this%level == 1 ) then
+        this%phi(0,:) = 2.0_num * mg_state%phi_bc_xmin &
+                        & -this%phi(1,:)
+      endif
     endif
     if (mg_state%bc_xmax == fixed) then
       this%phi(this%nx+1,:) = -this%phi(this%nx,:)
+      if (this%level == 1 ) then
+        this%phi(this%nx+1,:) = 2.0_num * mg_state%phi_bc_xmax &
+                              & -this%phi(this%nx,:)
+      endif
     endif
     if (mg_state%bc_ymin == fixed) then
       this%phi(:,0) = -this%phi(:,1)

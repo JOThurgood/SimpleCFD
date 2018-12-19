@@ -14,7 +14,7 @@ FCFLAGS += -I/usr/include
 
 # List of executables to be built within the package
 PROGRAMS = test1 test2 test3 test4 test5 test6 test6_reverse \
-  test6_y
+  test6_y test6_y_reverse
 
 # "make" builds all
 all: $(PROGRAMS)
@@ -27,6 +27,7 @@ test5: multigrid.o
 test6: multigrid.o
 test6_y: multigrid.o
 test6_reverse: multigrid.o
+test6_y_reverse: multigrid.o
 
 # ======================================================================
 # And now the general rules, these should not require modification

@@ -85,7 +85,7 @@ program test2_constHelmholtz
 
   input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
             & bc_xmin = 'fixed', bc_ymin='fixed', bc_xmax='fixed', bc_ymax = 'fixed', &
-            & const_helmholtz = .true., ch_alpha = 0.0_num, ch_beta = 1.0_num, &
+            & const_helmholtz = .true., ch_alpha = 0.0_num, ch_beta = -1.0_num, &
             & deallocate_after = .true.)
 
   call mg_interface(input)

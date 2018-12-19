@@ -76,19 +76,21 @@ program test3
     eta = 1.0_num 
   
     ! solve for phi
-!    nlevels = -1!-1 ! auto
-!    call mg_interface(f = f, phi=phi, eta=eta, tol = 1e-12_num, &
-!                    & nx = nx, ny = ny, dx = dx, dy = dy, &
-!                    &  nlevels = nlevels, &
-!    & bc_xmin_in = fixed, bc_ymin_in = fixed, bc_xmax_in = fixed, bc_ymax_in = fixed)
-  
 
 
   input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
             & bc_xmin = 'fixed', bc_ymin='fixed', bc_xmax='fixed', bc_ymax = 'fixed', &
             & deallocate_after = .true., &
             & eta = eta, eta_present = .true., & 
-            & eta_bc_xmin = 'fixed', eta_bc_ymin='fixed', eta_bc_xmax='fixed', eta_bc_ymax = 'fixed')
+! as eta=1 uniformly, zero gradient is equivalent to dirichlet with eta=1
+            & eta_bc_xmin = 'zero_gradient', eta_bc_ymin='zero_gradient', &
+            & eta_bc_xmax='zero_gradient', eta_bc_ymax = 'zero_gradient')
+! fixed shouldn't really work atm, since inhomo fixed eta not implemented
+!its just because inside MG code eta_bc = fixed 
+! actually defaults to zero_grad which is a BS hack thats came back to bite me 
+! and needs fixed in general
+!             & eta_bc_xmin = 'fixed', eta_bc_ymin='fixed', &
+!            &eta_bc_xmax='fixed', eta_bc_ymax = 'fixed')
 
   call mg_interface(input)
 

@@ -1,4 +1,4 @@
-program test6
+program test6_reverse
 
   use multigrid
 
@@ -33,8 +33,8 @@ program test6
 
   
   print *,'Test6: Lphi= A * sin(k * 2pi *x)'
-  print *,'x_min = zerograd'
-  print *,'x_max = fixed = B = ',B
+  print *,'x_min = fixed = B = ',B
+  print *,'x_max = zerograd'
   print *,'2D => 1D via ybcs = periodic'
   print *,'also can test variable nx for convergence properties'
 
@@ -91,7 +91,7 @@ program test6
  ! Solve for phi
 
   input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
-            & bc_xmin = 'zero_gradient', bc_xmax = 'fixed', phi_bc_xmax = 1.0_num, &
+            & bc_xmin = 'fixed', bc_xmax = 'zero_gradient', phi_bc_xmin = 1.0_num, &
             & bc_ymin = 'periodic', bc_ymax = 'periodic', &
             & deallocate_after = .true.)
 
@@ -106,7 +106,7 @@ program test6
       x = xc(ix)
       y = yc(iy)
       C1 = A / k / pi2
-      C2 = B - C1 
+      C2 = B
       analytic(ix,iy) = - A * sin(k * pi2 * x) *(1.0_num/k/pi2)**2 + C1*x + C2
     enddo
     enddo
@@ -148,4 +148,4 @@ program test6
   call execute_command_line("rm test6_nx.dat")
 
 
-end program test6
+end program test6_reverse

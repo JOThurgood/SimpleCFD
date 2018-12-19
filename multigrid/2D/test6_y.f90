@@ -1,4 +1,4 @@
-program test6
+program test6_y
 
   use multigrid
 
@@ -32,11 +32,11 @@ program test6
 
 
   
-  print *,'Test6: Lphi= A * sin(k * 2pi *x)'
-  print *,'x_min = zerograd'
-  print *,'x_max = fixed = B = ',B
-  print *,'2D => 1D via ybcs = periodic'
-  print *,'also can test variable nx for convergence properties'
+  print *,'Test6: Lphi= A * sin(k * 2pi *y)'
+  print *,'y_min = zerograd'
+  print *,'y_max = fixed = B = ',B
+  print *,'2D => 1D via xbcs = periodic'
+  print *,'also can test variable ny for convergence properties'
 
   power_min = 5
   power_max = 9 
@@ -83,7 +83,7 @@ program test6
     do ix = 1, nx
       x = xc(ix)
       y = yc(iy) 
-      f(ix,iy) = A * sin(k * pi2 * x) 
+      f(ix,iy) = A * sin(k * pi2 * y) 
     enddo
     enddo
   
@@ -91,8 +91,8 @@ program test6
  ! Solve for phi
 
   input = mg_input(tol = 1e-12_num, nx=nx, ny = ny, dx=dx, dy=dy, f = f, phi = phi, &
-            & bc_xmin = 'zero_gradient', bc_xmax = 'fixed', phi_bc_xmax = 1.0_num, &
-            & bc_ymin = 'periodic', bc_ymax = 'periodic', &
+            & bc_ymin = 'zero_gradient', bc_ymax = 'fixed', phi_bc_ymax = 1.0_num, &
+            & bc_xmin = 'periodic', bc_xmax = 'periodic', &
             & deallocate_after = .true.)
 
   call mg_interface(input)
@@ -107,7 +107,7 @@ program test6
       y = yc(iy)
       C1 = A / k / pi2
       C2 = B - C1 
-      analytic(ix,iy) = - A * sin(k * pi2 * x) *(1.0_num/k/pi2)**2 + C1*x + C2
+      analytic(ix,iy) = - A * sin(k * pi2 * y) *(1.0_num/k/pi2)**2 + C1*y + C2
     enddo
     enddo
   
@@ -148,4 +148,4 @@ program test6
   call execute_command_line("rm test6_nx.dat")
 
 
-end program test6
+end program test6_y

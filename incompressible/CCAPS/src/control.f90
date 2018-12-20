@@ -41,9 +41,9 @@ module control
     ! favour of the specific problems
 
 !    shear_test = .true.
-!    minion_test = .true. 
+    minion_test = .true. 
 !    vortex1_test = .true.
-    drivenlid_test = .true.
+!    drivenlid_test = .true.
 !    vardens_adv_test = .true.
 !    rti1_test = .true. 
 !    blob1_test = .true. 
@@ -129,14 +129,14 @@ module control
     x_max = 1.0_num
     y_min = x_min
     y_max = x_max
-    nx = 128
+    nx = 32 
     ny = nx
     CFL = 1.0_num
-    t_end = 200.0_num  
+    t_end = 20.0_num   
     nsteps = -1
     use_minmod = .false.    
     use_viscosity = .true.
-    visc = 1e-4_num
+    visc = 1e-2_num
     bc_xmin = no_slip
     bc_xmax = no_slip
     bc_ymin = no_slip

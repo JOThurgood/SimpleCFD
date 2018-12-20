@@ -460,18 +460,20 @@ print *,'warning hardcoded perodic for MG, needs general handling'
         STOP 
       else
 
-!        input = mg_input(tol = 1e-16_num, nx = nx, ny = ny, dx = dx, dy = dy, &
-!              & f = f, phi=ustar, &
-!              & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
-!              & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ,&
-!              & const_helmholtz = .true. , ch_alpha = 1.0_num, ch_beta = dt*visc/2.0_num) 
-!  
-!        call mg_interface(input)
-!        ustar(1:nx,1:ny) = input%phi
+        input = mg_input(tol = 1e-16_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+              & f = f, phi=ustar, &
+!              & use_as_init_guess = .true., & 
+              & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
+              & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ,&
+              & phi_bc_ymax = 1.0_num, & 
+              & const_helmholtz = .true. , ch_alpha = 1.0_num, ch_beta = dt*visc/2.0_num) 
+  
+        call mg_interface(input)
+        ustar(1:nx,1:ny) = input%phi(1:nx,1:ny)
 
-        call solve_const_Helmholtz(phigs = ustar, f = f, &
-          alpha = 1.0_num, beta = dt*visc/2.0_num, &
-          & use_old_phi = .true., tol = 1e-16_num) 
+!        call solve_const_Helmholtz(phigs = ustar, f = f, &
+!          alpha = 1.0_num, beta = dt*visc/2.0_num, &
+!          & use_old_phi = .true., tol = 1e-16_num) 
       endif
 
       print *,'*** begin implicit solve for vstar' 
@@ -485,9 +487,19 @@ print *,'warning hardcoded perodic for MG, needs general handling'
       if (use_vardens) then
         !stub
       else
-        call solve_const_Helmholtz(phigs = vstar, f = f, &
-          alpha = 1.0_num, beta = dt*visc/2.0_num, &
-          & use_old_phi = .true., tol = 1e-16_num) 
+!        call solve_const_Helmholtz(phigs = vstar, f = f, &
+!          alpha = 1.0_num, beta = dt*visc/2.0_num, &
+!          & use_old_phi = .true., tol = 1e-16_num) 
+
+        input = mg_input(tol = 1e-16_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+              & f = f, phi=vstar, &
+ !             & use_as_init_guess = .true., & 
+              & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
+              & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ,&
+              & const_helmholtz = .true. , ch_alpha = 1.0_num, ch_beta = dt*visc/2.0_num) 
+  
+        call mg_interface(input)
+        vstar(1:nx,1:ny) = input%phi(1:nx,1:ny)
       endif
 
     endif

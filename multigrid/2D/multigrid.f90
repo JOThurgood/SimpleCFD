@@ -37,6 +37,7 @@ module multigrid
     real(num) :: tol
     ! optional non-allocatable variables just set to a default
     integer :: nlevels = -1 !-1 is "auto"
+    logical :: use_as_init_guess = .false.
     logical :: eta_present = .false.
     logical :: quiet = .false.
     logical :: deallocate_after = .false.
@@ -836,6 +837,9 @@ contains
     current => head
     current%f = mg_state%f
     current%phi = 0.0_num 
+    if (mg_state%use_as_init_guess) then
+      current%phi = mg_state%phi(0:mg_state%nx+1, 0:mg_state%ny+1)
+    endif 
     if (mg_state%eta_present) then
       current%eta(1:current%nx,1:current%ny) = mg_state%eta
       call eta_initialise

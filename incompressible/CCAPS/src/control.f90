@@ -41,9 +41,9 @@ module control
     ! favour of the specific problems
 
 !    shear_test = .true.
-    minion_test = .true. 
+!    minion_test = .true. 
 !    vortex1_test = .true.
-!    drivenlid_test = .true.
+    drivenlid_test = .true.
 !    vardens_adv_test = .true.
 !    rti1_test = .true. 
 !    blob1_test = .true. 
@@ -140,7 +140,6 @@ module control
     bc_xmin = no_slip
     bc_xmax = no_slip
     bc_ymin = no_slip
-!    bc_ymax = driven
     bc_ymax = dirichlet ! dirichlet const must be hardcoded in boundary.f90 for now
     dumpfreq = 100
     grav_x = 0.0_num

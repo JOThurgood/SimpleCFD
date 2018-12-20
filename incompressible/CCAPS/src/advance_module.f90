@@ -344,7 +344,7 @@ module advance_module
 !        & alpha = 0.0_num, beta = -1.0_num, &
 !        & use_old_phi = .false., tol = 1e-18_num) 
 
-      input = mg_input(tol = 1e-16_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+      input = mg_input(tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy, &
             & f = divu(1:nx,1:ny), phi=phi, &
             & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
             & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ) 
@@ -456,7 +456,7 @@ module advance_module
         STOP 
       else
 
-        input = mg_input(tol = 1e-16_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+        input = mg_input(tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy, &
               & f = f, phi=ustar, &
 !              & use_as_init_guess = .true., & 
               & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
@@ -487,7 +487,7 @@ module advance_module
 !          alpha = 1.0_num, beta = dt*visc/2.0_num, &
 !          & use_old_phi = .true., tol = 1e-16_num) 
 
-        input = mg_input(tol = 1e-16_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+        input = mg_input(tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy, &
               & f = f, phi=vstar, &
  !             & use_as_init_guess = .true., & 
               & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
@@ -538,7 +538,7 @@ module advance_module
 !        alpha = 0.0_num, beta = -1.0_num, &
 !        & use_old_phi = .true., tol = 1e-16_num) 
 
-      input = mg_input(tol = 1e-16_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+      input = mg_input(tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy, &
             & f = divu(1:nx,1:ny), phi=phi, &
             & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
             & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ) 

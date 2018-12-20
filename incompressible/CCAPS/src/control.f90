@@ -129,20 +129,20 @@ module control
     x_max = 1.0_num
     y_min = x_min
     y_max = x_max
-    nx = 32 
+    nx = 128
     ny = nx
     CFL = 1.0_num
-    t_end = 20.0_num  
+    t_end = 200.0_num  
     nsteps = -1
     use_minmod = .false.    
     use_viscosity = .true.
-    visc = 1e-2_num
+    visc = 1e-4_num
     bc_xmin = no_slip
     bc_xmax = no_slip
     bc_ymin = no_slip
-    bc_ymax = dirichlet ! dirichlet const must be hardcoded in boundary.f90 for now
+    bc_ymax = dirichlet ! dirichlet is hardcoded in boundary.f90 to set ux = drive_vel
     drive_vel = 1.0_num
-    dumpfreq = 100
+    dumpfreq = 500
     grav_x = 0.0_num
     grav_y = 0.0_num
     use_vardens = .false.

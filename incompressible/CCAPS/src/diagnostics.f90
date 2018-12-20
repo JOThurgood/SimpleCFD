@@ -135,7 +135,7 @@ module diagnostics
     call execute_command_line("python python_plotting/sln_plots.py")
 
     if (drivenlid_test) then
-      ! equality comparison on real is usually bad but ok here specifically
+      if (visc == 1e-4_num) call execute_command_line("python python_plotting/ghia_re1e4.py")
       if (visc == 1e-3_num) call execute_command_line("python python_plotting/ghia_re1e3.py")
       if (visc == 1e-2_num) call execute_command_line("python python_plotting/ghia_re1e2.py")
     endif 

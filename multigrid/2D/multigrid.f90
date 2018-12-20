@@ -157,6 +157,9 @@ contains
           L2 = sqrt(sum(abs(current%residue)**2)/real(current%nx*current%ny,num))
           if (abs(L2-L2_old) <= mg_state%tol) exit mainloop
 !          if (isnan(L2)) STOP
+          if (nsteps > 1000) then
+            print *,'MG struggling to converge, L2 =', L2
+          endif
           L2_old = L2
         endif
         call residual(current)

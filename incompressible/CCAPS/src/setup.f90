@@ -70,7 +70,10 @@ module setup
     if (bc_xmin == dirichlet) mg_bc_xmin = 'fixed'
     if (bc_xmax == dirichlet) mg_bc_xmax = 'fixed'
     if (bc_ymin == dirichlet) mg_bc_ymin = 'fixed'
-    if (bc_ymax == dirichlet) mg_bc_ymax = 'none' !* this is a fudge for the driven lid test and should be fixed
+    if (bc_ymax == dirichlet) mg_bc_ymax = 'fixed' !*
+
+
+  !* Drikkas and Rider suggest this a questionable way to sort solvability
 
   end subroutine setup_mg
 

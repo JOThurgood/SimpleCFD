@@ -214,7 +214,7 @@ module boundary_conditions
     if ( bc_ymax == dirichlet) then
 
       if (di == 1) then
-        const = 1.0_num ! you will also want to make sure MG in advance is passed the same drive vel
+        const = drive_vel
       else if (di == 2) then
         const = 0.0_num
       else 

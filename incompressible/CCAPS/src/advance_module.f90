@@ -465,7 +465,7 @@ print *,'warning hardcoded perodic for MG, needs general handling'
 !              & use_as_init_guess = .true., & 
               & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
               & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ,&
-              & phi_bc_ymax = 1.0_num, & 
+              & phi_bc_ymax = drive_vel, & 
               & const_helmholtz = .true. , ch_alpha = 1.0_num, ch_beta = dt*visc/2.0_num) 
   
         call mg_interface(input)

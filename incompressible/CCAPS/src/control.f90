@@ -141,6 +141,7 @@ module control
     bc_xmax = no_slip
     bc_ymin = no_slip
     bc_ymax = dirichlet ! dirichlet const must be hardcoded in boundary.f90 for now
+    drive_vel = 1.0_num
     dumpfreq = 100
     grav_x = 0.0_num
     grav_y = 0.0_num

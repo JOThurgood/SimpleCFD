@@ -60,6 +60,11 @@ module multigrid
     real(num) :: phi_bc_xmax = 0.0_num
     real(num) :: phi_bc_ymin = 0.0_num
     real(num) :: phi_bc_ymax = 0.0_num
+    ! eta values for inhomogeneous dirichlet 
+    real(num) :: etaval_bc_xmin = 0.0_num
+    real(num) :: etaval_bc_xmax = 0.0_num
+    real(num) :: etaval_bc_ymin = 0.0_num
+    real(num) :: etaval_bc_ymax = 0.0_num
 
   end type mg_input
 
@@ -548,19 +553,23 @@ contains
 
    if (mg_state%eta_bc_xmin == fixed) then
 !      this%eta(0,:) = -this%eta(1,:)
-     this%eta(0,:) = this%eta(1,:)
+!!     this%eta(0,:) = this%eta(1,:)
+      this%eta(0,:) = 2.0_num * mg_state%etaval_bc_xmin - this%eta(1,:)
    endif
    if (mg_state%eta_bc_xmax == fixed) then
 !      this%eta(this%nx+1,:) = -this%eta(this%nx,:)
-     this%eta(this%nx+1,:) = this%eta(this%nx,:)
+!!     this%eta(this%nx+1,:) = this%eta(this%nx,:)
+      this%eta(this%nx+1,:) = 2.0_num * mg_state%etaval_bc_xmax -this%eta(this%nx,:)
    endif
    if (mg_state%eta_bc_ymin == fixed) then
 !      this%eta(:,0) = -this%eta(:,1)
-     this%eta(:,0) = this%eta(:,1)
+!!     this%eta(:,0) = this%eta(:,1)
+      this%eta(:,0) = 2.0_num * mg_state%etaval_bc_ymin - this%eta(:,1)
    endif
    if (mg_state%eta_bc_ymax == fixed) then
 !      this%eta(:,this%ny+1) = -this%eta(:,this%ny)
-     this%eta(:,this%ny+1) = this%eta(:,this%ny)
+!!     this%eta(:,this%ny+1) = this%eta(:,this%ny)
+      this%eta(:,this%ny+1) = 2.0_num * mg_state%etaval_bc_ymax-this%eta(:,this%ny)
    endif
 
 

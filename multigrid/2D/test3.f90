@@ -83,14 +83,16 @@ program test3
             & deallocate_after = .true., &
             & eta = eta, eta_present = .true., & 
 ! as eta=1 uniformly, zero gradient is equivalent to dirichlet with eta=1
-            & eta_bc_xmin = 'zero_gradient', eta_bc_ymin='zero_gradient', &
-            & eta_bc_xmax='zero_gradient', eta_bc_ymax = 'zero_gradient')
+!            & eta_bc_xmin = 'zero_gradient', eta_bc_ymin='zero_gradient', &
+!            & eta_bc_xmax='zero_gradient', eta_bc_ymax = 'zero_gradient')
 ! fixed shouldn't really work atm, since inhomo fixed eta not implemented
 !its just because inside MG code eta_bc = fixed 
 ! actually defaults to zero_grad which is a BS hack thats came back to bite me 
 ! and needs fixed in general
-!             & eta_bc_xmin = 'fixed', eta_bc_ymin='fixed', &
-!            &eta_bc_xmax='fixed', eta_bc_ymax = 'fixed')
+             & eta_bc_xmin = 'fixed', eta_bc_ymin='fixed', &
+             & eta_bc_xmax='fixed', eta_bc_ymax = 'fixed', &
+             & etaval_bc_xmin = 1.0_num, etaval_bc_ymin = 1.0_num, &
+             & etaval_bc_xmax = 1.0_num, etaval_bc_ymax = 1.0_num)
 
   call mg_interface(input)
 

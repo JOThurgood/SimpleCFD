@@ -22,8 +22,9 @@ v = np.fromfile('v.dat', dtype = np.float64)
 u = u.reshape(yc.size, xc.size)
 v = v.reshape(yc.size, xc.size)
 
+cen = yc.size // 2
 
-plt.plot(yc,(u[:,16]+u[:,17])/2.)
+plt.plot(yc,(u[:,cen]+u[:,cen+1])/2.)
 
 y_ghia = np.array([
   0.0000, 
@@ -65,6 +66,6 @@ u_center = np.array([
 
 u_center = np.flip(u_center,0)
 plt.scatter(y_ghia,u_center)
-plt.scatter(yc,(u[:,16]+u[:,17])/2.,color='red')
+plt.scatter(yc,(u[:,cen]+u[:,cen+1])/2.,color='red')
 plt.title('u on central vertical axis at t = {:.3f}'.format(float(time)))
 plt.savefig(getfilenameindex("output/ghia_u_cent_"))

@@ -97,6 +97,7 @@ contains
 
     if (.not.(mg_state%quiet)) then
       print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
+      print *,'****** (nb this is not wall time - if using OpenMP will be *total cpu time* (i.e. more threads = more time reported)'
       print *,'*** Multigrid finished'
     endif
 
@@ -346,6 +347,7 @@ contains
 
     if (mg_state%eta_present) then
       do odd_then_even = 1, 0, -1 
+        !$OMP PARALLEL DO
         do iy = 1, this%ny  
         do ix = 1, this%nx  
           if (modulo(ix+iy,2) == odd_then_even) then
@@ -360,11 +362,13 @@ contains
           endif
         end do
         end do 
+        !$OMP END PARALLEL DO
       enddo
 
     else if (mg_state%const_helmholtz) then
 
       do odd_then_even = 1, 0, -1 
+        !$OMP PARALLEL DO
         do iy = 1, this%ny  
         do ix = 1, this%nx  
           if (modulo(ix+iy,2) == odd_then_even) then
@@ -376,11 +380,13 @@ contains
           endif
         end do
         end do 
+        !$OMP END PARALLEL DO
       enddo
 
     else 
  
       do odd_then_even = 1, 0, -1 
+        !$OMP PARALLEL DO
         do iy = 1, this%ny  
         do ix = 1, this%nx  
           if (modulo(ix+iy,2) == odd_then_even) then
@@ -391,6 +397,7 @@ contains
           endif
         end do
         end do 
+        !$OMP END PARALLEL DO
       enddo
 
     endif
@@ -406,6 +413,7 @@ contains
     call bcs(this)
 
     if (mg_state%eta_present) then
+      !$OMP PARALLEL DO
       do iy = 1, this%ny   
       do ix = 1, this%nx   
         eta_ip = 0.5_num * (this%eta(ix,iy)+this%eta(ix+1,iy))! / this%dx**2
@@ -421,9 +429,11 @@ contains
         this%residue(ix,iy) = Lap - this%f(ix,iy)
       enddo              
       enddo        
+      !$OMP END PARALLEL DO
 
     else if (mg_state%const_helmholtz) then
-      
+
+      !$OMP PARALLEL DO
       do iy = 1, this%ny   
       do ix = 1, this%nx   
         Lap = (this%phi(ix+1,iy) - 2.0_num*this%phi(ix,iy) + this%phi(ix-1,iy)) / this%dx**2 + & 
@@ -432,9 +442,11 @@ contains
         this%residue(ix,iy) = Lap - this%f(ix,iy)
       enddo
       enddo
+      !$OMP END PARALLEL DO
 
     else
 
+      !$OMP PARALLEL DO
       do iy = 1, this%ny   
       do ix = 1, this%nx   
         Lap = (this%phi(ix+1,iy) - 2.0_num*this%phi(ix,iy) + this%phi(ix-1,iy)) / this%dx**2 + & 
@@ -442,6 +454,7 @@ contains
         this%residue(ix,iy) = Lap - this%f(ix,iy)
       enddo              
       enddo        
+      !$OMP END PARALLEL DO
 
     endif
 

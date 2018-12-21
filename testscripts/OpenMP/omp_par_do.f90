@@ -12,6 +12,7 @@
 !sys	0m0.488s
 
 !
+!C17775472:OpenMP tflv6$ gfortran -fopenmp -o out omp_par_do.f90
 !C17775472:OpenMP_test tflv6$ time ./out
 ! hi
 ! hi
@@ -24,6 +25,11 @@
 !
 !real	1m52.110s
 !user	14m12.182s
+
+
+! looks good but dont forget that -O2 does all sorts of magic 
+! so when you run with that you might find something this simple 
+! just finishes instantly regardless of how big you make the loop
 
 program omp_par_do
 

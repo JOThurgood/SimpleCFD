@@ -6,6 +6,7 @@ FC = gfortran
 FCFLAGS = -g -fbounds-check -Wall  -Wline-truncation  -Wcharacter-truncation  -Wsurprising  -Waliasing  -Wimplicit-interface  -Wunused-parameter  -fwhole-file  -fcheck=all  -std=f2008  -pedantic      -fbacktrace -Wextra -Wconversion -Wconversion-extra 
 
 FCFLAGS = -O2
+FCFLAGS = -O2 -fopenmp
 # flags forall (e.g. look for system .mod files, required in gfortran)
 FCFLAGS += -I/usr/include
 

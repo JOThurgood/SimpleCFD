@@ -12,6 +12,7 @@
 !sys	0m0.488s
 
 !
+!C17775472:OpenMP tflv6$ gfortran -fopenmp -o out omp_par_do.f90
 !C17775472:OpenMP_test tflv6$ time ./out
 ! hi
 ! hi

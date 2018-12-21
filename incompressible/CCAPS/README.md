@@ -11,10 +11,16 @@ See the wiki for full details of usage and test data: https://github.com/JOThurg
 
 ## Compiling
 
-Use cmake to make a makefile. Call cmake in "build" for an out of source build, because it generates a ton of rubbish so you dont that mixed in with src.
+Currently uses cmake to produce a makefile with the proper linking etc.
 
-cd build
-cmake ..
-make
-cd ..
-./bin/CCAPS
+* Make a directory to keep cmakes junk in
+    * `mkdir build` 
+    * `cd build`
+* Use cmake to produce a makefile (dont have to repeat this often, just if change compiler flags or add files to source), then run the makefile (do this every time you edit the source).
+    * `cmake ..`
+    * `make`
+* Move back up to the main directory and execute CCAPS
+    * `cd ..`
+    * `./bin/CCAPS`
+* There is a script to cleanup the output and the compiled binary
+    * `./clean.sh`

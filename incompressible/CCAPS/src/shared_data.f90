@@ -101,5 +101,14 @@ module shared_data
   character(len=20) :: mg_bc_ymin = 'none'
   character(len=20) :: mg_bc_ymax = 'none'
 
+  character(len=20) :: mg_etabc_xmin = 'none'
+  character(len=20) :: mg_etabc_xmax = 'none'
+  character(len=20) :: mg_etabc_ymin = 'none'
+  character(len=20) :: mg_etabc_ymax = 'none'
+
+  real(num) :: mg_etaval_bc_xmin = -1e6_num ! for dirichlet on eta
+  real(num) :: mg_etaval_bc_xmax = -1e6_num ! default to ridiculous num 
+  real(num) :: mg_etaval_bc_ymin = -1e6_num
+  real(num) :: mg_etaval_bc_ymax = -1e6_num !
 
 end module shared_data

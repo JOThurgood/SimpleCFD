@@ -72,6 +72,27 @@ module setup
     if (bc_ymin == dirichlet) mg_bc_ymin = 'fixed'
     if (bc_ymax == dirichlet) mg_bc_ymax = 'fixed' !*
 
+    if (use_vardens) then
+
+      if (bc_xmin == periodic) mg_etabc_xmin = 'periodic'
+      if (bc_xmax == periodic) mg_etabc_xmax = 'periodic'
+      if (bc_ymin == periodic) mg_etabc_ymin = 'periodic'
+      if (bc_ymax == periodic) mg_etabc_ymax = 'periodic'
+
+      if (bc_xmin == no_slip) mg_etabc_xmin = 'fixed'
+      if (bc_xmax == no_slip) mg_etabc_xmax = 'fixed'
+      if (bc_ymin == no_slip) mg_etabc_ymin = 'fixed'
+      if (bc_ymax == no_slip) mg_etabc_ymax = 'fixed'
+
+      if (bc_xmin == no_slip) mg_etaval_bc_xmin = 1.0_num 
+      if (bc_xmax == no_slip) mg_etaval_bc_xmax = 1.0_num
+      if (bc_ymin == no_slip) mg_etaval_bc_ymin = 1.0_num
+      if (bc_ymax == no_slip) mg_etaval_bc_ymax = 7.0_num
+
+    endif ! use_vardens
+
+
+
 
   !* Drikkas and Rider suggest this a questionable way to sort solvability
 

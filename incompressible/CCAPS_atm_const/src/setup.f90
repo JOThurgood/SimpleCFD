@@ -33,11 +33,55 @@ module setup
     if (rti1_test) call rti1_ic
     if (blob1_test) call blob1_ic
 
+    call setup_mg
+
     time = 0.0_num
 
     call setup_report
 
   end subroutine initial_setup
+
+  subroutine setup_mg
+
+    if (bc_xmin == periodic) mg_bc_xmin = 'periodic'
+    if (bc_xmax == periodic) mg_bc_xmax = 'periodic'
+    if (bc_ymin == periodic) mg_bc_ymin = 'periodic'
+    if (bc_ymax == periodic) mg_bc_ymax = 'periodic'
+
+    if (bc_xmin == zero_gradient) mg_bc_xmin = 'zero_gradient'
+    if (bc_xmax == zero_gradient) mg_bc_xmax = 'zero_gradient'
+    if (bc_ymin == zero_gradient) mg_bc_ymin = 'zero_gradient'
+    if (bc_ymax == zero_gradient) mg_bc_ymax = 'zero_gradient'
+
+    if (bc_xmin == no_slip) mg_bc_xmin = 'zero_gradient'
+    if (bc_xmax == no_slip) mg_bc_xmax = 'zero_gradient'
+    if (bc_ymin == no_slip) mg_bc_ymin = 'zero_gradient'
+    if (bc_ymax == no_slip) mg_bc_ymax = 'zero_gradient'
+
+    if (bc_xmin == dirichlet) mg_bc_xmin = 'fixed'
+    if (bc_xmax == dirichlet) mg_bc_xmax = 'fixed'
+    if (bc_ymin == dirichlet) mg_bc_ymin = 'fixed'
+    if (bc_ymax == dirichlet) mg_bc_ymax = 'fixed' !*
+
+    if (bc_xmin == periodic) mg_etabc_xmin = 'periodic'
+    if (bc_xmax == periodic) mg_etabc_xmax = 'periodic'
+    if (bc_ymin == periodic) mg_etabc_ymin = 'periodic'
+    if (bc_ymax == periodic) mg_etabc_ymax = 'periodic'
+
+    if (bc_xmin == no_slip) mg_etabc_xmin = 'fixed'
+    if (bc_xmax == no_slip) mg_etabc_xmax = 'fixed'
+    if (bc_ymin == no_slip) mg_etabc_ymin = 'fixed'
+    if (bc_ymax == no_slip) mg_etabc_ymax = 'fixed'
+
+    if (bc_xmin == no_slip) mg_etaval_bc_xmin = 1.0_num 
+    if (bc_xmax == no_slip) mg_etaval_bc_xmax = 1.0_num
+    if (bc_ymin == no_slip) mg_etaval_bc_ymin = 1.0_num
+    if (bc_ymax == no_slip) mg_etaval_bc_ymax = 7.0_num
+
+
+  !* Drikkas and Rider suggest this a questionable way to sort solvability
+
+  end subroutine setup_mg
 
   subroutine bootstrap
 

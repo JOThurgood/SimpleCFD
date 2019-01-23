@@ -41,8 +41,8 @@ module control
     ! favour of the specific problems
 
 !    shear_test = .true.
-!    minion_test = .true. 
-    rti1_test = .true. 
+    minion_test = .true. 
+!    rti1_test = .true. 
 
 !!!! following not yet updated for bkgd
 !    blob1_test = .true. 

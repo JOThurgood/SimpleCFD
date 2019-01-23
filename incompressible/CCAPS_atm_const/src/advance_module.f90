@@ -301,9 +301,10 @@ module advance_module
 
     do ix = 0, nx
     do iy = 0, ny
+      betacc = p0(iy)**(1.0_num / gamma)
       if (iy /= 0) then !can do the xface stuff
         correction = (phi(ix+1,iy) - phi(ix,iy))/dx
-        betacc = p0(iy)**(1.0_num / gamma)
+!        betacc = p0(iy)**(1.0_num / gamma)
         correction = correction * betacc / &
             (0.5_num * (rho(ix,iy) + rho(ix+1,iy)))
         macu(ix,iy) = macu(ix,iy) - correction 

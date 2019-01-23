@@ -79,7 +79,7 @@ module diagnostics
     L2 = sqrt( L2 / real(2*nx*ny,num))
 
     print *,''
-    print *,' Morrisons Convergence test: - L2 of velocity vs analytic sln:',L2
+    print *,' Minions Convergence test: - L2 of velocity vs analytic sln:',L2
     print *,''
 
   end subroutine test_minion

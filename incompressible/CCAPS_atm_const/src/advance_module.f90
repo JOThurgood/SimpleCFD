@@ -4,12 +4,15 @@ module advance_module
   use boundary_conditions
   use diagnostics
   use gauss_seidel
+  use multigrid
 
   implicit none
 
   private 
 
   public :: advance_dt 
+
+  type(mg_input) :: input
 
   contains
 
@@ -293,17 +296,31 @@ module advance_module
     enddo
     enddo
 
-    call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
-      & eta = eta_arr(0:nx+1,0:ny+1), &
-      & use_old_phi = .false., tol = 1e-18_num) 
-    
+!    call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
+!      & eta = eta_arr(0:nx+1,0:ny+1), &
+!      & use_old_phi = .false., tol = 1e-18_num) 
+ 
+      input = mg_input(tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+            & f = divu(1:nx,1:ny), phi=phi, &
+            & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
+            & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax, &
+            & eta = eta_arr(1:nx,1:ny), eta_present = .true., &
+            & eta_bc_xmin = mg_etabc_xmin, eta_bc_xmax = mg_etabc_xmax, &
+            & eta_bc_ymin = mg_etabc_ymin, eta_bc_ymax = mg_etabc_ymax, &
+            & etaval_bc_xmin = mg_etaval_bc_xmin, etaval_bc_ymin = mg_etaval_bc_ymin, &
+            & etaval_bc_xmax = mg_etaval_bc_xmax, etaval_bc_ymax = mg_etaval_bc_ymax )
+
+      call mg_interface(input)
+      phi = input%phi
+   
     print *, '*** max div beta*u before cleaning',maxval(abs(divu))
 
     do ix = 0, nx
     do iy = 0, ny
+      betacc = p0(iy)**(1.0_num / gamma)
       if (iy /= 0) then !can do the xface stuff
         correction = (phi(ix+1,iy) - phi(ix,iy))/dx
-        betacc = p0(iy)**(1.0_num / gamma)
+!        betacc = p0(iy)**(1.0_num / gamma)
         correction = correction * betacc / &
             (0.5_num * (rho(ix,iy) + rho(ix+1,iy)))
         macu(ix,iy) = macu(ix,iy) - correction 
@@ -423,10 +440,22 @@ module advance_module
     enddo
     enddo
 
-    call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
-      & eta = eta_arr(0:nx+1,0:ny+1) , &
-      & use_old_phi = .true., tol = 1e-18_num) 
+!    call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
+!      & eta = eta_arr(0:nx+1,0:ny+1) , &
+!      & use_old_phi = .true., tol = 1e-18_num) 
 
+      input = mg_input(tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy, &
+            & f = divu(1:nx,1:ny), phi=phi, &
+            & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
+            & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax, &
+            & eta = eta_arr(1:nx,1:ny), eta_present = .true., &
+            & eta_bc_xmin = mg_etabc_xmin, eta_bc_xmax = mg_etabc_xmax, &
+            & eta_bc_ymin = mg_etabc_ymin, eta_bc_ymax = mg_etabc_ymax, &
+            & etaval_bc_xmin = mg_etaval_bc_xmin, etaval_bc_ymin = mg_etaval_bc_ymin, &
+            & etaval_bc_xmax = mg_etaval_bc_xmax, etaval_bc_ymax = mg_etaval_bc_ymax )
+
+      call mg_interface(input)
+      phi = input%phi
     print *, '*** max  div (beta u) before cleaning',maxval(abs(divu)*dt)
 
     call phi_bcs

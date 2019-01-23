@@ -282,24 +282,7 @@ module boundary_conditions
       phi(:,ny+2) = phi(:,ny-1)
     endif
 
-    ! No slip (no actually sure what is appropriate for phi at this stage?)
-
-!!!    if (bc_xmin == no_slip) then
-!!!      phi(0,:) = -phi(1,:)
-!!!      phi(-1,:) = -phi(2,:)
-!!!    endif
-!!!    if (bc_xmax == no_slip) then
-!!!      phi(nx+1,:) = -phi(nx,:)
-!!!      phi(nx+2,:) = -phi(nx-1,:)
-!!!    endif
-!!!    if (bc_ymin == no_slip) then
-!!!      phi(:,0) = -phi(:,1)
-!!!      phi(:,-1) = -phi(:,2)
-!!!    endif
-!!!    if (bc_ymax == no_slip) then
-!!!      phi(:,ny+1) = -phi(:,ny)
-!!!      phi(:,ny+2) = -phi(:,ny-1)
-!!!    endif
+    ! No slip should be Neumann for pressure?
 
     if (bc_xmin == no_slip) then
       phi(0,:) = phi(1,:)
@@ -318,7 +301,14 @@ module boundary_conditions
       phi(:,ny+2) = phi(:,ny-1)
     endif
 
-    !overwrite with experimental no_slip
+    ! want to overhaul BC so you don't have so many different things doing the same thing
+
+    if (bc_ymax == dirichlet) then
+      phi(:,ny+1) =  phi(:,ny)
+      phi(:,ny+2) =  phi(:,ny-1)
+    endif
+
+    ! overwrite with experimental no_slip (for atmospheres)
 
     if (bc_ymin == no_slip) then
       phi(:,0) =  phi(:,1) - (phi(:,2)-phi(:,1))
@@ -329,6 +319,7 @@ module boundary_conditions
       phi(:,ny+1) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))
       phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
     endif
+
 
   end subroutine phi_bcs
 

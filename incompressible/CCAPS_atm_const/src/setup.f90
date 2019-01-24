@@ -288,6 +288,24 @@ module setup
     print *,''
     print *,'grav_y', grav_y
 
+    print *,'' 
+    print *,'with multigrid BC options'
+    print *,''        
+    print *,'mg_bc_xmin', mg_bc_xmin
+    print *,'mg_bc_xmax', mg_bc_xmax
+    print *,'mg_bc_ymin', mg_bc_ymin
+    print *,'mg_bc_ymax', mg_bc_ymax
+    print *,''        
+    print *,'mg_etabc_xmin', mg_etabc_xmin
+    print *,'mg_etabc_xmax', mg_etabc_xmax
+    print *,'mg_etabc_ymin', mg_etabc_ymin
+    print *,'mg_etabc_ymax', mg_etabc_ymax
+    print *,''        
+    print *,'mg_etaval_bx_xmin',  mg_etaval_bc_xmin 
+    print *,'mg_etaval_bx_xmax',  mg_etaval_bc_xmin 
+    print *,'mg_etaval_bx_ymin',  mg_etaval_bc_ymin 
+    print *,'mg_etaval_bx_ymax',  mg_etaval_bc_ym
+
   end subroutine setup_report
 
 end module setup

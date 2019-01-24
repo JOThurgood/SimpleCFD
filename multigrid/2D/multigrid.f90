@@ -165,6 +165,7 @@ contains
 !          if (isnan(L2)) STOP
           if (nsteps > 1000) then
             print *,'MG struggling to converge, L2 =', L2
+STOP
           endif
           L2_old = L2
         endif

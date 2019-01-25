@@ -79,15 +79,26 @@ module setup
       if (bc_ymin == periodic) mg_etabc_ymin = 'periodic'
       if (bc_ymax == periodic) mg_etabc_ymax = 'periodic'
 
-      if (bc_xmin == no_slip) mg_etabc_xmin = 'fixed'
-      if (bc_xmax == no_slip) mg_etabc_xmax = 'fixed'
-      if (bc_ymin == no_slip) mg_etabc_ymin = 'fixed'
-      if (bc_ymax == no_slip) mg_etabc_ymax = 'fixed'
+!      ! don't think you should be doing this
+!      if (bc_xmin == no_slip) mg_etabc_xmin = 'fixed'
+!      if (bc_xmax == no_slip) mg_etabc_xmax = 'fixed'
+!      if (bc_ymin == no_slip) mg_etabc_ymin = 'fixed'
+!      if (bc_ymax == no_slip) mg_etabc_ymax = 'fixed'
+!
+!      if (bc_xmin == no_slip) mg_etaval_bc_xmin = 1.0_num 
+!      if (bc_xmax == no_slip) mg_etaval_bc_xmax = 1.0_num
+!      if (bc_ymin == no_slip) mg_etaval_bc_ymin = 1.0_num
+!      if (bc_ymax == no_slip) mg_etaval_bc_ymax = 1.0_num !7.0_num
 
-      if (bc_xmin == no_slip) mg_etaval_bc_xmin = 1.0_num 
-      if (bc_xmax == no_slip) mg_etaval_bc_xmax = 1.0_num
-      if (bc_ymin == no_slip) mg_etaval_bc_ymin = 1.0_num
-      if (bc_ymax == no_slip) mg_etaval_bc_ymax = 7.0_num
+!      ! instead eta should be zerogradient (as it is basically 1/rho)
+      if (bc_xmin == no_slip) mg_etabc_xmin = 'zero_gradient'
+      if (bc_xmax == no_slip) mg_etabc_xmax = 'zero_gradient'
+      if (bc_ymin == no_slip) mg_etabc_ymin = 'zero_gradient'
+      if (bc_ymax == no_slip) mg_etabc_ymax = 'zero_gradient'
+
+      ! additionally make the rti1 case solvable by setting phi = fixed on one of the
+      ! non periodic faces
+      if (rti1_test) mg_bc_ymax = 'fixed' !*
 
     endif ! use_vardens
 

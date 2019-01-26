@@ -155,17 +155,8 @@ module initial_conditions
 
     do ix = -1, nx+1
     do iy = -1, ny+2
+
       x = xc(ix)
-
-!      if (step /= 0) then ! trust post step0 to have HSE built in . dont call on bootstrap?
-!          y = yc(iy) !+ amp * d * (cos(2.0_num * pi * x / d))
-!          y = y * 1.818_num / fwtm
-          rho(ix,iy) = rho0 + 0.5_num * (rho1-rho0) * (1.0_num + tanh(y))
-!          gradp_x(ix,iy) = rho(ix,iy) * grav_x
-!          gradp_y(ix,iy) = rho(ix,iy) * grav_y
-!      endif
-
-      !now overwrite rho with the perturbed + desingularised profile
       y = yc(iy) + amp * d * (cos(2.0_num * pi * x / d))
       y = y * 1.818_num / fwtm
       rho(ix,iy) = rho0 + 0.5_num * (rho1-rho0) * (1.0_num + tanh(y))

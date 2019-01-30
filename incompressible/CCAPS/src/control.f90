@@ -190,9 +190,9 @@ module control
     bc_xmin = periodic
     bc_xmax = periodic
     bc_ymin = no_slip
-    bc_ymax = no_slip
+    bc_ymax = outflow
     dumpfreq = -1 
-    dt_snapshot = 0.2_num
+    dt_snapshot = 0.10_num
     use_vardens = .true.
     grav_x = 0.0_num
     grav_y = -1.0_num

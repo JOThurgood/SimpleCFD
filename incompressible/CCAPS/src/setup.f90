@@ -98,11 +98,14 @@ module setup
 
       ! additionally make the rti1 case solvable by setting phi = fixed on one of the
       ! non periodic faces
-      if (rti1_test) mg_bc_ymax = 'fixed' !*
+      !if (rti1_test) mg_bc_ymax = 'fixed' !*
 
     endif ! use_vardens
 
-
+    if (bc_ymax == outflow) then 
+      mg_bc_ymax = 'fixed'
+      mg_etabc_ymax = 'zero_gradient'
+    endif
 
 
   !* Drikkas and Rider suggest this a questionable way to sort solvability

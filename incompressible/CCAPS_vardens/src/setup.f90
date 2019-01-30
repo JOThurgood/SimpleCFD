@@ -68,15 +68,27 @@ module setup
     if (bc_ymin == periodic) mg_etabc_ymin = 'periodic'
     if (bc_ymax == periodic) mg_etabc_ymax = 'periodic'
 
-    if (bc_xmin == no_slip) mg_etabc_xmin = 'fixed'
-    if (bc_xmax == no_slip) mg_etabc_xmax = 'fixed'
-    if (bc_ymin == no_slip) mg_etabc_ymin = 'fixed'
-    if (bc_ymax == no_slip) mg_etabc_ymax = 'fixed'
+! Think these are wrong
+!    if (bc_xmin == no_slip) mg_etabc_xmin = 'fixed'
+!    if (bc_xmax == no_slip) mg_etabc_xmax = 'fixed'
+!    if (bc_ymin == no_slip) mg_etabc_ymin = 'fixed'
+!    if (bc_ymax == no_slip) mg_etabc_ymax = 'fixed'
+!
+!    if (bc_xmin == no_slip) mg_etaval_bc_xmin = 1.0_num 
+!    if (bc_xmax == no_slip) mg_etaval_bc_xmax = 1.0_num
+!    if (bc_ymin == no_slip) mg_etaval_bc_ymin = 1.0_num
+!    if (bc_ymax == no_slip) mg_etaval_bc_ymax = 7.0_num
 
-    if (bc_xmin == no_slip) mg_etaval_bc_xmin = 1.0_num 
-    if (bc_xmax == no_slip) mg_etaval_bc_xmax = 1.0_num
-    if (bc_ymin == no_slip) mg_etaval_bc_ymin = 1.0_num
-    if (bc_ymax == no_slip) mg_etaval_bc_ymax = 7.0_num
+! Eta should really be zero gradient (as it is basically 1/rho)
+    if (bc_xmin == no_slip) mg_etabc_xmin = 'zero_gradient'
+    if (bc_xmax == no_slip) mg_etabc_xmax = 'zero_gradient'
+    if (bc_ymin == no_slip) mg_etabc_ymin = 'zero_gradient'
+    if (bc_ymax == no_slip) mg_etabc_ymax = 'zero_gradient'
+
+    if (bc_ymax == outflow) then 
+      mg_bc_ymax = 'fixed'
+      mg_etabc_ymax = 'zero_gradient'
+    endif
 
 
   !* Drikkas and Rider suggest this a questionable way to sort solvability

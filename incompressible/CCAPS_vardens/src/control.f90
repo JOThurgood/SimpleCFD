@@ -119,7 +119,7 @@ module control
 !    y_max = 0.5_num
     y_min = -2.0_num
     y_max = 2.0_num
-    nx = 16
+    nx = 128
 !    ny = nx
     ny = 4*nx !but do force nx=ny
     CFL = 0.5_num
@@ -129,7 +129,7 @@ module control
     bc_xmin = periodic
     bc_xmax = periodic
     bc_ymin = no_slip
-    bc_ymax = no_slip
+    bc_ymax = outflow! 
     dumpfreq = -1 
     dt_snapshot = 0.2_num
     grav_x = 0.0_num

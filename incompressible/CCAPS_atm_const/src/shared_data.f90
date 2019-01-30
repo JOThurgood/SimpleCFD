@@ -89,6 +89,7 @@ module shared_data
   integer, parameter :: zero_gradient = 1
   integer, parameter :: no_slip = 2
   integer, parameter :: dirichlet = 3
+  integer, parameter :: outflow = 4
 
   ! to pass bcs to mg
   character(len=20) :: mg_bc_xmin = 'none'

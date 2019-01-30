@@ -158,14 +158,6 @@ module initial_conditions
     do iy = -1, ny+2
       x = xc(ix)
 
-!      if (step /= 0) then ! trust post step0 to have HSE built in . dont call on bootstrap?
-!          y = yc(iy) !+ amp * d * (cos(2.0_num * pi * x / d))
-!          y = y * 1.818_num / fwtm
-!          rho(ix,iy) = rho_lo + 0.5_num * (rho_hi-rho_lo) * (1.0_num + tanh(y))
-!          gradp_x(ix,iy) = rho(ix,iy) * grav_x
-!          gradp_y(ix,iy) = rho(ix,iy) * grav_y
-!      endif
-
       !now overwrite rho with the perturbed + desingularised profile
       y = yc(iy) + amp * d * (cos(2.0_num * pi * x / d))
       y = y * 1.818_num / fwtm
@@ -196,7 +188,7 @@ module initial_conditions
   subroutine blob1_ic
 
     real(num) :: x,y,r
-
+    real(num) :: p0_lo
     ! this should probabally be de-singularised with a tanh profile on rho=rho(r)
 
     u = 0.0_num
@@ -211,8 +203,25 @@ module initial_conditions
       x = xc(ix)-0.5_num
       y = yc(iy)-0.5_num
       r = sqrt(x**2 + y**2)
-      if (r <= 0.1_num) rho(ix,iy) = 2.0_num
+      if (r <= 0.1_num) rho(ix,iy) = 0.8_num
     enddo
+    enddo
+
+  ! calculate a consistent rho0 and p0
+
+    do iy = -1, ny+2
+      rho0(iy) = sum(rho(1:nx,iy)) / REAL(nx,num)
+    enddo
+
+    ! Calculate a HSE background pressure p0 
+
+    p0_lo = 100.0_num ! just sets a Gauge? 
+        ! However, due to p0^(<1) terms, cant tolerate a negative number in the profile
+        ! so needs to be sufficiently high to not NAN the betas 
+
+    p0(-1) = p0_lo
+    do iy = 0, ny+2
+      p0(iy) = p0(iy-1) + 0.5_num * dy * (rho0(iy-1) + rho0(iy)) * grav_y
     enddo
 
     print *, 'rho on grid',sum(rho(1:nx,1:ny)*dx*dy)

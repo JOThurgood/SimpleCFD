@@ -101,8 +101,8 @@ contains
     this%phi(0:this%nx+1,0:this%ny+1) = current%phi 
 
     if (.not.(mg_state%quiet)) then
-      print '(" ****** cpu_time: ",f20.3," seconds.")',finish-start
-      print *,'****** (nb this is not wall time - if using OpenMP will be *total cpu time* (i.e. more threads = more time reported)'
+      print '(" ****** total cpu_time: ",f20.3," seconds.")',finish-start
+      print *,'****** (nb this is not wall time)'
       print *,'*** Multigrid finished'
     endif
 

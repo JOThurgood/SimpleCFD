@@ -238,6 +238,25 @@ module boundary_conditions
 
     endif
 
+    if (bc_ymax == outflow) then
+
+      if (present(arr_cc)) then
+        arr_cc(:,ny+1) = arr_cc(:,ny)
+        arr_cc(:,ny+2) = arr_cc(:,ny-1)
+      endif
+
+      if (present(arr_xface)) then
+        arr_xface(:,ny+1) = arr_xface(:,ny)
+        arr_xface(:,ny+2) = arr_xface(:,ny-1)
+      endif
+
+      if (present(arr_yface)) then
+        arr_yface(:,ny+1) = arr_yface(:,ny-1)
+        arr_yface(:,ny+2) = arr_yface(:,ny-2)
+      endif
+
+    endif
+
 
   end subroutine velocity_bcs
 
@@ -326,6 +345,11 @@ module boundary_conditions
     endif
 
     if (bc_ymax == no_slip) then
+      phi(:,ny+1) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))
+      phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
+    endif
+
+    if (bc_ymax == outflow) then
       phi(:,ny+1) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))
       phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
     endif
@@ -501,6 +525,25 @@ module boundary_conditions
     ! Zero gradient
 
     ! Driven / general dirichlet 
+
+    if (bc_ymax == outflow) then
+
+      if (present(arr_cc)) then
+        arr_cc(:,ny+1) = arr_cc(:,ny)
+        arr_cc(:,ny+2) = arr_cc(:,ny-1)
+      endif
+
+      if (present(arr_xface)) then
+        arr_xface(:,ny+1) = arr_xface(:,ny)
+        arr_xface(:,ny+2) = arr_xface(:,ny-1)
+      endif
+
+      if (present(arr_yface)) then
+        arr_yface(:,ny+1) = arr_yface(:,ny-1)
+        arr_yface(:,ny+2) = arr_yface(:,ny-2)
+      endif
+
+    endif
 
   end subroutine rho_bcs
 

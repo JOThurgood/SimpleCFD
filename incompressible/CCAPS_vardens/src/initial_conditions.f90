@@ -131,7 +131,7 @@ module initial_conditions
       x = xc(ix)-0.5_num
       y = yc(iy)-0.5_num
       r = sqrt(x**2 + y**2)
-      if (r <= 0.1_num) rho(ix,iy) = 2.0_num
+      if (r <= 0.1_num) rho(ix,iy) = 0.8_num !0.5_num
     enddo
     enddo
 

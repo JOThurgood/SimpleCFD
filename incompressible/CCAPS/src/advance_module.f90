@@ -579,7 +579,6 @@ module advance_module
       call mg_interface(input)
       phi = input%phi
 
-print *,'warning hardcoded perodic for MG, needs general handling'
     endif
 
     print *, '*** max divu before cleaning',maxval(abs(divu)*dt)

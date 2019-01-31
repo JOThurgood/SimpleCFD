@@ -107,6 +107,12 @@ module setup
       mg_etabc_ymax = 'zero_gradient'
     endif
 
+    if (bc_ymin == slip) then
+      mg_bc_ymin = 'zero_gradient'
+      mg_etabc_ymin = 'zero_gradient'
+    endif
+
+
 
   !* Drikkas and Rider suggest this a questionable way to sort solvability
 

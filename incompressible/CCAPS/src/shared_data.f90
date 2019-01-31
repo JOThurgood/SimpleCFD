@@ -93,6 +93,7 @@ module shared_data
   integer, parameter :: driven = 3
   integer, parameter :: dirichlet = 4
   integer, parameter :: outflow = 5
+  integer, parameter :: slip = 6
 
   real(num) :: drive_vel = 0.0_num
 

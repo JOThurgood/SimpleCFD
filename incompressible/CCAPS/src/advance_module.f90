@@ -548,6 +548,11 @@ module advance_module
 
     divu = divu/dt
 
+!DEBUG
+if (step >= 1211) then
+    print *, '*** max divu before cleaning',maxval(abs(divu)*dt)
+endif
+
     if (use_vardens) then
 !      call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
 !        & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
@@ -772,23 +777,48 @@ module advance_module
     call velocity_bcs(arr_cc = u, di = 1)  
     call velocity_bcs(arr_cc = v, di = 2)
 
-    dtx = CFL * dx / maxval(abs(u))
-    dty = CFL * dy / maxval(abs(v))
+    dtx = 1e6_num
+    dty = dtx
+
+    if (maxval(abs(u)) > 1e-16_num) dtx = CFL * dx / maxval(abs(u))
+    if (maxval(abs(v)) > 1e-16_num) dty = CFL * dy / maxval(abs(v))
     dt = MIN(dtx,dty)
 
-    if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
+    if (abs(grav_x) > 1e-16_num) then
       if (use_vardens) then
         dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
-        dt = MIN(dt,dtf)
-        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
         dt = MIN(dt,dtf)
       else
         dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
         dt = MIN(dt,dtf)
+      endif
+    endif
+
+    if (abs(grav_y) > 1e-16_num) then
+      if (use_vardens) then
+        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
+        dt = MIN(dt,dtf)
+      else
         dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
         dt = MIN(dt,dtf)
       endif
-    endif 
+
+    endif
+
+
+!    if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
+!      if (use_vardens) then
+!        dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
+!        dt = MIN(dt,dtf)
+!        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
+!        dt = MIN(dt,dtf)
+!      else
+!        dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
+!        dt = MIN(dt,dtf)
+!        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
+!        dt = MIN(dt,dtf)
+!      endif
+!    endif 
 
     print *, 'hydro dt = ',dt
 

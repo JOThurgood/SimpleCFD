@@ -203,6 +203,55 @@ module boundary_conditions
 
     endif
 
+
+    ! Slip - Only for ymin currently
+
+    if (bc_ymin == slip) then
+
+      if (di == 1) then !apply zero gradient to x velocity (i.e. tangent to this face)
+
+        if (present(arr_cc)) then
+          arr_cc(:,0) =  arr_cc(:,1)
+          arr_cc(:,-1) = arr_cc(:,2)
+        endif
+  
+        if (present(arr_xface)) then
+          arr_xface(:,0) = arr_xface(:,1)
+          arr_xface(:,-1) = arr_xface(:,2)
+        endif
+  
+        if (present(arr_yface)) then
+          arr_yface(:,-1) = arr_yface(:,1)
+          arr_yface(:,-2) = arr_yface(:,2)
+        endif
+
+      endif ! di == 1
+
+      if (di == 2) then !apply anti-sym to y velocity (i.e. normal to this face)
+  
+        ! centered and xface are same y coordinates
+  
+        if (present(arr_cc)) then
+          arr_cc(:,0) = - arr_cc(:,1)
+          arr_cc(:,-1) = -arr_cc(:,2)
+        endif
+  
+        if (present(arr_xface)) then
+          arr_xface(:,0) = -arr_xface(:,1)
+          arr_xface(:,-1) = -arr_xface(:,2)
+        endif
+  
+        if (present(arr_yface)) then
+          arr_yface(:,-1) = -arr_yface(:,1)
+          arr_yface(:,-2) = -arr_yface(:,2)
+        endif
+  
+      endif ! di == 2
+
+    endif
+
+
+
     ! Constant / Dirichlet
 
     ! Driven - hardcoded as u = 1 for now
@@ -351,6 +400,12 @@ module boundary_conditions
       phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
     endif
 
+    ! slip BC, only for ymin currently
+
+    if (bc_ymin == slip) then
+      phi(:,0) =  phi(:,1) - (phi(:,2)-phi(:,1))
+      phi(:,-1) = phi(:,1) - (phi(:,2)-phi(:,1))*2.0_num
+    endif
 
 
   end subroutine phi_bcs
@@ -545,6 +600,27 @@ module boundary_conditions
       endif
 
     endif
+    
+    ! slip - currenly only for ymin
+
+    if (bc_ymin == slip) then
+
+      if (present(arr_cc)) then
+        arr_cc(:, 0) = arr_cc(:,1)
+        arr_cc(:,-1) = arr_cc(:,2)
+      endif
+
+      if (present(arr_xface)) then
+        arr_xface(:, 0) = arr_xface(:,1)
+        arr_xface(:,-1) = arr_xface(:,2)
+      endif
+
+      if (present(arr_yface)) then
+        arr_yface(:,-1) = arr_yface(:,1)
+        arr_yface(:,-2) = arr_yface(:,2)
+      endif
+
+    endif 
 
   end subroutine rho_bcs
 

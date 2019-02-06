@@ -50,14 +50,14 @@ module setup
 
   subroutine control
     !user control variables
-    nx = 128
+    nx = 256
     x_min = 0.0_num
     x_max = 1.0_num
-    t_end = 1.00_num
-    CFL = 0.7_num
+    t_end = 0.10_num
+    CFL = 0.8_num
     nsteps = -1    !set to -1 to run till t_end
-    limiter = lim_unlimited
-!    limiter = lim_minmod
+!    limiter = lim_unlimited
+    limiter = lim_minmod
   end subroutine control
 
   subroutine initial_conditions
@@ -69,13 +69,13 @@ module setup
 
   subroutine jump 
     real(num) :: left, right, x_diaphragm 
-    x_diaphragm = 0.1 
+    x_diaphragm = 0.5 
     left = 1.0_num
-    right = 0.1_num
+    right = 2.0_num
 
     u = left
     do ix = -1,nx+2
-      if (xc(ix) .GE. 0.1_num) u(ix) = right 
+      if (xc(ix) .GE. x_diaphragm) u(ix) = right 
     enddo 
   end subroutine jump 
 

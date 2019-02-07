@@ -8,7 +8,11 @@
 ! using a second order finite volume predictor-corrector scheme and optional 
 ! gradient limiters. Boundaries are periodic.
 !
-!  https://github.com/JOThurgood/SimpleCFD/wiki!
+!  https://github.com/JOThurgood/SimpleCFD/wiki
+!
+! Update - added a option to set t_end as negative.
+! This enables a logical that changes the sign of dt and
+! the directionality of the Riemann problem.
 
 module shared_data
   implicit none
@@ -27,6 +31,7 @@ module shared_data
   !keyword codes
   integer :: limiter
   integer, parameter :: lim_unlimited = 1, lim_minmod = 2
+  logical :: reverse_time = .false.
   contains
 end module shared_data
 
@@ -40,6 +45,7 @@ module setup
 
   subroutine initial_setup
     call control
+    if (t_end < 0.0_num) reverse_time = .true.
     call setup_1dfvgrid
     call initial_conditions
   end subroutine initial_setup
@@ -49,7 +55,7 @@ module setup
     nx = 64 
     x_min = 0.0_num
     x_max = 1.0_num
-    t_end = 1.0_num
+    t_end = 0.25_num
     CFL = 0.7_num
     nsteps = -1   !set to -1 to run till t_end
     limiter = lim_unlimited !lim_unlimited, lim_minmod
@@ -122,6 +128,7 @@ module solver
 
   subroutine set_dt 
     dt = CFL * dxc / abs(u) 
+    if (reverse_time) dt = -dt
   end subroutine set_dt
 
   subroutine predictor
@@ -160,12 +167,21 @@ module solver
   end subroutine interface_states
 
   subroutine reimann 
-    !worlds simplest Reimann problem
-    if (u < 0.0_num) then 
-      a1 = a1R
-    else if (u > 0.0_num) then
-      a1 = a1L
-    endif 
+
+    if (.not. reverse_time) then !forward time
+      if (u < 0.0_num) then 
+        a1 = a1R
+      else if (u > 0.0_num) then
+        a1 = a1L
+      endif 
+    else ! reverse time
+      if (u > 0.0_num) then 
+        a1 = a1R
+      else if (u < 0.0_num) then
+        a1 = a1L
+      endif 
+    endif
+
   end subroutine reimann 
 
   real(num) function minmod(a,b)  ! "a" is an unforunate choice of var name!
@@ -176,7 +192,7 @@ module solver
       minmod = b
     else 
       minmod = 0.0_num
-    endif 
+    endif
   end function minmod
 
 end module solver
@@ -214,7 +230,7 @@ program advect_1d_FV !main driver
   call initial_setup
 
   do 
-   if ((step >= nsteps .and. nsteps >= 0) .or. (time >= t_end)) exit
+   if ((step >= nsteps .and. nsteps >= 0) .or. (abs(time) >= abs(t_end))) exit !*
     step = step + 1
     call update    
   enddo
@@ -225,3 +241,4 @@ program advect_1d_FV !main driver
 
 end program advect_1d_FV
 
+!* uses abs(time) for purposes of testing negative t_end

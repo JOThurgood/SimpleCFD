@@ -14,22 +14,37 @@ module boundary_conditions
 
   contains
 
-  subroutine apply_periodic_cc(arr_cc, face)
+  subroutine apply_periodic_cc(arr_cc, boundary)
 
     real(num), dimension(:,:), allocatable, intent(inout) :: arr_cc
-    character(len=10), intent(in) :: face
+    character(len=5), intent(in) :: boundary
 !    if (present(arr_cc)) call bc_sanity_check(arr_cc=arr_cc, di=di, varname='vel_bcs')
 
-    if ((face /= 'x_min') .and. (face /= 'x_max') .and. &
-       (face /= 'y_min') .and. (face /= 'y_max')) then
+    if ((boundary /= 'x_min') .and. (boundary /= 'x_max') .and. &
+       (boundary /= 'y_min') .and. (boundary /= 'y_max')) then
       print *,'invalid argument passed to apply_periodic_cc'
       print *,'STOP'
       STOP
     endif
 
-    if (face == 'x_min') then
+    if (boundary == 'x_min') then
       arr_cc(0,:) = arr_cc(nx,:)
       arr_cc(-1,:) = arr_cc(nx-1,:)
+    endif 
+
+    if (boundary == 'x_max') then
+      arr_cc(nx+1,:) = arr_cc(1,:)
+      arr_cc(nx+2,:) = arr_cc(2,:)
+    endif 
+
+    if (boundary == 'y_min') then
+      arr_cc(:,0) = arr_cc(:,ny)
+      arr_cc(:,-1) = arr_cc(:,ny-1)
+    endif 
+
+    if (boundary == 'y_max') then
+      arr_cc(:,ny+1) = arr_cc(:,1)
+      arr_cc(:,ny+2) = arr_cc(:,2)
     endif 
 
   end subroutine apply_periodic_cc
@@ -64,8 +79,7 @@ module boundary_conditions
       ! at xmin, centered and yface are x coordinates 
 
       if (present(arr_cc)) then
-        arr_cc(0,:) = arr_cc(nx,:)
-        arr_cc(-1,:) = arr_cc(nx-1,:)
+        call apply_periodic_cc(arr_cc = arr_cc, boundary = 'x_min')
       endif
 
       if (present(arr_yface)) then
@@ -85,8 +99,7 @@ module boundary_conditions
     if (bc_xmax == periodic) then
 
       if (present(arr_cc)) then
-        arr_cc(nx+1,:) = arr_cc(1,:)
-        arr_cc(nx+2,:) = arr_cc(2,:)
+        call apply_periodic_cc(arr_cc = arr_cc, boundary = 'x_max')
       endif
 
       if (present(arr_yface)) then
@@ -106,8 +119,7 @@ module boundary_conditions
       ! centered and xface are same y coordinates
 
       if (present(arr_cc)) then
-        arr_cc(:,0) = arr_cc(:,ny)
-        arr_cc(:,-1) = arr_cc(:,ny-1)
+        call apply_periodic_cc(arr_cc = arr_cc, boundary = 'y_min')
       endif
 
       if (present(arr_xface)) then
@@ -125,8 +137,7 @@ module boundary_conditions
     if (bc_ymax == periodic) then
 
       if (present(arr_cc)) then
-        arr_cc(:,ny+1) = arr_cc(:,1)
-        arr_cc(:,ny+2) = arr_cc(:,2)
+        call apply_periodic_cc(arr_cc = arr_cc, boundary = 'y_max')
       endif
 
       if (present(arr_xface)) then
@@ -344,20 +355,16 @@ module boundary_conditions
     !Periodic 
 
     if (bc_xmin == periodic) then
-      phi(0,:) = phi(nx,:)
-      phi(-1,:) = phi(nx-1,:)
+      call apply_periodic_cc(arr_cc = phi, boundary = 'x_min')
     endif
     if (bc_xmax == periodic) then
-      phi(nx+1,:) = phi(1,:)
-      phi(nx+2,:) = phi(2,:)
+      call apply_periodic_cc(arr_cc = phi, boundary = 'x_max')
     endif
     if (bc_ymin == periodic) then
-      phi(:,0) = phi(:,ny)
-      phi(:,-1) = phi(:,ny-1)
+      call apply_periodic_cc(arr_cc = phi, boundary = 'y_min')
     endif
     if (bc_ymax == periodic) then
-      phi(:,ny+1) = phi(:,1)
-      phi(:,ny+2) = phi(:,2)
+      call apply_periodic_cc(arr_cc = phi, boundary = 'y_max')
     endif
 
     ! Zero gradient
@@ -463,8 +470,9 @@ module boundary_conditions
     if (bc_xmin == periodic) then
 
       if (present(arr_cc)) then
-        arr_cc( 0,:) = arr_cc(nx,:)
-        arr_cc(-1,:) = arr_cc(nx-1,:)
+!        arr_cc( 0,:) = arr_cc(nx,:)
+!        arr_cc(-1,:) = arr_cc(nx-1,:)
+        call apply_periodic_cc(arr_cc = arr_cc, boundary = 'x_min')
       endif 
 
       if (present(arr_xface)) then
@@ -483,8 +491,9 @@ module boundary_conditions
     if (bc_xmax == periodic) then
 
       if (present(arr_cc)) then
-        arr_cc(nx+1,:) = arr_cc(1,:)
-        arr_cc(nx+2,:) = arr_cc(2,:)
+!       arr_cc(nx+1,:) = arr_cc(1,:)
+!       arr_cc(nx+2,:) = arr_cc(2,:)
+        call apply_periodic_cc(arr_cc = arr_cc, boundary = 'x_max')
       endif 
 
       if (present(arr_xface)) then
@@ -502,8 +511,9 @@ module boundary_conditions
     if (bc_ymin == periodic) then
 
       if (present(arr_cc)) then
-        arr_cc(:, 0) = arr_cc(:,ny)
-        arr_cc(:,-1) = arr_cc(:,ny-1)
+!        arr_cc(:, 0) = arr_cc(:,ny)
+!        arr_cc(:,-1) = arr_cc(:,ny-1)
+        call apply_periodic_cc(arr_cc = arr_cc, boundary = 'y_min')
       endif
 
       if (present(arr_xface)) then
@@ -520,8 +530,9 @@ module boundary_conditions
 
     if (bc_ymax == periodic) then
       if (present(arr_cc)) then
-        arr_cc(:,ny+1) = arr_cc(:,1)
-        arr_cc(:,ny+2) = arr_cc(:,2)
+!        arr_cc(:,ny+1) = arr_cc(:,1)
+!        arr_cc(:,ny+2) = arr_cc(:,2)
+        call apply_periodic_cc(arr_cc = arr_cc, boundary = 'y_max')
       endif
       if (present(arr_xface)) then
         arr_xface(:,ny+1) = arr_xface(:,1)

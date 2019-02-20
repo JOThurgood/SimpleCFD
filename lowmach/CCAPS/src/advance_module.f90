@@ -333,7 +333,7 @@ module advance_module
 !call plot_divergence_now ! debug
 !if (step /=0) call plot_divergence_now ! debug
 
-    if (use_vardens) call rho_bcs ! needed for any OOB in relax and correction 
+    if (use_vardens) call rho_bcs(arr_cc = rho) !needed for correction
 
     if (use_vardens) then
 
@@ -354,8 +354,6 @@ module advance_module
 
       call mg_interface(input)
       phi = input%phi
-
-
 
 
     else

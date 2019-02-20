@@ -276,7 +276,7 @@ module advance_module
 !call plot_divergence_now ! debug
 !if (step /=0) call plot_divergence_now ! debug
 
-    call rho_bcs ! needed for any OOB in relax and correction 
+    call rho_bcs(arr_cc = rho) !needed for correction
 
 !    call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
 !      & eta= 1.0_num / rho(0:nx+1,0:ny+1), &

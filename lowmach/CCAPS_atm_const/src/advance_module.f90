@@ -283,7 +283,7 @@ module advance_module
 !call plot_divergence_now ! debug
 !if (step /=0) call plot_divergence_now ! debug
 
-    call rho_bcs ! needed for any OOB in relax and correction 
+    call rho_bcs(arr_cc = rho) !needed for correction
 
     ! allocate the "eta" coefficient array(0:nx+1,0:ny+1) if necessary and populate
 

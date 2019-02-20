@@ -18,7 +18,6 @@ module boundary_conditions
 
     real(num), dimension(:,:), allocatable, intent(inout) :: arr_cc
     character(len=5), intent(in) :: boundary
-!    if (present(arr_cc)) call bc_sanity_check(arr_cc=arr_cc, di=di, varname='vel_bcs')
 
     if ((boundary /= 'x_min') .and. (boundary /= 'x_max') .and. &
        (boundary /= 'y_min') .and. (boundary /= 'y_max')) then
@@ -48,6 +47,40 @@ module boundary_conditions
     endif 
 
   end subroutine apply_periodic_cc
+
+  subroutine apply_periodic_xface(arr_xface, boundary)
+
+    real(num), dimension(:,:), allocatable, intent(inout) :: arr_xface
+    character(len=5), intent(in) :: boundary
+
+    if ((boundary /= 'x_min') .and. (boundary /= 'x_max') .and. &
+       (boundary /= 'y_min') .and. (boundary /= 'y_max')) then
+      print *,'invalid argument passed to apply_periodic_xface'
+      print *,'STOP'
+      STOP
+    endif
+
+    if (boundary == 'x_min') then
+      arr_xface(-1,:) = arr_xface(nx-1,:)
+      arr_xface(-2,:) = arr_xface(nx-2,:)
+    endif 
+
+    if (boundary == 'x_max') then
+      arr_xface(nx+1,:) = arr_xface(1,:)
+      arr_xface(nx+2,:) = arr_xface(2,:)
+    endif 
+
+    if (boundary == 'y_min') then
+      arr_xface(:,0) = arr_xface(:,ny)
+      arr_xface(:,-1) = arr_xface(:,ny-1)
+    endif 
+
+    if (boundary == 'y_max') then
+      arr_xface(:,ny+1) = arr_xface(:,1)
+      arr_xface(:,ny+2) = arr_xface(:,2)
+    endif 
+
+  end subroutine apply_periodic_xface
 
   subroutine velocity_bcs(arr_cc, arr_xface, arr_yface, di)
 
@@ -90,8 +123,7 @@ module boundary_conditions
       ! xface
 
       if (present(arr_xface)) then
-        arr_xface(-1,:) = arr_xface(nx-1,:)
-        arr_xface(-2,:) = arr_xface(nx-2,:)
+        call apply_periodic_xface(arr_xface = arr_xface, boundary = 'x_min')
       endif
 
     endif
@@ -108,8 +140,7 @@ module boundary_conditions
       endif
 
       if (present(arr_xface)) then
-        arr_xface(nx+1,:) = arr_xface(1,:)
-        arr_xface(nx+2,:) = arr_xface(2,:)
+        call apply_periodic_xface(arr_xface = arr_xface, boundary = 'x_max')
       endif
 
     endif
@@ -123,8 +154,7 @@ module boundary_conditions
       endif
 
       if (present(arr_xface)) then
-        arr_xface(:,0) = arr_xface(:,ny)
-        arr_xface(:,-1) = arr_xface(:,ny-1)
+        call apply_periodic_xface(arr_xface = arr_xface, boundary = 'y_min')
       endif
 
       if (present(arr_yface)) then
@@ -141,8 +171,7 @@ module boundary_conditions
       endif
 
       if (present(arr_xface)) then
-        arr_xface(:,ny+1) = arr_xface(:,1)
-        arr_xface(:,ny+2) = arr_xface(:,2)
+        call apply_periodic_xface(arr_xface = arr_xface, boundary = 'y_max')
       endif
 
       if (present(arr_yface)) then
@@ -476,8 +505,7 @@ module boundary_conditions
       endif 
 
       if (present(arr_xface)) then
-        arr_xface(-1,:) = arr_xface(nx-1,:)
-        arr_xface(-2,:) = arr_xface(nx-2,:)
+        call apply_periodic_xface(arr_xface = arr_xface, boundary = 'x_min')
       endif 
 
       if (present(arr_yface)) then
@@ -497,8 +525,9 @@ module boundary_conditions
       endif 
 
       if (present(arr_xface)) then
-        arr_xface(nx+1,:) = arr_xface(1,:)
-        arr_xface(nx+2,:) = arr_xface(2,:)
+!        arr_xface(nx+1,:) = arr_xface(1,:)
+!        arr_xface(nx+2,:) = arr_xface(2,:)
+        call apply_periodic_xface(arr_xface = arr_xface, boundary = 'x_max')
       endif 
 
       if (present(arr_yface)) then
@@ -517,8 +546,9 @@ module boundary_conditions
       endif
 
       if (present(arr_xface)) then
-        arr_xface(:, 0) = arr_xface(:,ny)
-        arr_xface(:,-1) = arr_xface(:,ny-1)
+!        arr_xface(:, 0) = arr_xface(:,ny)
+!        arr_xface(:,-1) = arr_xface(:,ny-1)
+        call apply_periodic_xface(arr_xface = arr_xface, boundary = 'y_min')
       endif
 
       if (present(arr_yface)) then
@@ -535,8 +565,9 @@ module boundary_conditions
         call apply_periodic_cc(arr_cc = arr_cc, boundary = 'y_max')
       endif
       if (present(arr_xface)) then
-        arr_xface(:,ny+1) = arr_xface(:,1)
-        arr_xface(:,ny+2) = arr_xface(:,2)
+!        arr_xface(:,ny+1) = arr_xface(:,1)
+!        arr_xface(:,ny+2) = arr_xface(:,2)
+        call apply_periodic_xface(arr_xface = arr_xface, boundary = 'y_max')
       endif
       if (present(arr_yface)) then
         arr_yface(:,ny+1) = arr_yface(:,1)

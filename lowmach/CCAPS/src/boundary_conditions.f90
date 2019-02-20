@@ -50,6 +50,13 @@ module boundary_conditions
     if (present(arr_xface)) call bc_sanity_check(arr_xface=arr_xface, di=di, varname='vel_bcs')
     if (present(arr_yface)) call bc_sanity_check(arr_yface=arr_yface, di=di, varname='vel_bcs')
 
+    if (.not.(present(arr_cc)) .and. .not.(present(arr_xface)) &
+        .and. .not.(present(arr_yface))) then
+
+      print *,'error: empty call to velocity_bcs'
+      STOP
+    endif
+
     ! Periodic 
 
     if (bc_xmin == periodic) then

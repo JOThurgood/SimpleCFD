@@ -82,6 +82,40 @@ module boundary_conditions
 
   end subroutine apply_periodic_xface
 
+  subroutine apply_periodic_yface(arr_yface, boundary)
+
+    real(num), dimension(:,:), allocatable, intent(inout) :: arr_yface
+    character(len=5), intent(in) :: boundary
+
+    if ((boundary /= 'x_min') .and. (boundary /= 'x_max') .and. &
+       (boundary /= 'y_min') .and. (boundary /= 'y_max')) then
+      print *,'invalid argument passed to apply_periodic_yface'
+      print *,'STOP'
+      STOP
+    endif
+
+    if (boundary == 'x_min') then
+      arr_yface(0,:) = arr_yface(nx,:)
+      arr_yface(-1,:) = arr_yface(nx-1,:)
+    endif 
+
+    if (boundary == 'x_max') then
+      arr_yface(nx+1,:) = arr_yface(1,:)
+      arr_yface(nx+2,:) = arr_yface(2,:)
+    endif 
+
+    if (boundary == 'y_min') then
+      arr_yface(:,-1) = arr_yface(:,ny-1)
+      arr_yface(:,-2) = arr_yface(:,ny-2)
+    endif 
+
+    if (boundary == 'y_max') then
+      arr_yface(:,ny+1) = arr_yface(:,1)
+      arr_yface(:,ny+2) = arr_yface(:,2)
+    endif 
+
+  end subroutine apply_periodic_yface
+
   subroutine velocity_bcs(arr_cc, arr_xface, arr_yface, di)
 
     real(num), dimension(:,:), allocatable, optional, intent(inout) :: arr_cc
@@ -116,8 +150,7 @@ module boundary_conditions
       endif
 
       if (present(arr_yface)) then
-        arr_yface(0,:) = arr_yface(nx,:)
-        arr_yface(-1,:) = arr_yface(nx-1,:)
+        call apply_periodic_yface(arr_yface = arr_yface, boundary = 'x_min')
       endif
 
       ! xface
@@ -135,8 +168,7 @@ module boundary_conditions
       endif
 
       if (present(arr_yface)) then
-        arr_yface(nx+1,:) = arr_yface(1,:)
-        arr_yface(nx+2,:) = arr_yface(2,:)
+        call apply_periodic_yface(arr_yface = arr_yface, boundary = 'x_max')
       endif
 
       if (present(arr_xface)) then
@@ -158,8 +190,7 @@ module boundary_conditions
       endif
 
       if (present(arr_yface)) then
-        arr_yface(:,-1) = arr_yface(:,ny-1)
-        arr_yface(:,-2) = arr_yface(:,ny-2)
+        call apply_periodic_yface(arr_yface = arr_yface, boundary = 'y_min')
       endif
 
     endif
@@ -175,8 +206,7 @@ module boundary_conditions
       endif
 
       if (present(arr_yface)) then
-        arr_yface(:,ny+1) = arr_yface(:,1)
-        arr_yface(:,ny+2) = arr_yface(:,2)
+        call apply_periodic_yface(arr_yface = arr_yface, boundary = 'y_max')
       endif
 
     endif

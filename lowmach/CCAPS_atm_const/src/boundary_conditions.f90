@@ -31,6 +31,14 @@ module boundary_conditions
     if (present(arr_xface)) call bc_sanity_check(arr_xface=arr_xface, di=di, varname='vel_bcs')
     if (present(arr_yface)) call bc_sanity_check(arr_yface=arr_yface, di=di, varname='vel_bcs')
 
+    if (.not.(present(arr_cc)) .and. .not.(present(arr_xface)) &
+        .and. .not.(present(arr_yface))) then
+             
+      print *,'error: empty call to velocity_bcs'
+      STOP
+    endif 
+
+
     ! Periodic 
 
     if (bc_xmin == periodic) then
@@ -205,8 +213,38 @@ module boundary_conditions
 
     ! Constant / Dirichlet
 
+    ! Driven - hardcoded as u = 1 for now
+    ! problem is distinguishing between u = 1 and v = 0
+    
+    ! It would be better to handle a class of 'constant' or 'dirchlet' 
+    ! and then have the user specify the constant for each dimension
 
-    ! outflow - zero gradient on v and rho, fixed phi
+    if ( bc_ymax == dirichlet) then
+
+      if (di == 1) then
+        const = 1.0_num
+      else if (di == 2) then
+        const = 0.0_num
+      else 
+        STOP
+      endif
+
+      if (present(arr_cc)) then
+        arr_cc(:,ny+1) = 2.0_num * const - arr_cc(:,ny)
+        arr_cc(:,ny+2) = 2.0_num * const - arr_cc(:,ny-1)
+      endif
+
+      if (present(arr_xface)) then
+        arr_xface(:,ny+1) = 2.0_num * const - arr_xface(:,ny)
+        arr_xface(:,ny+2) = 2.0_num * const - arr_xface(:,ny-1)
+      endif
+
+      if (present(arr_yface)) then
+        arr_yface(:,ny+1) = 2.0_num * const - arr_yface(:,ny-1)
+        arr_yface(:,ny+2) = 2.0_num * const - arr_yface(:,ny-2)
+      endif
+
+    endif
 
     if (bc_ymax == outflow) then
 
@@ -271,7 +309,24 @@ module boundary_conditions
       phi(:,ny+2) = phi(:,ny-1)
     endif
 
-    ! No slip should be Neumann for pressure?
+    ! No slip (no actually sure what is appropriate for phi at this stage?)
+
+!!!    if (bc_xmin == no_slip) then
+!!!      phi(0,:) = -phi(1,:)
+!!!      phi(-1,:) = -phi(2,:)
+!!!    endif
+!!!    if (bc_xmax == no_slip) then
+!!!      phi(nx+1,:) = -phi(nx,:)
+!!!      phi(nx+2,:) = -phi(nx-1,:)
+!!!    endif
+!!!    if (bc_ymin == no_slip) then
+!!!      phi(:,0) = -phi(:,1)
+!!!      phi(:,-1) = -phi(:,2)
+!!!    endif
+!!!    if (bc_ymax == no_slip) then
+!!!      phi(:,ny+1) = -phi(:,ny)
+!!!      phi(:,ny+2) = -phi(:,ny-1)
+!!!    endif
 
     if (bc_xmin == no_slip) then
       phi(0,:) = phi(1,:)
@@ -290,14 +345,7 @@ module boundary_conditions
       phi(:,ny+2) = phi(:,ny-1)
     endif
 
-    ! want to overhaul BC so you don't have so many different things doing the same thing
-
-    if (bc_ymax == dirichlet) then
-      phi(:,ny+1) =  phi(:,ny)
-      phi(:,ny+2) =  phi(:,ny-1)
-    endif
-
-    ! overwrite with experimental no_slip (for atmospheres)
+!    !overwrite with experimental no_slip
 
     if (bc_ymin == no_slip) then
       phi(:,0) =  phi(:,1) - (phi(:,2)-phi(:,1))
@@ -309,13 +357,10 @@ module boundary_conditions
       phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
     endif
 
-
     if (bc_ymax == outflow) then
       phi(:,ny+1) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))
       phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
     endif
-
-
 
   end subroutine phi_bcs
 
@@ -332,6 +377,13 @@ module boundary_conditions
     if (present(arr_cc)) call bc_sanity_check(arr_cc=arr_cc, di=di, varname='rho_bcs')
     if (present(arr_xface)) call bc_sanity_check(arr_xface=arr_xface, di=di, varname='rho_bcs')
     if (present(arr_yface)) call bc_sanity_check(arr_yface=arr_yface, di=di, varname='rho_bcs')
+
+
+    if (.not.(present(arr_cc)) .and. .not.(present(arr_xface)) &
+        .and. .not.(present(arr_yface))) then
+      print *,'error: empty call to rho_bcs'
+      STOP
+    endif
 
 
     ! periodic
@@ -488,8 +540,6 @@ module boundary_conditions
     ! Zero gradient
 
     ! Driven / general dirichlet 
-
-    ! outflow - zero gradient on v and rho, fixed phi
 
     if (bc_ymax == outflow) then
 

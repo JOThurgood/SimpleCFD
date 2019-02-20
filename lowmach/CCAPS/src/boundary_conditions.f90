@@ -14,6 +14,25 @@ module boundary_conditions
 
   contains
 
+  subroutine apply_periodic_cc(arr_cc, face)
+
+    real(num), dimension(:,:), allocatable, intent(inout) :: arr_cc
+    character(len=10), intent(in) :: face
+!    if (present(arr_cc)) call bc_sanity_check(arr_cc=arr_cc, di=di, varname='vel_bcs')
+
+    if ((face /= 'x_min') .and. (face /= 'x_max') .and. &
+       (face /= 'y_min') .and. (face /= 'y_max')) then
+      print *,'invalid argument passed to apply_periodic_cc'
+      print *,'STOP'
+      STOP
+    endif
+
+    if (face == 'x_min') then
+      arr_cc(0,:) = arr_cc(nx,:)
+      arr_cc(-1,:) = arr_cc(nx-1,:)
+    endif 
+
+  end subroutine apply_periodic_cc
 
   subroutine velocity_bcs(arr_cc, arr_xface, arr_yface, di)
 
@@ -30,6 +49,13 @@ module boundary_conditions
     if (present(arr_cc)) call bc_sanity_check(arr_cc=arr_cc, di=di, varname='vel_bcs')
     if (present(arr_xface)) call bc_sanity_check(arr_xface=arr_xface, di=di, varname='vel_bcs')
     if (present(arr_yface)) call bc_sanity_check(arr_yface=arr_yface, di=di, varname='vel_bcs')
+
+    if (.not.(present(arr_cc)) .and. .not.(present(arr_xface)) &
+        .and. .not.(present(arr_yface))) then
+
+      print *,'error: empty call to velocity_bcs'
+      STOP
+    endif
 
     ! Periodic 
 
@@ -423,6 +449,13 @@ module boundary_conditions
     if (present(arr_cc)) call bc_sanity_check(arr_cc=arr_cc, di=di, varname='rho_bcs')
     if (present(arr_xface)) call bc_sanity_check(arr_xface=arr_xface, di=di, varname='rho_bcs')
     if (present(arr_yface)) call bc_sanity_check(arr_yface=arr_yface, di=di, varname='rho_bcs')
+
+    if (.not.(present(arr_cc)) .and. .not.(present(arr_xface)) &
+        .and. .not.(present(arr_yface))) then
+
+      print *,'error: empty call to rho_bcs'
+      STOP
+    endif
 
 
     ! periodic

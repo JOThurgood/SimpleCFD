@@ -26,7 +26,7 @@ module advance_module
 
     call step_3 ! Step 3: Reconstruct interface states consistent with constraint
 
-    if (use_vardens) call advect_dens ! consv. update of density based on mac vels
+    call advect_dens ! consv. update of density based on mac vels
 
     call step_4 ! Step 4: Provisional update for full dt (star state)
 
@@ -40,7 +40,6 @@ module advance_module
 
     real(num) :: du, dv
     real(num) :: transv
-    real(num) :: LU_l, LU_r ! vector laplacian of U left/right - for viscous forcing 
 
     ! 1 - Calculate the advective velocities
 
@@ -228,62 +227,6 @@ module advance_module
     enddo
     enddo
 
-    ! also include viscous forcing if using viscosity
-
-    if (use_viscosity) then
-
-      if (use_vardens) then 
-        print *,'warning: using variable density and viscosity. Dont forget to add 1/rho terms to visc forcing'
-        print *,'stopping in step 1D'
-        STOP
-      endif
-
-      do ix = 0, nx
-      do iy = 0, ny
-        if (iy /=0 ) then ! x faces
-
-          ! vector laplacian in cartesians L(U) = (L u_x, L u_y, L u_z)
-          ! x component, in cell centers to left and right of interface
-
-          LU_l = get_LU_cc(ix,iy,1)
-          LU_r = get_LU_cc(ix+1,iy,1) 
-  
-          uxl(ix,iy) = uxl(ix,iy) + 0.5_num * dt * visc * LU_l 
-          uxr(ix,iy) = uxr(ix,iy) + 0.5_num * dt * visc * LU_r 
-  
-          ! vector laplacian of y component
-  
-          LU_l = get_LU_cc(ix,iy,2)
-          LU_r = get_LU_cc(ix+1,iy,2)
-
-
-          vxl(ix,iy) = vxl(ix,iy) + 0.5_num * dt * visc * LU_l
-          vxr(ix,iy) = vxr(ix,iy) + 0.5_num * dt * visc * LU_r
-  
-  
-        endif
-        if (ix /=0) then ! yfaces
-
-          !_l and _r is now vector laplacian at cc "below" and "above" y face
-  
-          LU_l = get_LU_cc(ix,iy,1)
-          LU_r = get_LU_cc(ix,iy+1,1) 
-
-          uyl(ix,iy) = uyl(ix,iy) + 0.5_num * dt * visc * LU_l
-          uyr(ix,iy) = uyr(ix,iy) + 0.5_num * dt * visc * LU_r
-
-          LU_l = get_LU_cc(ix,iy,2)
-          LU_r = get_LU_cc(ix,iy+1,2)
-
-          vyl(ix,iy) = vyl(ix,iy) + 0.5_num * dt * visc * LU_l
-          vyr(ix,iy) = vyr(ix,iy) + 0.5_num * dt * visc * LU_r
-
-        endif
-      enddo
-      enddo
-    endif
-
-
     ! 1E Final riemann solve + upwinding for full normal velocities 
     ! (sometimes AKA the MAC velocities)
 
@@ -333,13 +276,11 @@ module advance_module
 !call plot_divergence_now ! debug
 !if (step /=0) call plot_divergence_now ! debug
 
-    if (use_vardens) call rho_bcs ! needed for any OOB in relax and correction 
+    call rho_bcs(arr_cc = rho) !needed for correction
 
-    if (use_vardens) then
-
-!      call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
-!        & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
-!        & use_old_phi = .false., tol = 1e-18_num) 
+!    call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
+!      & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
+!      & use_old_phi = .false., tol = 1e-18_num) 
 
       input = mg_input(tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy, &
             & f = divu(1:nx,1:ny), phi=phi, &
@@ -355,37 +296,19 @@ module advance_module
       call mg_interface(input)
       phi = input%phi
 
-
-
-
-    else
-!      call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
-!        & alpha = 0.0_num, beta = -1.0_num, &
-!        & use_old_phi = .false., tol = 1e-18_num) 
-
-      input = mg_input(tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy, &
-            & f = divu(1:nx,1:ny), phi=phi, &
-            & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
-            & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ) 
-
-      call mg_interface(input)
-      phi = input%phi
-
-    endif
-
     print *, '*** max divu before cleaning',maxval(abs(divu))
 
     do ix = 0, nx
     do iy = 0, ny
       if (iy /= 0) then !can do the xface stuff
         correction = (phi(ix+1,iy) - phi(ix,iy))/dx
-        if (use_vardens) correction = correction / &
+        correction = correction / &
             (0.5_num * (rho(ix,iy) + rho(ix+1,iy)))
         macu(ix,iy) = macu(ix,iy) - correction 
       endif
       if (ix /= 0) then !can do the yface stuff
         correction = (phi(ix,iy+1)-phi(ix,iy))/dy
-        if (use_vardens) correction = correction / &
+        correction = correction / &
             (0.5_num * (rho(ix,iy) + rho(ix,iy+1)))
         macv(ix,iy) = macv(ix,iy) - correction 
       endif
@@ -442,12 +365,9 @@ module advance_module
 
 
   subroutine step_4
+
     real(num) :: Au, Av ! evaluation of advection term
 
-    real(num),dimension(1:nx,1:ny) :: f !viscous only
-
-    ! do inviscid calculation first since the terms
-    ! used to evaluate ustar are used in the "f" term
     do iy = 1, ny
     do ix = 1, nx
       Au = get_Au(ix,iy)
@@ -456,68 +376,6 @@ module advance_module
       vstar(ix,iy) = v(ix,iy) - dt * Av + dt * get_force_cc(ix,iy,2)
     enddo
     enddo
-  
-    if (use_viscosity) then
-
-      print *,'Step #4 explicit viscosity on '
-      print *,'*** begin implicit solve for ustar'
-
-      do ix = 1, nx
-      do iy = 1, ny
-        f(ix,iy) = ustar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,1)
-      enddo
-      enddo    
-
-      if (use_vardens) then
-        !stub
-        print *,'cannot use viscosity and variable density at same time currently'
-        print *,'TERMINATING'
-        STOP 
-      else
-
-        input = mg_input(tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy, &
-              & f = f, phi=ustar, &
-!              & use_as_init_guess = .true., & 
-              & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
-              & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ,&
-              & phi_bc_ymax = drive_vel, & 
-              & const_helmholtz = .true. , ch_alpha = 1.0_num, ch_beta = dt*visc/2.0_num) 
-  
-        call mg_interface(input)
-        ustar(1:nx,1:ny) = input%phi(1:nx,1:ny)
-
-!        call solve_const_Helmholtz(phigs = ustar, f = f, &
-!          alpha = 1.0_num, beta = dt*visc/2.0_num, &
-!          & use_old_phi = .true., tol = 1e-16_num) 
-      endif
-
-      print *,'*** begin implicit solve for vstar' 
-
-      do ix = 1, nx
-      do iy = 1, ny
-        f(ix,iy) = vstar(ix,iy) + 0.5_num * dt * visc * get_LU_cc(ix,iy,2)
-      enddo
-      enddo    
-
-      if (use_vardens) then
-        !stub
-      else
-!        call solve_const_Helmholtz(phigs = vstar, f = f, &
-!          alpha = 1.0_num, beta = dt*visc/2.0_num, &
-!          & use_old_phi = .true., tol = 1e-16_num) 
-
-        input = mg_input(tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy, &
-              & f = f, phi=vstar, &
- !             & use_as_init_guess = .true., & 
-              & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
-              & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ,&
-              & const_helmholtz = .true. , ch_alpha = 1.0_num, ch_beta = dt*visc/2.0_num) 
-  
-        call mg_interface(input)
-        vstar(1:nx,1:ny) = input%phi(1:nx,1:ny)
-      endif
-
-    endif
 
     print *, 'Step #4 completed normally'
   end subroutine step_4
@@ -548,15 +406,9 @@ module advance_module
 
     divu = divu/dt
 
-!DEBUG
-if (step >= 1211) then
-    print *, '*** max divu before cleaning',maxval(abs(divu)*dt)
-endif
-
-    if (use_vardens) then
-!      call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
-!        & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
-!        & use_old_phi = .true., tol = 1e-18_num) 
+!    call solve_variable_elliptic(phigs = phi, f = divu(1:nx,1:ny), &
+!      & eta= 1.0_num / rho(0:nx+1,0:ny+1), &
+!      & use_old_phi = .true., tol = 1e-18_num) 
 
       input = mg_input(tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy, &
             & f = divu(1:nx,1:ny), phi=phi, &
@@ -568,26 +420,11 @@ endif
             & etaval_bc_xmin = mg_etaval_bc_xmin, etaval_bc_ymin = mg_etaval_bc_ymin, &
             & etaval_bc_xmax = mg_etaval_bc_xmax, etaval_bc_ymax = mg_etaval_bc_ymax )
 
-
-      call mg_interface(input)
-      phi = input%phi
-    else
-!      call solve_const_Helmholtz(phigs = phi, f = divu(1:nx,1:ny), &
-!        alpha = 0.0_num, beta = -1.0_num, &
-!        & use_old_phi = .true., tol = 1e-16_num) 
-
-      input = mg_input(tol = 1e-12_num, nx = nx, ny = ny, dx = dx, dy = dy, &
-            & f = divu(1:nx,1:ny), phi=phi, &
-            & bc_xmin = mg_bc_xmin, bc_xmax = mg_bc_xmax, &
-            & bc_ymin = mg_bc_ymin, bc_ymax = mg_bc_ymax ) 
-
       call mg_interface(input)
       phi = input%phi
 
-    endif
 
     print *, '*** max divu before cleaning',maxval(abs(divu)*dt)
-
 
     call phi_bcs
 
@@ -596,12 +433,12 @@ endif
 
       gpsi = (phi(ix+1,iy) - phi(ix-1,iy))/dx/2.0_num
       correction = dt * gpsi
-      if (use_vardens) correction = correction/rho(ix,iy) !cc here
+      correction = correction/rho(ix,iy) !cc here
       u(ix,iy) = ustar(ix,iy) - correction 
 
       gpsi = (phi(ix,iy+1)-phi(ix,iy-1))/dy/2.0_num
       correction = dt * gpsi
-      if (use_vardens) correction = correction/rho(ix,iy)
+      correction = correction/rho(ix,iy)
       v(ix,iy) = vstar(ix,iy) - correction 
 
     enddo
@@ -777,48 +614,16 @@ endif
     call velocity_bcs(arr_cc = u, di = 1)  
     call velocity_bcs(arr_cc = v, di = 2)
 
-    dtx = 1e6_num
-    dty = dtx
-
-    if (maxval(abs(u)) > 1e-16_num) dtx = CFL * dx / maxval(abs(u))
-    if (maxval(abs(v)) > 1e-16_num) dty = CFL * dy / maxval(abs(v))
+    dtx = CFL * dx / maxval(abs(u))
+    dty = CFL * dy / maxval(abs(v))
     dt = MIN(dtx,dty)
 
-    if (abs(grav_x) > 1e-16_num) then
-      if (use_vardens) then
-        dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
-        dt = MIN(dt,dtf)
-      else
-        dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
-        dt = MIN(dt,dtf)
-      endif
-    endif
-
-    if (abs(grav_y) > 1e-16_num) then
-      if (use_vardens) then
-        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
-        dt = MIN(dt,dtf)
-      else
-        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
-        dt = MIN(dt,dtf)
-      endif
-
-    endif
-
-
-!    if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
-!      if (use_vardens) then
-!        dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
-!        dt = MIN(dt,dtf)
-!        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
-!        dt = MIN(dt,dtf)
-!      else
-!        dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
-!        dt = MIN(dt,dtf)
-!        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
-!        dt = MIN(dt,dtf)
-!      endif
-!    endif 
+    if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
+      dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
+      dt = MIN(dt,dtf)
+      dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
+      dt = MIN(dt,dtf)
+    endif 
 
     print *, 'hydro dt = ',dt
 
@@ -865,27 +670,16 @@ endif
     grav_tmp_x = grav_x
     grav_tmp_y = grav_y
 
-
 ! debug: uncomment to turn grav off at the closest cc's to the edges
 !    grav_tmp_x = 0.0_num
 !    grav_tmp_y = 0.0_num
 !    if ( (ix > 1) .and. (ix < nx) ) grav_tmp_x = grav_x
 !    if ( (iy > 1) .and. (iy < ny) ) grav_tmp_y = grav_y
 
-
     if (di==1) then
-      if (use_vardens) then
-        get_force_cc = -gradp_x(ix,iy)/rho(ix,iy) + grav_tmp_x
-      else
-        get_force_cc = -gradp_x(ix,iy) + grav_tmp_x
-      endif
+      get_force_cc = -gradp_x(ix,iy)/rho(ix,iy) + grav_tmp_x
     else if (di==2) then
-      if (use_vardens) then
-        get_force_cc = -gradp_y(ix,iy)/rho(ix,iy) + grav_tmp_y
-      else
-        get_force_cc = -gradp_y(ix,iy) + grav_tmp_y
-      endif
-  
+      get_force_cc = -gradp_y(ix,iy)/rho(ix,iy) + grav_tmp_y
     else
       print *,'error get_force_cc given invalid dimension'
       print *,'di = 1(x) or =2(y)'
@@ -895,28 +689,6 @@ endif
 
   end function get_force_cc
 
-  real(num) function get_LU_cc(ix,iy,di) ! calculate vector laplacian at a coordinate
-    integer, intent(in) :: ix, iy, di
-
-    if (di == 1) then
-
-      get_LU_cc = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
-         (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
-
-    else if (di == 2) then
-
-      get_LU_cc = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
-         (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
-    else 
-
-      print *,'error: get_LU_cc (calc vector laplacian) not given valid dimension'
-      print *,'di = 1 (x) or = 2 (y)'
-      print *,'Terminating early'
-      STOP
-
-    endif
-
-  endfunction get_LU_cc
 
   real(num) function get_Au(ix,iy) 
 
@@ -935,4 +707,32 @@ endif
   endfunction get_Av
 
 end module advance_module
+
+! Old subroutines 
+
+!!!! Currently unused - was used in the viscous code. Keep here, might prove useful.
+!!!! (but if you use it, double check is still standard 5 point
+!!!!
+!!!!  real(num) function get_LU_cc(ix,iy,di) ! calculate vector laplacian at a coordinate
+!!!!    integer, intent(in) :: ix, iy, di
+!!!!
+!!!!    if (di == 1) then
+!!!!
+!!!!      get_LU_cc = (u(ix+1,iy) - 2.0_num*u(ix,iy) + u(ix-1,iy)) / dx**2 + & 
+!!!!         (u(ix,iy+1) - 2.0_num*u(ix,iy) + u(ix,iy-1)) / dy**2 
+!!!!
+!!!!    else if (di == 2) then
+!!!!
+!!!!      get_LU_cc = (v(ix+1,iy) - 2.0_num*v(ix,iy) + v(ix-1,iy)) / dx**2 + & 
+!!!!         (v(ix,iy+1) - 2.0_num*v(ix,iy) + v(ix,iy-1)) / dy**2 
+!!!!    else 
+!!!!
+!!!!      print *,'error: get_LU_cc (calc vector laplacian) not given valid dimension'
+!!!!      print *,'di = 1 (x) or = 2 (y)'
+!!!!      print *,'Terminating early'
+!!!!      STOP
+!!!!
+!!!!    endif
+!!!!
+!!!!  endfunction get_LU_cc
 

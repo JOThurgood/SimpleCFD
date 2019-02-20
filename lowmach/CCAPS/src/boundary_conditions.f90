@@ -65,91 +65,30 @@ module boundary_conditions
     endif
 
 
-    ! Encode no-slip and more general dirchlet in one go? 
-    ! KISS for now ...
-
-    ! No Slip
+    ! new no slip - third argument is set to one to indicate odd symmetry on velocities (forces zero on boundary)
 
     if (bc_xmin == no_slip) then
-
-      ! at xmin, centered and yface are x coordinates 
-
-      if (present(arr_cc)) then !this one passes for v but fails for u? likely a corner issue 
-        arr_cc(0,:)  = -arr_cc(1,:) 
-        arr_cc(-1,:) = -arr_cc(2,:)
-      endif
-
-      if (present(arr_yface)) then
-        arr_yface(0,:)  = -arr_yface(1,:)
-        arr_yface(-1,:) = -arr_yface(2,:)
-      endif
-
-      ! xface
-
-      if (present(arr_xface)) then
-        arr_xface(-1,:) = -arr_xface(1,:)
-        arr_xface(-2,:) = -arr_xface(2,:)
-      endif
-
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'x_min',odd_even = 1)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'x_min',odd_even = 1)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'x_min',odd_even = 1)
     endif
 
     if (bc_xmax == no_slip) then
-
-      if (present(arr_cc)) then
-        arr_cc(nx+1,:) = -arr_cc(nx,:)
-        arr_cc(nx+2,:) = -arr_cc(nx-1,:)
-      endif
-
-      if (present(arr_yface)) then
-        arr_yface(nx+1,:) = - arr_yface(nx,:)
-        arr_yface(nx+2,:) = - arr_yface(nx-1,:)
-      endif
-
-      if (present(arr_xface)) then
-        arr_xface(nx+1,:) = - arr_xface(nx-1,:)
-        arr_xface(nx+2,:) = - arr_xface(nx-2,:)
-      endif
-
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'x_max',odd_even = 1)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'x_max',odd_even = 1)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'x_max',odd_even = 1)
     endif
 
     if (bc_ymin == no_slip) then
-
-      ! centered and xface are same y coordinates
-
-      if (present(arr_cc)) then
-        arr_cc(:,0) = - arr_cc(:,1)
-        arr_cc(:,-1) = -arr_cc(:,2)
-      endif
-
-      if (present(arr_xface)) then
-        arr_xface(:,0) = -arr_xface(:,1)
-        arr_xface(:,-1) = -arr_xface(:,2)
-      endif
-
-      if (present(arr_yface)) then
-        arr_yface(:,-1) = -arr_yface(:,1)
-        arr_yface(:,-2) = -arr_yface(:,2)
-      endif
-
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'y_min',odd_even = 1)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'y_min',odd_even = 1)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'y_min',odd_even = 1)
     endif
 
     if (bc_ymax == no_slip) then
-
-      if (present(arr_cc)) then
-        arr_cc(:,ny+1) = -arr_cc(:,ny)
-        arr_cc(:,ny+2) = -arr_cc(:,ny-1)
-      endif
-
-      if (present(arr_xface)) then
-        arr_xface(:,ny+1) = -arr_xface(:,ny)
-        arr_xface(:,ny+2) = -arr_xface(:,ny-1)
-      endif
-
-      if (present(arr_yface)) then
-        arr_yface(:,ny+1) = -arr_yface(:,ny-1)
-        arr_yface(:,ny+2) = -arr_yface(:,ny-2)
-      endif
-
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'y_max',odd_even = 1)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'y_max',odd_even = 1)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'y_max',odd_even = 1)
     endif
 
 
@@ -261,7 +200,6 @@ module boundary_conditions
 
   end subroutine velocity_bcs
 
-
   subroutine phi_bcs
 
     !Periodic 
@@ -290,24 +228,12 @@ module boundary_conditions
       phi(:,ny+2) = phi(:,ny-1)
     endif
 
-    ! No slip should be Neumann for pressure?
+    ! No slip
 
-    if (bc_xmin == no_slip) then
-      phi(0,:) = phi(1,:)
-      phi(-1,:) = phi(2,:)
-    endif
-    if (bc_xmax == no_slip) then
-      phi(nx+1,:) = phi(nx,:)
-      phi(nx+2,:) = phi(nx-1,:)
-    endif
-    if (bc_ymin == no_slip) then
-      phi(:,0) = phi(:,1)
-      phi(:,-1) = phi(:,2)
-    endif
-    if (bc_ymax == no_slip) then
-      phi(:,ny+1) = phi(:,ny)
-      phi(:,ny+2) = phi(:,ny-1)
-    endif
+    if (bc_xmin == no_slip) call apply_sym_cc(arr_cc = phi, boundary = 'x_min', odd_even = 0)
+    if (bc_xmax == no_slip) call apply_sym_cc(arr_cc = phi, boundary = 'x_max', odd_even = 0)
+    if (bc_ymin == no_slip) call apply_sym_cc(arr_cc = phi, boundary = 'y_min', odd_even = 0)
+    if (bc_ymax == no_slip) call apply_sym_cc(arr_cc = phi, boundary = 'y_max', odd_even = 0)
 
     ! want to overhaul BC so you don't have so many different things doing the same thing
 
@@ -395,83 +321,95 @@ module boundary_conditions
       if (present(arr_yface)) call apply_periodic_yface(arr_yface = arr_yface, boundary = 'y_max')
     endif 
 
-    ! No slip is just even sym for rho
+    ! new no slip - third argument is set to 0 to indicate even symmetry on rho
 
     if (bc_xmin == no_slip) then
-
-      if (present(arr_cc)) then
-        arr_cc( 0,:) = arr_cc(1,:)
-        arr_cc(-1,:) = arr_cc(2,:)
-      endif 
-
-      if (present(arr_xface)) then
-        arr_xface(-1,:) = arr_xface(1,:)
-        arr_xface(-2,:) = arr_xface(2,:)
-      endif 
-
-      if (present(arr_yface)) then
-        arr_yface( 0,:) = arr_yface(1,:)
-        arr_yface(-1,:) = arr_yface(2,:)
-      endif 
-
-    endif 
-
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'x_min',odd_even = 0)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'x_min',odd_even = 0)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'x_min',odd_even = 0)
+    endif
 
     if (bc_xmax == no_slip) then
-
-      if (present(arr_cc)) then
-        arr_cc(nx+1,:) = arr_cc(nx,:)
-        arr_cc(nx+2,:) = arr_cc(nx-1,:)
-      endif 
-
-      if (present(arr_xface)) then
-        arr_xface(nx+1,:) = arr_xface(nx-1,:)
-        arr_xface(nx+2,:) = arr_xface(nx-2,:)
-      endif 
-
-      if (present(arr_yface)) then
-        arr_yface(nx+1,:) = arr_yface(nx,:)
-        arr_yface(nx+2,:) = arr_yface(nx-1,:)
-      endif 
-
-    endif 
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'x_max',odd_even = 0)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'x_max',odd_even = 0)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'x_max',odd_even = 0)
+    endif
 
     if (bc_ymin == no_slip) then
-
-      if (present(arr_cc)) then
-        arr_cc(:, 0) = arr_cc(:,1)
-        arr_cc(:,-1) = arr_cc(:,2)
-      endif
-
-      if (present(arr_xface)) then
-        arr_xface(:, 0) = arr_xface(:,1)
-        arr_xface(:,-1) = arr_xface(:,2)
-      endif
-
-      if (present(arr_yface)) then
-        arr_yface(:,-1) = arr_yface(:,1)
-        arr_yface(:,-2) = arr_yface(:,2)
-      endif
-
-    endif 
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'y_min',odd_even = 0)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'y_min',odd_even = 0)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'y_min',odd_even = 0)
+    endif
 
     if (bc_ymax == no_slip) then
-      if (present(arr_cc)) then
-        arr_cc(:,ny+1) = arr_cc(:,ny)
-        arr_cc(:,ny+2) = arr_cc(:,ny-1)
-      endif
-      if (present(arr_xface)) then
-        arr_xface(:,ny+1) = arr_xface(:,ny)
-        arr_xface(:,ny+2) = arr_xface(:,ny-1)
-      endif
-      if (present(arr_yface)) then
-        arr_yface(:,ny+1) = arr_yface(:,ny-1)
-        arr_yface(:,ny+2) = arr_yface(:,ny-2)
-      endif
-    endif 
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'y_max',odd_even = 0)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'y_max',odd_even = 0)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'y_max',odd_even = 0)
+    endif
 
+    ! old no slip for rho, keep till properly tested
 
-    ! Zero gradient
+!!!!!    if (bc_xmin == no_slip) then
+!!!!!      if (present(arr_cc)) then
+!!!!!        arr_cc( 0,:) = arr_cc(1,:)
+!!!!!        arr_cc(-1,:) = arr_cc(2,:)
+!!!!!      endif 
+!!!!!      if (present(arr_xface)) then
+!!!!!        arr_xface(-1,:) = arr_xface(1,:)
+!!!!!        arr_xface(-2,:) = arr_xface(2,:)
+!!!!!      endif 
+!!!!!      if (present(arr_yface)) then
+!!!!!        arr_yface( 0,:) = arr_yface(1,:)
+!!!!!        arr_yface(-1,:) = arr_yface(2,:)
+!!!!!      endif 
+!!!!!    endif 
+!!!!!
+!!!!!
+!!!!!    if (bc_xmax == no_slip) then
+!!!!!      if (present(arr_cc)) then
+!!!!!        arr_cc(nx+1,:) = arr_cc(nx,:)
+!!!!!        arr_cc(nx+2,:) = arr_cc(nx-1,:)
+!!!!!      endif 
+!!!!!      if (present(arr_xface)) then
+!!!!!        arr_xface(nx+1,:) = arr_xface(nx-1,:)
+!!!!!        arr_xface(nx+2,:) = arr_xface(nx-2,:)
+!!!!!      endif 
+!!!!!      if (present(arr_yface)) then
+!!!!!        arr_yface(nx+1,:) = arr_yface(nx,:)
+!!!!!        arr_yface(nx+2,:) = arr_yface(nx-1,:)
+!!!!!      endif 
+!!!!!    endif 
+!!!!!
+!!!!!    if (bc_ymin == no_slip) then
+!!!!!      if (present(arr_cc)) then
+!!!!!        arr_cc(:, 0) = arr_cc(:,1)
+!!!!!        arr_cc(:,-1) = arr_cc(:,2)
+!!!!!      endif
+!!!!!      if (present(arr_xface)) then
+!!!!!        arr_xface(:, 0) = arr_xface(:,1)
+!!!!!        arr_xface(:,-1) = arr_xface(:,2)
+!!!!!      endif
+!!!!!      if (present(arr_yface)) then
+!!!!!        arr_yface(:,-1) = arr_yface(:,1)
+!!!!!        arr_yface(:,-2) = arr_yface(:,2)
+!!!!!      endif
+!!!!!    endif 
+!!!!!
+!!!!!    if (bc_ymax == no_slip) then
+!!!!!      if (present(arr_cc)) then
+!!!!!        arr_cc(:,ny+1) = arr_cc(:,ny)
+!!!!!        arr_cc(:,ny+2) = arr_cc(:,ny-1)
+!!!!!      endif
+!!!!!      if (present(arr_xface)) then
+!!!!!        arr_xface(:,ny+1) = arr_xface(:,ny)
+!!!!!        arr_xface(:,ny+2) = arr_xface(:,ny-1)
+!!!!!      endif
+!!!!!      if (present(arr_yface)) then
+!!!!!        arr_yface(:,ny+1) = arr_yface(:,ny-1)
+!!!!!        arr_yface(:,ny+2) = arr_yface(:,ny-2)
+!!!!!      endif
+!!!!!    endif 
+
 
     ! Driven / general dirichlet 
 
@@ -620,6 +558,171 @@ module boundary_conditions
     endif 
 
   end subroutine apply_periodic_yface
+
+  subroutine apply_sym_cc(arr_cc, boundary, odd_even)
+
+    real(num), dimension(:,:), allocatable, intent(inout) :: arr_cc
+    character(len=5), intent(in) :: boundary
+    integer, intent(in) :: odd_even !0 is even, 1 is odd
+
+    if ((boundary /= 'x_min') .and. (boundary /= 'x_max') .and. &
+       (boundary /= 'y_min') .and. (boundary /= 'y_max')) then
+      print *,'invalid argument passed to apply_evensym_cc'
+      print *,'stop'
+      STOP
+    endif
+
+    if (odd_even == 0) then !even symmetry : f(x) = f(-x), translated to boundary
+      if (boundary == 'x_min') then
+        arr_cc(0,:) = arr_cc(1,:)
+        arr_cc(-1,:) = arr_cc(2,:)
+      endif 
+      if (boundary == 'x_max') then
+        arr_cc(nx+1,:) = arr_cc(nx,:)
+        arr_cc(nx+2,:) = arr_cc(nx-1,:)
+      endif 
+      if (boundary == 'y_min') then
+        arr_cc(:,0) = arr_cc(:,1)
+        arr_cc(:,-1) = arr_cc(:,2)
+      endif 
+      if (boundary == 'y_max') then
+        arr_cc(:,ny+1) = arr_cc(:,ny)
+        arr_cc(:,ny+2) = arr_cc(:,ny-1)
+      endif 
+    else if (odd_even ==1) then ! odd symmetry : -f(x) = f(-x), translated to boundary
+      if (boundary == 'x_min') then
+        arr_cc(0,:) = -arr_cc(1,:)
+        arr_cc(-1,:) = -arr_cc(2,:)
+      endif 
+      if (boundary == 'x_max') then
+        arr_cc(nx+1,:) = -arr_cc(nx,:)
+        arr_cc(nx+2,:) = -arr_cc(nx-1,:)
+      endif 
+      if (boundary == 'y_min') then
+        arr_cc(:,0) = -arr_cc(:,1)
+        arr_cc(:,-1) = -arr_cc(:,2)
+      endif 
+      if (boundary == 'y_max') then
+        arr_cc(:,ny+1) = -arr_cc(:,ny)
+        arr_cc(:,ny+2) = -arr_cc(:,ny-1)
+      endif 
+    else
+      print *,'apply_sym_cc not given valid odd_even, odd_even = ',odd_even
+      print *,'STOP'
+      STOP 
+    endif
+
+  end subroutine apply_sym_cc
+
+  subroutine apply_sym_xface(arr_xface, boundary, odd_even)
+
+    real(num), dimension(:,:), allocatable, intent(inout) :: arr_xface
+    character(len=5), intent(in) :: boundary
+    integer, intent(in) :: odd_even !0 is even, 1 is odd
+
+    if ((boundary /= 'x_min') .and. (boundary /= 'x_max') .and. &
+       (boundary /= 'y_min') .and. (boundary /= 'y_max')) then
+      print *,'invalid argument passed to apply_evensym_xface'
+      print *,'stop'
+      STOP
+    endif
+
+    if (odd_even == 0) then !even symmetry : f(x) = f(-x), translated to boundary
+      if (boundary == 'x_min') then
+        arr_xface(-1,:) = arr_xface(1,:)
+        arr_xface(-2,:) = arr_xface(2,:)
+      endif 
+      if (boundary == 'x_max') then
+        arr_xface(nx+1,:) = arr_xface(nx-1,:)
+        arr_xface(nx+2,:) = arr_xface(nx-2,:)
+      endif 
+      if (boundary == 'y_min') then
+        arr_xface(:,0) = arr_xface(:,1)
+        arr_xface(:,-1) = arr_xface(:,2)
+      endif 
+      if (boundary == 'y_max') then
+        arr_xface(:,ny+1) = arr_xface(:,ny)
+        arr_xface(:,ny+2) = arr_xface(:,ny-1)
+      endif 
+    else if (odd_even ==1) then ! odd symmetry : -f(x) = f(-x), translated to boundary
+      if (boundary == 'x_min') then
+        arr_xface(-1,:) = -arr_xface(1,:)
+        arr_xface(-2,:) = -arr_xface(2,:)
+      endif 
+      if (boundary == 'x_max') then
+        arr_xface(nx+1,:) = -arr_xface(nx-1,:)
+        arr_xface(nx+2,:) = -arr_xface(nx-2,:)
+      endif 
+      if (boundary == 'y_min') then
+        arr_xface(:,0) = -arr_xface(:,1)
+        arr_xface(:,-1) = -arr_xface(:,2)
+      endif 
+      if (boundary == 'y_max') then
+        arr_xface(:,ny+1) = -arr_xface(:,ny)
+        arr_xface(:,ny+2) = -arr_xface(:,ny-1)
+      endif 
+    else
+      print *,'apply_sym_xface not given valid odd_even, odd_even = ',odd_even
+      print *,'STOP'
+      STOP 
+    endif
+
+  end subroutine apply_sym_xface
+  
+  subroutine apply_sym_yface(arr_yface, boundary, odd_even)
+
+    real(num), dimension(:,:), allocatable, intent(inout) :: arr_yface
+    character(len=5), intent(in) :: boundary
+    integer, intent(in) :: odd_even !0 is even, 1 is odd
+
+    if ((boundary /= 'x_min') .and. (boundary /= 'x_max') .and. &
+       (boundary /= 'y_min') .and. (boundary /= 'y_max')) then
+      print *,'invalid argument passed to apply_evensym_yface'
+      print *,'stop'
+      STOP
+    endif
+
+    if (odd_even == 0) then !even symmetry : f(x) = f(-x), translated to boundary
+      if (boundary == 'x_min') then
+        arr_yface( 0,:) = arr_yface(1,:)
+        arr_yface(-1,:) = arr_yface(2,:)
+      endif 
+      if (boundary == 'x_max') then
+        arr_yface(nx+1,:) = arr_yface(nx,:)
+        arr_yface(nx+2,:) = arr_yface(nx-1,:)
+      endif 
+      if (boundary == 'y_min') then
+        arr_yface(:,-1) = arr_yface(:,1)
+        arr_yface(:,-2) = arr_yface(:,2)
+      endif 
+      if (boundary == 'y_max') then
+        arr_yface(:,ny+1) = arr_yface(:,ny-1)
+        arr_yface(:,ny+2) = arr_yface(:,ny-2)
+      endif 
+    else if (odd_even ==1) then ! odd symmetry : -f(x) = f(-x), translated to boundary
+      if (boundary == 'x_min') then
+        arr_yface( 0,:) = -arr_yface(1,:)
+        arr_yface(-1,:) = -arr_yface(2,:)
+      endif 
+      if (boundary == 'x_max') then
+        arr_yface(nx+1,:) = -arr_yface(nx,:)
+        arr_yface(nx+2,:) = -arr_yface(nx-1,:)
+      endif 
+      if (boundary == 'y_min') then
+        arr_yface(:,-1) = -arr_yface(:,1)
+        arr_yface(:,-2) = -arr_yface(:,2)
+      endif 
+      if (boundary == 'y_max') then
+        arr_yface(:,ny+1) = -arr_yface(:,ny-1)
+        arr_yface(:,ny+2) = -arr_yface(:,ny-2)
+      endif 
+    else
+      print *,'apply_sym_yface not given valid odd_even, odd_even = ',odd_even
+      print *,'STOP'
+      STOP 
+    endif
+
+  end subroutine apply_sym_yface
 
   subroutine bc_sanity_check(arr_cc, arr_xface, arr_yface,di,varname)
 

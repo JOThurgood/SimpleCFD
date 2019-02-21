@@ -34,19 +34,16 @@ module control
 
     grav_y  = -1.0_num
 
-    ! set one of these to true to overwrite everything except nx 
-    ! in control with correct setup for the test problems.
-    !
-    ! This will also cause any nitial_condition set to be ignored in
-    ! favour of the specific problems
+    ! uncomment one of these to overwrite user_control
+    ! and users initial condition with one of the test cases
 
-!    shear_test = .true.
     minion_test = .true. 
-!    vortex1_test = .true.
+!    shear_test = .true.
 !    drivenlid_test = .true.
-!!    vardens_adv_test = .true.
 !    rti1_test = .true. 
 !    blob1_test = .true. 
+!!    vortex1_test = .true.
+!!    vardens_adv_test = .true.
 
     ! DONT set more than one of the above true
 
@@ -83,8 +80,7 @@ module control
     x_max = 1.0_num
     y_min = x_min
     y_max = x_max
-    !nx = 32   allow it to use whatever was set for easy overwriting in
-    ! user control. Dont change it here in practice.
+    nx = 32
     ny = nx !but do force nx=ny
     CFL = 0.5_num
     t_end = 0.5_num 
@@ -99,7 +95,7 @@ module control
     dumpfreq = 10000
     grav_x = 0.0_num
     grav_y = 0.0_num
-!    use_vardens = .true.
+    !use_vardens = .true.
   end subroutine minion_test_control
 
   subroutine vortex1_test_control
@@ -129,7 +125,7 @@ module control
     x_max = 1.0_num
     y_min = x_min
     y_max = x_max
-    nx = 32
+    nx = 64
     ny = nx
     CFL = 1.0_num
     t_end = 100.0_num   
@@ -140,7 +136,7 @@ module control
     bc_xmin = no_slip
     bc_xmax = no_slip
     bc_ymin = no_slip
-    bc_ymax = dirichlet ! dirichlet is hardcoded in boundary.f90 to set ux = drive_vel
+    bc_ymax = driven 
     drive_vel = 1.0_num
     dumpfreq = -1
     dt_snapshot = 5.0_num

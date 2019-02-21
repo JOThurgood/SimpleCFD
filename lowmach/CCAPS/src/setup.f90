@@ -67,10 +67,10 @@ module setup
     if (bc_ymin == no_slip) mg_bc_ymin = 'zero_gradient'
     if (bc_ymax == no_slip) mg_bc_ymax = 'zero_gradient'
 
-    if (bc_xmin == dirichlet) mg_bc_xmin = 'fixed'
-    if (bc_xmax == dirichlet) mg_bc_xmax = 'fixed'
-    if (bc_ymin == dirichlet) mg_bc_ymin = 'fixed'
-    if (bc_ymax == dirichlet) mg_bc_ymax = 'fixed' !*
+    if (bc_xmin == driven) mg_bc_xmin = 'fixed'
+    if (bc_xmax == driven) mg_bc_xmax = 'fixed'
+    if (bc_ymin == driven) mg_bc_ymin = 'fixed'
+    if (bc_ymax == driven) mg_bc_ymax = 'fixed' !*
 
     if (use_vardens) then
 

@@ -23,7 +23,8 @@ module boundary_conditions
 
     integer, intent(in) :: di
 
-    real(num) :: const 
+    real(num) :: diri_val
+    integer :: sym_type
 
     ! Sanity checks
 
@@ -33,10 +34,14 @@ module boundary_conditions
 
     if (.not.(present(arr_cc)) .and. .not.(present(arr_xface)) &
         .and. .not.(present(arr_yface))) then
-
       print *,'error: empty call to velocity_bcs'
       STOP
     endif
+
+    if ((di /= 1) .and. (di /= 2)) then 
+      print *,'error: velocity_bcs passed invalid dimension parameter "di"'
+      STOP
+    endif 
 
     ! Periodic 
 
@@ -65,7 +70,7 @@ module boundary_conditions
     endif
 
 
-    ! new no slip - third argument is set to one to indicate odd symmetry on velocities (forces zero on boundary)
+    ! No slip - third argument is set to one to indicate odd symmetry on velocities (forces zero on boundary)
 
     if (bc_xmin == no_slip) then
       if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'x_min',odd_even = 1)
@@ -91,90 +96,79 @@ module boundary_conditions
       if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'y_max',odd_even = 1)
     endif
 
+    ! slip - zero gradient to tangent velocity (even sym), force zero normal velocity (odd sym)
 
-    ! Slip - Only for ymin currently
+    if (bc_xmin == slip) then
+      if (di == 1) then ! ==1 is u_x, .ie. normal to this boundary
+        sym_type = 1
+      else 
+        sym_type = 0  ! tangent 
+      endif 
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'x_min',odd_even = sym_type)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'x_min',odd_even = sym_type)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'x_min',odd_even = sym_type)
+    endif
+
+    if (bc_xmax == slip) then
+      if (di == 1) then ! ==1 is u_x, .ie. normal to this boundary
+        sym_type = 1
+      else 
+        sym_type = 0  ! tangent 
+      endif 
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'x_max',odd_even = sym_type)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'x_max',odd_even = sym_type)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'x_max',odd_even = sym_type)
+    endif
 
     if (bc_ymin == slip) then
-
-      if (di == 1) then !apply zero gradient to x velocity (i.e. tangent to this face)
-
-        if (present(arr_cc)) then
-          arr_cc(:,0) =  arr_cc(:,1)
-          arr_cc(:,-1) = arr_cc(:,2)
-        endif
-  
-        if (present(arr_xface)) then
-          arr_xface(:,0) = arr_xface(:,1)
-          arr_xface(:,-1) = arr_xface(:,2)
-        endif
-  
-        if (present(arr_yface)) then
-          arr_yface(:,-1) = arr_yface(:,1)
-          arr_yface(:,-2) = arr_yface(:,2)
-        endif
-
-      endif ! di == 1
-
-      if (di == 2) then !apply anti-sym to y velocity (i.e. normal to this face)
-  
-        ! centered and xface are same y coordinates
-  
-        if (present(arr_cc)) then
-          arr_cc(:,0) = - arr_cc(:,1)
-          arr_cc(:,-1) = -arr_cc(:,2)
-        endif
-  
-        if (present(arr_xface)) then
-          arr_xface(:,0) = -arr_xface(:,1)
-          arr_xface(:,-1) = -arr_xface(:,2)
-        endif
-  
-        if (present(arr_yface)) then
-          arr_yface(:,-1) = -arr_yface(:,1)
-          arr_yface(:,-2) = -arr_yface(:,2)
-        endif
-  
-      endif ! di == 2
-
-    endif
-
-
-
-    ! Constant / Dirichlet
-
-    ! Driven - hardcoded as u = 1 for now
-    ! problem is distinguishing between u = 1 and v = 0
-    
-    ! It would be better to handle a class of 'constant' or 'dirchlet' 
-    ! and then have the user specify the constant for each dimension
-
-    if ( bc_ymax == dirichlet) then
-
-      if (di == 1) then
-        const = drive_vel
-      else if (di == 2) then
-        const = 0.0_num
+      if (di == 2) then ! ==2 is u_y, .ie. normal to this boundary
+        sym_type = 1
       else 
-        STOP
-      endif
-
-      if (present(arr_cc)) then
-        arr_cc(:,ny+1) = 2.0_num * const - arr_cc(:,ny)
-        arr_cc(:,ny+2) = 2.0_num * const - arr_cc(:,ny-1)
-      endif
-
-      if (present(arr_xface)) then
-        arr_xface(:,ny+1) = 2.0_num * const - arr_xface(:,ny)
-        arr_xface(:,ny+2) = 2.0_num * const - arr_xface(:,ny-1)
-      endif
-
-      if (present(arr_yface)) then
-        arr_yface(:,ny+1) = 2.0_num * const - arr_yface(:,ny-1)
-        arr_yface(:,ny+2) = 2.0_num * const - arr_yface(:,ny-2)
-      endif
-
+        sym_type = 0  ! tangent 
+      endif 
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'y_min',odd_even = sym_type)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'y_min',odd_even = sym_type)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'y_min',odd_even = sym_type)
     endif
 
+    if (bc_ymax == slip) then
+      if (di == 2) then ! ==2 is u_y, .ie. normal to this boundary
+        sym_type = 1
+      else 
+        sym_type = 0  ! tangent 
+      endif 
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'y_max',odd_even = sym_type)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'y_max',odd_even = sym_type)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'y_max',odd_even = sym_type)
+    endif
+
+    ! driven
+
+    if (bc_xmin == driven) then
+        print *,'driven bx_xmin not yet implemented, STOP'
+        STOP
+    endif
+
+    if (bc_xmax == driven) then
+        print *,'driven bx_xmin not yet implemented, STOP'
+        STOP
+    endif
+
+    if (bc_ymin == driven) then
+        print *,'driven bx_xmin not yet implemented, STOP'
+        STOP
+    endif
+
+    if (bc_ymax == driven) then
+      if (di == 2) then ! ==2 is u_y, .ie. normal to this boundary
+        diri_val = 0.0_num
+      else 
+        diri_val = drive_vel  ! tangent 
+      endif 
+      if (present(arr_cc)) call apply_dirichlet_cc(arr_cc = arr_cc, boundary = 'y_max',const = diri_val)
+      if (present(arr_xface)) call apply_dirichlet_xface(arr_xface = arr_xface, boundary = 'y_max',const = diri_val)
+      if (present(arr_yface)) call apply_dirichlet_yface(arr_yface = arr_yface, boundary = 'y_max',const = diri_val)
+    endif
 
     ! outflow - zero gradient on v and rho, fixed phi
 
@@ -235,40 +229,59 @@ module boundary_conditions
     if (bc_ymin == no_slip) call apply_sym_cc(arr_cc = phi, boundary = 'y_min', odd_even = 0)
     if (bc_ymax == no_slip) call apply_sym_cc(arr_cc = phi, boundary = 'y_max', odd_even = 0)
 
-    ! want to overhaul BC so you don't have so many different things doing the same thing
+    ! Slip  (applying zero gradent / even sym to phi)
+    ! NB might want an extrapolation instead for some setups?
 
-    if (bc_ymax == dirichlet) then
-      phi(:,ny+1) =  phi(:,ny)
-      phi(:,ny+2) =  phi(:,ny-1)
+    if (bc_xmin == slip) call apply_sym_cc(arr_cc = phi, boundary = 'x_min', odd_even = 0)
+    if (bc_xmax == slip) call apply_sym_cc(arr_cc = phi, boundary = 'x_max', odd_even = 0)
+    if (bc_ymin == slip) call apply_sym_cc(arr_cc = phi, boundary = 'y_min', odd_even = 0)
+    if (bc_ymax == slip) call apply_sym_cc(arr_cc = phi, boundary = 'y_max', odd_even = 0)
+
+    ! driven velocity
+
+    if (bc_xmin == driven) then
+        print *,'driven bx_xmin not yet implemented, STOP'
+        STOP
     endif
 
-    ! overwrite with experimental no_slip (for atmospheres)
-
-    if (.not. drivenlid_test) then
-
-    if (bc_ymin == no_slip) then
-      phi(:,0) =  phi(:,1) - (phi(:,2)-phi(:,1))
-      phi(:,-1) = phi(:,1) - (phi(:,2)-phi(:,1))*2.0_num
+    if (bc_xmax == driven) then
+        print *,'driven bx_xmin not yet implemented, STOP'
+        STOP
     endif
 
-    if (bc_ymax == no_slip) then
-      phi(:,ny+1) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))
-      phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
+    if (bc_ymin == driven) then
+        print *,'driven bx_xmin not yet implemented, STOP'
+        STOP
     endif
 
-    endif
+    if (bc_ymax == driven) call apply_sym_cc(arr_cc = phi, boundary = 'y_max', odd_even = 0)
 
-    if (bc_ymax == outflow) then
-      phi(:,ny+1) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))
-      phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
-    endif
-
-    ! slip BC, only for ymin currently
-
-    if (bc_ymin == slip) then
-      phi(:,0) =  phi(:,1) - (phi(:,2)-phi(:,1))
-      phi(:,-1) = phi(:,1) - (phi(:,2)-phi(:,1))*2.0_num
-    endif
+!!!!!    ! Old slip / no slip alternatives - found extrapolations might be better with gravity / atmospheres
+!!!!!    ! (expect this might be replaced wiht "outflow" or "alt slip" or something to separate properly)
+!!!!!
+!!!!!    if (.not. drivenlid_test) then
+!!!!!
+!!!!!    if (bc_ymin == no_slip) then
+!!!!!      phi(:,0) =  phi(:,1) - (phi(:,2)-phi(:,1))
+!!!!!      phi(:,-1) = phi(:,1) - (phi(:,2)-phi(:,1))*2.0_num
+!!!!!    endif
+!!!!!
+!!!!!    if (bc_ymax == no_slip) then
+!!!!!      phi(:,ny+1) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))
+!!!!!      phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
+!!!!!    endif
+!!!!!
+!!!!!    endif
+!!!!!
+!!!!!    if (bc_ymax == outflow) then
+!!!!!      phi(:,ny+1) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))
+!!!!!      phi(:,ny+2) = phi(:,ny) + (phi(:,ny) - phi(:,ny-1))*2.0_num
+!!!!!    endif
+!!!!!
+!!!!!    if (bc_ymin == slip) then
+!!!!!      phi(:,0) =  phi(:,1) - (phi(:,2)-phi(:,1))
+!!!!!      phi(:,-1) = phi(:,1) - (phi(:,2)-phi(:,1))*2.0_num
+!!!!!    endif
 
 
   end subroutine phi_bcs
@@ -321,7 +334,7 @@ module boundary_conditions
       if (present(arr_yface)) call apply_periodic_yface(arr_yface = arr_yface, boundary = 'y_max')
     endif 
 
-    ! new no slip - third argument is set to 0 to indicate even symmetry on rho
+    ! no slip - third argument is set to 0 to indicate even symmetry on rho
 
     if (bc_xmin == no_slip) then
       if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'x_min',odd_even = 0)
@@ -347,71 +360,54 @@ module boundary_conditions
       if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'y_max',odd_even = 0)
     endif
 
-    ! old no slip for rho, keep till properly tested
+    ! slip also usually sets even symmetry on rho
 
-!!!!!    if (bc_xmin == no_slip) then
-!!!!!      if (present(arr_cc)) then
-!!!!!        arr_cc( 0,:) = arr_cc(1,:)
-!!!!!        arr_cc(-1,:) = arr_cc(2,:)
-!!!!!      endif 
-!!!!!      if (present(arr_xface)) then
-!!!!!        arr_xface(-1,:) = arr_xface(1,:)
-!!!!!        arr_xface(-2,:) = arr_xface(2,:)
-!!!!!      endif 
-!!!!!      if (present(arr_yface)) then
-!!!!!        arr_yface( 0,:) = arr_yface(1,:)
-!!!!!        arr_yface(-1,:) = arr_yface(2,:)
-!!!!!      endif 
-!!!!!    endif 
-!!!!!
-!!!!!
-!!!!!    if (bc_xmax == no_slip) then
-!!!!!      if (present(arr_cc)) then
-!!!!!        arr_cc(nx+1,:) = arr_cc(nx,:)
-!!!!!        arr_cc(nx+2,:) = arr_cc(nx-1,:)
-!!!!!      endif 
-!!!!!      if (present(arr_xface)) then
-!!!!!        arr_xface(nx+1,:) = arr_xface(nx-1,:)
-!!!!!        arr_xface(nx+2,:) = arr_xface(nx-2,:)
-!!!!!      endif 
-!!!!!      if (present(arr_yface)) then
-!!!!!        arr_yface(nx+1,:) = arr_yface(nx,:)
-!!!!!        arr_yface(nx+2,:) = arr_yface(nx-1,:)
-!!!!!      endif 
-!!!!!    endif 
-!!!!!
-!!!!!    if (bc_ymin == no_slip) then
-!!!!!      if (present(arr_cc)) then
-!!!!!        arr_cc(:, 0) = arr_cc(:,1)
-!!!!!        arr_cc(:,-1) = arr_cc(:,2)
-!!!!!      endif
-!!!!!      if (present(arr_xface)) then
-!!!!!        arr_xface(:, 0) = arr_xface(:,1)
-!!!!!        arr_xface(:,-1) = arr_xface(:,2)
-!!!!!      endif
-!!!!!      if (present(arr_yface)) then
-!!!!!        arr_yface(:,-1) = arr_yface(:,1)
-!!!!!        arr_yface(:,-2) = arr_yface(:,2)
-!!!!!      endif
-!!!!!    endif 
-!!!!!
-!!!!!    if (bc_ymax == no_slip) then
-!!!!!      if (present(arr_cc)) then
-!!!!!        arr_cc(:,ny+1) = arr_cc(:,ny)
-!!!!!        arr_cc(:,ny+2) = arr_cc(:,ny-1)
-!!!!!      endif
-!!!!!      if (present(arr_xface)) then
-!!!!!        arr_xface(:,ny+1) = arr_xface(:,ny)
-!!!!!        arr_xface(:,ny+2) = arr_xface(:,ny-1)
-!!!!!      endif
-!!!!!      if (present(arr_yface)) then
-!!!!!        arr_yface(:,ny+1) = arr_yface(:,ny-1)
-!!!!!        arr_yface(:,ny+2) = arr_yface(:,ny-2)
-!!!!!      endif
-!!!!!    endif 
+    if (bc_xmin == slip) then
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'x_min',odd_even = 0)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'x_min',odd_even = 0)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'x_min',odd_even = 0)
+    endif
 
+    if (bc_xmax == slip) then
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'x_max',odd_even = 0)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'x_max',odd_even = 0)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'x_max',odd_even = 0)
+    endif
 
-    ! Driven / general dirichlet 
+    if (bc_ymin == slip) then
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'y_min',odd_even = 0)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'y_min',odd_even = 0)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'y_min',odd_even = 0)
+    endif
+
+    if (bc_ymax == slip) then
+      if (present(arr_cc)) call apply_sym_cc(arr_cc = arr_cc, boundary = 'y_max',odd_even = 0)
+      if (present(arr_xface)) call apply_sym_xface(arr_xface = arr_xface, boundary = 'y_max',odd_even = 0)
+      if (present(arr_yface)) call apply_sym_yface(arr_yface = arr_yface, boundary = 'y_max',odd_even = 0)
+    endif
+
+    ! driven not implemented for rho yet    
+    if (bc_xmin == driven) then
+        print *,'driven not yet implemented for rho, STOP'
+        STOP
+    endif
+
+    if (bc_xmax == driven) then
+        print *,'driven not yet implemented for rho, STOP'
+        print *,'driven bx_xmin not yet implemented, STOP'
+        STOP
+    endif
+
+    if (bc_ymin == driven) then
+        print *,'driven not yet implemented for rho, STOP'
+        print *,'driven bx_xmin not yet implemented, STOP'
+        STOP
+    endif
+
+    if (bc_ymax == driven) then
+      print *,'driven not yet implemented for rho, STOP'
+      STOP
+    endif
 
     ! outflow - zero gradient on v and rho, fixed phi
 
@@ -433,27 +429,6 @@ module boundary_conditions
       endif
 
     endif
-    
-    ! slip - currenly only for ymin
-
-    if (bc_ymin == slip) then
-
-      if (present(arr_cc)) then
-        arr_cc(:, 0) = arr_cc(:,1)
-        arr_cc(:,-1) = arr_cc(:,2)
-      endif
-
-      if (present(arr_xface)) then
-        arr_xface(:, 0) = arr_xface(:,1)
-        arr_xface(:,-1) = arr_xface(:,2)
-      endif
-
-      if (present(arr_yface)) then
-        arr_yface(:,-1) = arr_yface(:,1)
-        arr_yface(:,-2) = arr_yface(:,2)
-      endif
-
-    endif 
 
   end subroutine rho_bcs
 
@@ -723,6 +698,104 @@ module boundary_conditions
     endif
 
   end subroutine apply_sym_yface
+
+  subroutine apply_dirichlet_cc(arr_cc, boundary, const)
+
+    real(num), dimension(:,:), allocatable, intent(inout) :: arr_cc
+    character(len=5), intent(in) :: boundary
+    real(num), intent(in) :: const
+
+    ! if const == 0 this should be the same as your odd symmetry conditions
+
+    if ((boundary /= 'x_min') .and. (boundary /= 'x_max') .and. &
+       (boundary /= 'y_min') .and. (boundary /= 'y_max')) then
+      print *,'invalid argument passed to apply_evendirichlet_cc'
+      print *,'stop'
+      STOP
+    endif
+
+    if (boundary == 'x_min') then
+      arr_cc(0,:) = 2.0_num * const - arr_cc(1,:)
+      arr_cc(-1,:) = 2.0_num * const - arr_cc(2,:)
+    endif 
+    if (boundary == 'x_max') then
+      arr_cc(nx+1,:) = 2.0_num * const - arr_cc(nx,:)
+      arr_cc(nx+2,:) = 2.0_num * const - arr_cc(nx-1,:)
+    endif 
+    if (boundary == 'y_min') then
+      arr_cc(:,0) = 2.0_num * const - arr_cc(:,1)
+      arr_cc(:,-1) = 2.0_num * const - arr_cc(:,2)
+    endif 
+    if (boundary == 'y_max') then
+      arr_cc(:,ny+1) = 2.0_num * const - arr_cc(:,ny)
+      arr_cc(:,ny+2) = 2.0_num * const - arr_cc(:,ny-1)
+    endif 
+
+  end subroutine apply_dirichlet_cc
+
+  subroutine apply_dirichlet_xface(arr_xface, boundary, const)
+
+    real(num), dimension(:,:), allocatable, intent(inout) :: arr_xface
+    character(len=5), intent(in) :: boundary
+    real(num), intent(in) :: const
+
+    if ((boundary /= 'x_min') .and. (boundary /= 'x_max') .and. &
+       (boundary /= 'y_min') .and. (boundary /= 'y_max')) then
+      print *,'invalid argument passed to apply_evendirichlet_xface'
+      print *,'stop'
+      STOP
+    endif
+
+    if (boundary == 'x_min') then
+      arr_xface(-1,:) = 2.0_num * const - arr_xface(1,:)
+      arr_xface(-2,:) = 2.0_num * const - arr_xface(2,:)
+    endif 
+    if (boundary == 'x_max') then
+      arr_xface(nx+1,:) = 2.0_num * const - arr_xface(nx-1,:)
+      arr_xface(nx+2,:) = 2.0_num * const - arr_xface(nx-2,:)
+    endif 
+    if (boundary == 'y_min') then
+      arr_xface(:,0) = 2.0_num * const - arr_xface(:,1)
+      arr_xface(:,-1) = 2.0_num * const - arr_xface(:,2)
+    endif 
+    if (boundary == 'y_max') then
+      arr_xface(:,ny+1) = 2.0_num * const - arr_xface(:,ny)
+      arr_xface(:,ny+2) = 2.0_num * const - arr_xface(:,ny-1)
+    endif 
+
+  end subroutine apply_dirichlet_xface
+
+  subroutine apply_dirichlet_yface(arr_yface, boundary, const)
+
+    real(num), dimension(:,:), allocatable, intent(inout) :: arr_yface
+    character(len=5), intent(in) :: boundary
+    real(num), intent(in) :: const
+
+    if ((boundary /= 'x_min') .and. (boundary /= 'x_max') .and. &
+       (boundary /= 'y_min') .and. (boundary /= 'y_max')) then
+      print *,'invalid argument passed to apply_evendirichlet_yface'
+      print *,'stop'
+      STOP
+    endif
+
+    if (boundary == 'x_min') then
+      arr_yface( 0,:) = 2.0_num * const - arr_yface(1,:)
+      arr_yface(-1,:) = 2.0_num * const - arr_yface(2,:)
+    endif 
+    if (boundary == 'x_max') then
+      arr_yface(nx+1,:) = 2.0_num * const - arr_yface(nx,:)
+      arr_yface(nx+2,:) = 2.0_num * const - arr_yface(nx-1,:)
+    endif 
+    if (boundary == 'y_min') then
+      arr_yface(:,-1) = 2.0_num * const - arr_yface(:,1)
+      arr_yface(:,-2) = 2.0_num * const - arr_yface(:,2)
+    endif 
+    if (boundary == 'y_max') then
+      arr_yface(:,ny+1) = 2.0_num * const - arr_yface(:,ny-1)
+      arr_yface(:,ny+2) = 2.0_num * const - arr_yface(:,ny-2)
+    endif 
+
+  end subroutine apply_dirichlet_yface
 
   subroutine bc_sanity_check(arr_cc, arr_xface, arr_yface,di,varname)
 

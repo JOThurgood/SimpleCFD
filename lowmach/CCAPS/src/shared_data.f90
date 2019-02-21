@@ -91,7 +91,6 @@ module shared_data
   integer, parameter :: zero_gradient = 1
   integer, parameter :: no_slip = 2
   integer, parameter :: driven = 3
-  integer, parameter :: dirichlet = 4
   integer, parameter :: outflow = 5
   integer, parameter :: slip = 6
 

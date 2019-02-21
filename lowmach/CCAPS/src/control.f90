@@ -37,11 +37,11 @@ module control
     ! uncomment one of these to overwrite user_control
     ! and users initial condition with one of the test cases
 
-!    minion_test = .true. 
+    minion_test = .true. 
 !    shear_test = .true.
 !    drivenlid_test = .true.
 !    rti1_test = .true. 
-    circular_drop = .true.
+!    circular_drop = .true.
 !    blob1_test = .true. 
 !!    vortex1_test = .true.
 !!    vardens_adv_test = .true.

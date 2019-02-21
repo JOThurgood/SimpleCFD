@@ -394,13 +394,11 @@ module boundary_conditions
 
     if (bc_xmax == driven) then
         print *,'driven not yet implemented for rho, STOP'
-        print *,'driven bx_xmin not yet implemented, STOP'
         STOP
     endif
 
     if (bc_ymin == driven) then
         print *,'driven not yet implemented for rho, STOP'
-        print *,'driven bx_xmin not yet implemented, STOP'
         STOP
     endif
 

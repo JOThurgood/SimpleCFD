@@ -24,6 +24,7 @@ module setup
     if (drivenlid_test) call driven_lid_control
     if (vardens_adv_test) call vardens_adv_test_control
     if (rti1_test) call rti1_control
+    if (circular_drop) call circular_drop_control
     if (blob1_test) call blob1_control
 
     call allocate_global_arrays
@@ -35,6 +36,7 @@ module setup
     if (drivenlid_test) call driven_lid_ic
     if (vardens_adv_test) call vardens_adv_test_ic
     if (rti1_test) call rti1_ic
+    if (circular_drop) call circular_drop_ic
     if (blob1_test) call blob1_ic
 
     call setup_mg
@@ -133,6 +135,7 @@ module setup
     if (drivenlid_test) call driven_lid_ic
     if (vardens_adv_test) call vardens_adv_test_ic
     if (rti1_test) call rti1_ic
+    if (circular_drop) call circular_drop_ic
     if (blob1_test) call blob1_ic
 
     time = 0.0_num !reset to zero important

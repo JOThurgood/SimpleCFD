@@ -170,25 +170,22 @@ module control
   subroutine rti1_control
     x_min = -0.5_num
     x_max = 0.5_num
-!    y_min = -0.5_num
-!    y_max = 0.5_num
     y_min = -2.0_num
     y_max = 2.0_num
     nx = 16
-!    ny = nx
-    ny = 4*nx !but do force nx=ny
+    ny = 4*nx ! ensure nx=ny !!
     CFL = 0.5_num
     t_end = 10.0_num 
     nsteps = -1
-    use_minmod = .false.    
+    use_minmod = .true. !.false.    
     use_viscosity = .false.
     visc = 0.0_num
     bc_xmin = periodic
     bc_xmax = periodic
-    bc_ymin = no_slip
-    bc_ymax = outflow
+    bc_ymin = slip_hse
+    bc_ymax = outflow_hse
     dumpfreq = -1 
-    dt_snapshot = 0.10_num
+    dt_snapshot = 1.00_num
     use_vardens = .true.
     grav_x = 0.0_num
     grav_y = -1.0_num
@@ -210,7 +207,7 @@ module control
     bc_xmin = periodic
     bc_xmax = periodic
     bc_ymin = no_slip
-    bc_ymax = outflow !no_slip
+    bc_ymax = outflow_hse !no_slip
     dumpfreq = -1
     dt_snapshot = 0.1_num 
     use_vardens = .true.

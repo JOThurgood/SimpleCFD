@@ -67,7 +67,7 @@ module setup
 
     dxb = (x_max - x_min) / real(nx,num) 
     do ix = -1,nx+1 
-      xb(ix) = real(ix,num) * dxb
+      xb(ix) = x_min + real(ix,num) * dxb
     end do 
   endsubroutine setup_1d_fd_grid 
 

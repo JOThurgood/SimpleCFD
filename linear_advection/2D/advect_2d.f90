@@ -138,13 +138,13 @@ module setup
 
     dx = (x_max - x_min) / REAL(nx,num)
     do ix = -2, nx+2
-      xb(ix) = REAL(ix,num) * dx 
+      xb(ix) = x_min + REAL(ix,num) * dx 
       if (ix /= -2) xc(ix) = xb(ix) - dx/2.0_num
     enddo
 
     dy = (y_max - y_min) / REAL(ny,num)
     do iy = -2, ny+2
-      yb(iy) = REAL(iy,num) * dy 
+      yb(iy) = y_min + REAL(iy,num) * dy 
       if (iy /= -2) yc(iy) = yb(iy) - dy/2.0_num
     enddo
 

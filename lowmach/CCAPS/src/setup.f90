@@ -24,6 +24,7 @@ module setup
     if (drivenlid_test) call driven_lid_control
     if (vardens_adv_test) call vardens_adv_test_control
     if (rti1_test) call rti1_control
+    if (circular_drop) call circular_drop_control
     if (blob1_test) call blob1_control
 
     call allocate_global_arrays
@@ -35,6 +36,7 @@ module setup
     if (drivenlid_test) call driven_lid_ic
     if (vardens_adv_test) call vardens_adv_test_ic
     if (rti1_test) call rti1_ic
+    if (circular_drop) call circular_drop_ic
     if (blob1_test) call blob1_ic
 
     call setup_mg
@@ -52,10 +54,10 @@ module setup
     if (bc_ymin == periodic) mg_bc_ymin = 'periodic'
     if (bc_ymax == periodic) mg_bc_ymax = 'periodic'
 
-    if (bc_xmin == zero_gradient) mg_bc_xmin = 'zero_gradient'
-    if (bc_xmax == zero_gradient) mg_bc_xmax = 'zero_gradient'
-    if (bc_ymin == zero_gradient) mg_bc_ymin = 'zero_gradient'
-    if (bc_ymax == zero_gradient) mg_bc_ymax = 'zero_gradient'
+!!!!    if (bc_xmin == zero_gradient) mg_bc_xmin = 'zero_gradient'
+!!!!    if (bc_xmax == zero_gradient) mg_bc_xmax = 'zero_gradient'
+!!!!    if (bc_ymin == zero_gradient) mg_bc_ymin = 'zero_gradient'
+!!!!    if (bc_ymax == zero_gradient) mg_bc_ymax = 'zero_gradient'
 
     if (bc_xmin == driven) mg_bc_xmin = 'zero_gradient'
     if (bc_xmax == driven) mg_bc_xmax = 'zero_gradient'
@@ -67,10 +69,25 @@ module setup
     if (bc_ymin == no_slip) mg_bc_ymin = 'zero_gradient'
     if (bc_ymax == no_slip) mg_bc_ymax = 'zero_gradient'
 
-    if (bc_xmin == dirichlet) mg_bc_xmin = 'fixed'
-    if (bc_xmax == dirichlet) mg_bc_xmax = 'fixed'
-    if (bc_ymin == dirichlet) mg_bc_ymin = 'fixed'
-    if (bc_ymax == dirichlet) mg_bc_ymax = 'fixed' !*
+    if (bc_xmin == slip) mg_bc_xmin = 'zero_gradient'
+    if (bc_xmax == slip) mg_bc_xmax = 'zero_gradient'
+    if (bc_ymin == slip) mg_bc_ymin = 'zero_gradient'
+    if (bc_ymax == slip) mg_bc_ymax = 'zero_gradient'
+ 
+    if (bc_xmin == slip_hse) mg_bc_xmin = 'zero_gradient'
+    if (bc_xmax == slip_hse) mg_bc_xmax = 'zero_gradient'
+    if (bc_ymin == slip_hse) mg_bc_ymin = 'zero_gradient'
+    if (bc_ymax == slip_hse) mg_bc_ymax = 'zero_gradient'
+
+    if (bc_xmin == driven) mg_bc_xmin = 'fixed'
+    if (bc_xmax == driven) mg_bc_xmax = 'fixed'
+    if (bc_ymin == driven) mg_bc_ymin = 'fixed'
+    if (bc_ymax == driven) mg_bc_ymax = 'fixed' ! * questionable? see Drikkas and Rider
+
+    if (bc_xmin == outflow_hse) mg_bc_xmin = 'fixed'
+    if (bc_xmax == outflow_hse) mg_bc_xmax = 'fixed'
+    if (bc_ymin == outflow_hse) mg_bc_ymin = 'fixed'
+    if (bc_ymax == outflow_hse) mg_bc_ymax = 'fixed'
 
     if (use_vardens) then
 
@@ -79,42 +96,32 @@ module setup
       if (bc_ymin == periodic) mg_etabc_ymin = 'periodic'
       if (bc_ymax == periodic) mg_etabc_ymax = 'periodic'
 
-!      ! don't think you should be doing this
-!      if (bc_xmin == no_slip) mg_etabc_xmin = 'fixed'
-!      if (bc_xmax == no_slip) mg_etabc_xmax = 'fixed'
-!      if (bc_ymin == no_slip) mg_etabc_ymin = 'fixed'
-!      if (bc_ymax == no_slip) mg_etabc_ymax = 'fixed'
-!
-!      if (bc_xmin == no_slip) mg_etaval_bc_xmin = 1.0_num 
-!      if (bc_xmax == no_slip) mg_etaval_bc_xmax = 1.0_num
-!      if (bc_ymin == no_slip) mg_etaval_bc_ymin = 1.0_num
-!      if (bc_ymax == no_slip) mg_etaval_bc_ymax = 1.0_num !7.0_num
-
-!      ! instead eta should be zerogradient (as it is basically 1/rho)
       if (bc_xmin == no_slip) mg_etabc_xmin = 'zero_gradient'
       if (bc_xmax == no_slip) mg_etabc_xmax = 'zero_gradient'
       if (bc_ymin == no_slip) mg_etabc_ymin = 'zero_gradient'
       if (bc_ymax == no_slip) mg_etabc_ymax = 'zero_gradient'
 
-      ! additionally make the rti1 case solvable by setting phi = fixed on one of the
-      ! non periodic faces
-      !if (rti1_test) mg_bc_ymax = 'fixed' !*
+      if (bc_xmin == slip) mg_etabc_xmin = 'zero_gradient'
+      if (bc_xmax == slip) mg_etabc_xmax = 'zero_gradient'
+      if (bc_ymin == slip) mg_etabc_ymin = 'zero_gradient'
+      if (bc_ymax == slip) mg_etabc_ymax = 'zero_gradient'
+
+      if (bc_xmin == slip_hse) mg_etabc_xmin = 'zero_gradient'
+      if (bc_xmax == slip_hse) mg_etabc_xmax = 'zero_gradient'
+      if (bc_ymin == slip_hse) mg_etabc_ymin = 'zero_gradient'
+      if (bc_ymax == slip_hse) mg_etabc_ymax = 'zero_gradient'
+
+      if (bc_xmin == outflow_hse) mg_etabc_xmin = 'zero_gradient'
+      if (bc_xmax == outflow_hse) mg_etabc_xmax = 'zero_gradient'
+      if (bc_ymin == outflow_hse) mg_etabc_ymin = 'zero_gradient'
+      if (bc_ymax == outflow_hse) mg_etabc_ymax = 'zero_gradient'
 
     endif ! use_vardens
 
-    if (bc_ymax == outflow) then 
-      mg_bc_ymax = 'fixed'
-      mg_etabc_ymax = 'zero_gradient'
-    endif
-
-    if (bc_ymin == slip) then
-      mg_bc_ymin = 'zero_gradient'
-      mg_etabc_ymin = 'zero_gradient'
-    endif
-
-
-
-  !* Drikkas and Rider suggest this a questionable way to sort solvability
+!!!!!    if (bc_ymax == outflow) then 
+!!!!!      mg_bc_ymax = 'fixed'
+!!!!!      mg_etabc_ymax = 'zero_gradient'
+!!!!!    endif
 
   end subroutine setup_mg
 
@@ -128,6 +135,7 @@ module setup
     if (drivenlid_test) call driven_lid_ic
     if (vardens_adv_test) call vardens_adv_test_ic
     if (rti1_test) call rti1_ic
+    if (circular_drop) call circular_drop_ic
     if (blob1_test) call blob1_ic
 
     time = 0.0_num !reset to zero important

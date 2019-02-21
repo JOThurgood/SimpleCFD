@@ -17,7 +17,7 @@ module shared_data
   logical :: vardens_adv_test = .false.
   logical :: rti1_test = .false.
   logical :: blob1_test = .false.
-
+  logical :: circular_drop = .false.
 
   ! core solver
 
@@ -88,12 +88,12 @@ module shared_data
   integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
 
   integer, parameter :: periodic = 0
-  integer, parameter :: zero_gradient = 1
-  integer, parameter :: no_slip = 2
+  integer, parameter :: no_slip = 1
+  integer, parameter :: slip = 2
   integer, parameter :: driven = 3
-  integer, parameter :: dirichlet = 4
+  integer, parameter :: slip_hse = 4
   integer, parameter :: outflow = 5
-  integer, parameter :: slip = 6
+  integer, parameter :: outflow_hse = 6
 
   real(num) :: drive_vel = 0.0_num
 

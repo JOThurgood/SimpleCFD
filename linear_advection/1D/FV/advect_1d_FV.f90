@@ -96,7 +96,7 @@ module setup
     dxb = (x_max - x_min) / REAL(nx,num)
     dxc = dxb !redundant for uniform grids dxb=dxc=dx=constant
     do ix = -2, nx+2
-      xb(ix) = REAL(ix,num) * dxb
+      xb(ix) = x_min + REAL(ix,num) * dxb
       if (ix /= -2) xc(ix) = xb(ix) - dxc/2.0_num
     enddo
   end subroutine setup_1dfvgrid  

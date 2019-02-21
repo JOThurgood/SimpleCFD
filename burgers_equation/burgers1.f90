@@ -108,7 +108,7 @@ module setup
   
     dx = (x_max - x_min) / REAL(nx,num)
     do ix = -2, nx+2
-    xb(ix) = REAL(ix,num) * dx
+    xb(ix) = x_min + REAL(ix,num) * dx
     if (ix /= -2) xc(ix) = xb(ix) - dx/2.0_num
     enddo
 

@@ -77,11 +77,21 @@ module shared_data
 
   integer :: bc_xmin , bc_xmax, bc_ymin, bc_ymax
 
-  integer, parameter :: periodic = 0
-  integer, parameter :: zero_gradient = 1
-  integer, parameter :: no_slip = 2
-  integer, parameter :: dirichlet = 3
-  integer, parameter :: outflow = 4
+!!!  integer, parameter :: periodic = 0
+!!!  integer, parameter :: zero_gradient = 1
+!!!  integer, parameter :: no_slip = 2
+!!!  integer, parameter :: dirichlet = 3
+!!!  integer, parameter :: outflow = 4
+
+  integer, parameter :: periodic = 0 
+  integer, parameter :: no_slip = 1 
+  integer, parameter :: slip = 2 
+  integer, parameter :: driven = 3 ! no viscosity in _vardens version so dont use
+  integer, parameter :: slip_hse = 4
+  integer, parameter :: outflow = 5
+  integer, parameter :: outflow_hse = 6    
+
+  real(num) :: drive_vel = 0.0_num
 
   ! to pass bcs to mg
   character(len=20) :: mg_bc_xmin = 'none'

@@ -75,6 +75,11 @@ module setup
     if (bc_ymin == driven) mg_bc_ymin = 'fixed'
     if (bc_ymax == driven) mg_bc_ymax = 'fixed' ! * questionable? see Drikkas and Rider
 
+    if (bc_xmin == outflow_hse) mg_bc_xmin = 'fixed'
+    if (bc_xmax == outflow_hse) mg_bc_xmax = 'fixed'
+    if (bc_ymin == outflow_hse) mg_bc_ymin = 'fixed'
+    if (bc_ymax == outflow_hse) mg_bc_ymax = 'fixed'
+ 
     if (bc_xmin == periodic) mg_etabc_xmin = 'periodic'
     if (bc_xmax == periodic) mg_etabc_xmax = 'periodic'
     if (bc_ymin == periodic) mg_etabc_ymin = 'periodic'

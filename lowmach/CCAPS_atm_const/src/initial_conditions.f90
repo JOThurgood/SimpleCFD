@@ -231,36 +231,50 @@ module initial_conditions
   subroutine circular_drop_ic
               
     real(num) :: x,y,r
+    real(num) :: p0_lo
 
     u = 0.0_num
     v = 0.0_num
 
     grav_y = -1.0_num
 
-    ! set the background to be the uniform density or a laterally averaged value? 
+    ! although I've said so in the wiki I don't think anything in the code
+    ! requires definition that rho0 = lat avg rho at t=0
+    ! rather, just that rho = rho0 + rho1 , p = p0 + p1, and that due to
+    ! subtracting off the pressure grad and grav force associated with 0 quantities
+    ! it follows that they are required to themselves be hydrostatically balanced
+
+    ! ??? 
+
+    ! therefore set the background state to be the uniform density upon which
+    ! the (huge) perturbation sits
+
     rho0 = 1.0_num
-print *,'not yet circular_drop_ics not yet implemented'
-STOP
-!!!    ! this should probabally be de-singularised with a tanh profile on rho=rho(r)
-!!!              
-!!!    u = 0.0_num
-!!!    v = 0.0_num
-!!!              
-!!!    grav_x = 0.0_num
-!!!    grav_y = -1.0_num
-!!!              
-!!!    rho = 1.0_num
-!!!              
-!!!    do iy = -1,ny+1
-!!!    do ix = -1,nx+1
-!!!      x = xc(ix)-0.5_num
-!!!      y = yc(iy)-0.75_num
-!!!      r = sqrt(x**2 + y**2)
-!!!      if (r <= 0.15_num) rho(ix,iy) = 1000.0_num
-!!!    enddo        
-!!!    enddo        
-!!!              
-!!!    print *, 'rho on grid',sum(rho(1:nx,1:ny)*dx*dy)
+    rho = 1.0_num !both should be same, i.e. initialise with no perturbation then add on top
+
+    ! choose p0 s.t. this background is in HSE
+
+    p0_lo = 10.0_num ! just sets a Gauge? 
+        ! However, due to p0^(<1) terms, cant tolerate a negative number in the profile
+        ! so needs to be sufficiently high to not NAN the betas 
+
+    p0(-1) = p0_lo
+    do iy = 0, ny+2
+      p0(iy) = p0(iy-1) + 0.5_num * dy * (rho0(iy-1) + rho0(iy)) * grav_y
+    enddo
+
+    ! go through and add the (huge) perturbation to density 
+
+    do iy = -1,ny+1
+    do ix = -1,nx+1
+      x = xc(ix)-0.5_num
+      y = yc(iy)-0.75_num
+      r = sqrt(x**2 + y**2)
+      if (r <= 0.15_num) rho(ix,iy) = 1000.0_num
+    enddo        
+    enddo        
+              
+    print *, 'rho on grid',sum(rho(1:nx,1:ny)*dx*dy)
               
   end subroutine circular_drop_ic
 

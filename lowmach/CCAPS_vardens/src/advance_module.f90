@@ -3,7 +3,7 @@ module advance_module
   use shared_data
   use boundary_conditions
   use diagnostics
-  use gauss_seidel
+!  use gauss_seidel
   use multigrid
 
   implicit none

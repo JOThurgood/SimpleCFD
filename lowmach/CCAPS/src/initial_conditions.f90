@@ -205,7 +205,7 @@ module initial_conditions
     grav_x = 0.0_num
     grav_y = -1.0_num
 
-    rho = 1_num
+    rho = 1.0_num
 
     do iy = -1,ny+1
     do ix = -1,nx+1

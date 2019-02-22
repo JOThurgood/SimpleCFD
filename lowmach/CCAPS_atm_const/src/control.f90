@@ -39,8 +39,8 @@ module control
 
 !    minion_test = .true. 
 !    shear_test = .true.
-    rti1_test = .true. 
-!    circular_drop = .true.
+!    rti1_test = .true. 
+    circular_drop = .true.
 !    blob1_test = .true. 
 ! following not yet updated for bkgd
 !    vardens_adv_test = .true.
@@ -130,6 +130,7 @@ module control
     dumpfreq = -1 
     dt_snapshot = 1.0_num
     grav_y = -1.0_num
+    dt_min = 1e6_num
   end subroutine rti1_control
 
               
@@ -146,10 +147,11 @@ module control
     use_minmod = .true.
     bc_xmin = slip
     bc_xmax = slip
-    bc_ymin = slip!_hse
-    bc_ymax = slip!_hse !outflow_hse
+    bc_ymin = slip
+    bc_ymax = outflow_hse
     dumpfreq = -1
-    dt_snapshot = 0.1_num 
+    dt_snapshot = 0.1_num
+!    dt_min = dt_snapshot ! to test equlibrium 
   end subroutine circular_drop_control
 
 

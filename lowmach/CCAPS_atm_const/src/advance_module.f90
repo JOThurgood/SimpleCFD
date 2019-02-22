@@ -3,7 +3,7 @@ module advance_module
   use shared_data
   use boundary_conditions
   use diagnostics
-  use gauss_seidel
+!  use gauss_seidel
   use multigrid
 
   implicit none
@@ -659,10 +659,17 @@ module advance_module
     call velocity_bcs(arr_cc = u, di = 1)  
     call velocity_bcs(arr_cc = v, di = 2)
 
-    dtx = CFL * dx / maxval(abs(u))
-    dty = CFL * dy / maxval(abs(v))
-    dt = MIN(dt_min,dtx,dty)
+!    dtx = CFL * dx / maxval(abs(u))
+!    dty = CFL * dy / maxval(abs(v))
+!    dt = MIN(dt_min,dtx,dty)
 
+    dtx = 1e6_num
+    dty = dtx
+ 
+    if (maxval(abs(u)) > 1e-16_num) dtx = CFL * dx / maxval(abs(u))
+    if (maxval(abs(v)) > 1e-16_num) dty = CFL * dy / maxval(abs(v))
+    dt = MIN(dtx,dty)
+ 
     if (sqrt(grav_y**2) > 1e-16_num) then
       amax = 0.0_num
       do ix = -1, nx+1

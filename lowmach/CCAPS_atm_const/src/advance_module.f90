@@ -668,7 +668,7 @@ module advance_module
  
     if (maxval(abs(u)) > 1e-16_num) dtx = CFL * dx / maxval(abs(u))
     if (maxval(abs(v)) > 1e-16_num) dty = CFL * dy / maxval(abs(v))
-    dt = MIN(dtx,dty)
+    dt = MIN(dt_min,dtx,dty)
  
     if (sqrt(grav_y**2) > 1e-16_num) then
       amax = 0.0_num
@@ -677,7 +677,8 @@ module advance_module
         amax = MAX(amax, abs((rho(ix,iy)-rho0(iy))/rho(ix,iy)*grav_y))
       enddo
       enddo
-      dtf = CFL * sqrt(2.0_num * dy / amax)
+      dtf = 1e6_num
+      if (abs(amax) > 1e-16_num) dtf = CFL * sqrt(2.0_num * dy / amax)
       dt = MIN(dt,dtf)
     endif 
 

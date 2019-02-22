@@ -68,6 +68,7 @@ module welcome
 
     print *,'Welcome to CCAPS (Cell-centered approximate projection solver)'
     print *,''
+    print *,'Using variant CCAPS_atm_const (subtracted 1d hydrostatic background)'
     print *,'******************************************************************'
     print *,'Launching code'
   end subroutine welcome_msg

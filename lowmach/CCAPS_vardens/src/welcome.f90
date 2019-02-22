@@ -68,6 +68,7 @@ module welcome
 
     print *,'Welcome to CCAPS (Cell-centered approximate projection solver)'
     print *,''
+    print *,'Using variant CCAPS_vardens (variable density incompressible, inviscid)'
     print *,'******************************************************************'
     print *,'Launching code'
   end subroutine welcome_msg

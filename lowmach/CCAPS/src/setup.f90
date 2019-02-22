@@ -54,11 +54,6 @@ module setup
     if (bc_ymin == periodic) mg_bc_ymin = 'periodic'
     if (bc_ymax == periodic) mg_bc_ymax = 'periodic'
 
-!!!!    if (bc_xmin == zero_gradient) mg_bc_xmin = 'zero_gradient'
-!!!!    if (bc_xmax == zero_gradient) mg_bc_xmax = 'zero_gradient'
-!!!!    if (bc_ymin == zero_gradient) mg_bc_ymin = 'zero_gradient'
-!!!!    if (bc_ymax == zero_gradient) mg_bc_ymax = 'zero_gradient'
-
     if (bc_xmin == driven) mg_bc_xmin = 'zero_gradient'
     if (bc_xmax == driven) mg_bc_xmax = 'zero_gradient'
     if (bc_ymin == driven) mg_bc_ymin = 'zero_gradient'
@@ -117,11 +112,6 @@ module setup
       if (bc_ymax == outflow_hse) mg_etabc_ymax = 'zero_gradient'
 
     endif ! use_vardens
-
-!!!!!    if (bc_ymax == outflow) then 
-!!!!!      mg_bc_ymax = 'fixed'
-!!!!!      mg_etabc_ymax = 'zero_gradient'
-!!!!!    endif
 
   end subroutine setup_mg
 

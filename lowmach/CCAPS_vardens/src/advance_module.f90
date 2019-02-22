@@ -3,7 +3,7 @@ module advance_module
   use shared_data
   use boundary_conditions
   use diagnostics
-  use gauss_seidel
+!  use gauss_seidel
   use multigrid
 
   implicit none
@@ -604,29 +604,51 @@ module advance_module
     enddo
 
   end subroutine advect_dens
-  
+
+
   subroutine set_dt
-
-    real(num) :: dtx, dty
-    real(num) :: dtf
-
+              
+    real(num) :: dtx, dty 
+    real(num) :: dtf 
+              
     ! need to call bcs to capture velocities on driven boundaries
     call velocity_bcs(arr_cc = u, di = 1)  
     call velocity_bcs(arr_cc = v, di = 2)
-
-    dtx = CFL * dx / maxval(abs(u))
-    dty = CFL * dy / maxval(abs(v))
+              
+    dtx = 1e6_num
+    dty = dtx 
+              
+    if (maxval(abs(u)) > 1e-16_num) dtx = CFL * dx / maxval(abs(u))
+    if (maxval(abs(v)) > 1e-16_num) dty = CFL * dy / maxval(abs(v))
     dt = MIN(dtx,dty)
-
-    if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
+              
+    if (abs(grav_x) > 1e-16_num) then
       dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
       dt = MIN(dt,dtf)
+    endif     
+              
+    if (abs(grav_y) > 1e-16_num) then
       dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
       dt = MIN(dt,dtf)
-    endif 
-
+    endif     
+              
+              
+!    if (sqrt(grav_x**2 + grav_y**2) > 1e-16_num) then
+!      if (use_vardens) then
+!        dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x*rho)))
+!        dt = MIN(dt,dtf)
+!        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y*rho)))
+!        dt = MIN(dt,dtf)
+!      else   
+!        dtf = CFL * sqrt(2.0_num * dx / maxval(abs(gradp_x-grav_x)))
+!        dt = MIN(dt,dtf)
+!        dtf = CFL * sqrt(2.0_num * dy / maxval(abs(gradp_y-grav_y)))
+!        dt = MIN(dt,dtf)
+!      endif  
+!    endif    
+                 
     print *, 'hydro dt = ',dt
-
+                 
   end subroutine set_dt
 
   real(num) function minmod(a,b)  

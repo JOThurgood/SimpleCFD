@@ -30,20 +30,16 @@ module control
 
     grav_y  = -1.0_num
 
-    ! set one of these to true to overwrite everything except nx 
-    ! in control with correct setup for the test problems.
-    !
-    ! This will also cause any nitial_condition set to be ignored in
-    ! favour of the specific problems
-
-!    shear_test = .true.
+    ! uncomment one of these to overwrite user_control
+    ! and users initial condition with one of the test cases
+ 
 !    minion_test = .true. 
-!    vortex1_test = .true.
-!    drivenlid_test = .true.
-!    vardens_adv_test = .true.
+!    shear_test = .true.
 !    rti1_test = .true. 
-    blob1_test = .true. 
-
+    circular_drop = .true.
+!    blob1_test = .true. 
+!    vardens_adv_test = .true.
+ 
     ! DONT set more than one of the above true
 
   end subroutine user_control
@@ -76,8 +72,7 @@ module control
     x_max = 1.0_num
     y_min = x_min
     y_max = x_max
-    !nx = 32   allow it to use whatever was set for easy overwriting in
-    ! user control. Dont change it here in practice.
+    nx = 32
     ny = nx !but do force nx=ny
     CFL = 0.5_num
     t_end = 0.5_num 
@@ -115,26 +110,43 @@ module control
   subroutine rti1_control
     x_min = -0.5_num
     x_max = 0.5_num
-!    y_min = -0.5_num
-!    y_max = 0.5_num
     y_min = -2.0_num
     y_max = 2.0_num
-    nx = 128
-!    ny = nx
-    ny = 4*nx !but do force nx=ny
+    nx = 16
+    ny = 4*nx ! ensure nx=ny !!
     CFL = 0.5_num
     t_end = 10.0_num 
     nsteps = -1
     use_minmod = .false.    
     bc_xmin = periodic
     bc_xmax = periodic
-    bc_ymin = no_slip
-    bc_ymax = outflow! 
+    bc_ymin = slip_hse
+    bc_ymax = outflow_hse 
     dumpfreq = -1 
-    dt_snapshot = 0.2_num
+    dt_snapshot = 1.0_num
     grav_x = 0.0_num
     grav_y = -1.0_num
   end subroutine rti1_control
+
+  subroutine circular_drop_control
+    x_min = 0.0_num
+    x_max = 1.0_num
+    y_min = x_min
+    y_max = x_max
+    nx = 256  
+    ny = nx !but do force nx=ny
+    CFL = 0.5_num
+    t_end = 5.0_num 
+    nsteps = -1
+    use_minmod = .true.
+    bc_xmin = slip
+    bc_xmax = slip
+    bc_ymin = slip_hse
+    bc_ymax = slip_hse !outflow_hse
+    dumpfreq = -1
+    dt_snapshot = 0.1_num 
+  end subroutine circular_drop_control
+
 
   subroutine blob1_control
     x_min = 0.0_num

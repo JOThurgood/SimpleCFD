@@ -15,6 +15,7 @@ module shared_data
   logical :: vardens_adv_test = .false.
   logical :: rti1_test = .false.
   logical :: blob1_test = .false.
+  logical :: circular_drop = .false.
 
   ! core solver
 

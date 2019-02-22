@@ -35,8 +35,8 @@ module control
  
 !    minion_test = .true. 
 !    shear_test = .true.
-    rti1_test = .true. 
-!    circular_drop = .true.
+!    rti1_test = .true. 
+    circular_drop = .true.
 !    blob1_test = .true. 
 !    vardens_adv_test = .true.
  
@@ -127,6 +127,26 @@ module control
     grav_x = 0.0_num
     grav_y = -1.0_num
   end subroutine rti1_control
+
+  subroutine circular_drop_control
+    x_min = 0.0_num
+    x_max = 1.0_num
+    y_min = x_min
+    y_max = x_max
+    nx = 256  
+    ny = nx !but do force nx=ny
+    CFL = 0.5_num
+    t_end = 5.0_num 
+    nsteps = -1
+    use_minmod = .true.
+    bc_xmin = slip
+    bc_xmax = slip
+    bc_ymin = slip_hse
+    bc_ymax = slip_hse !outflow_hse
+    dumpfreq = -1
+    dt_snapshot = 0.1_num 
+  end subroutine circular_drop_control
+
 
   subroutine blob1_control
     x_min = 0.0_num

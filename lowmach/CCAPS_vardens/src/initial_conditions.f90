@@ -139,5 +139,33 @@ module initial_conditions
 
   end subroutine blob1_ic
 
+  subroutine circular_drop_ic
+
+    real(num) :: x,y,r
+    
+    ! this should probabally be de-singularised with a tanh profile on rho=rho(r)
+    
+    u = 0.0_num
+    v = 0.0_num
+    
+    grav_x = 0.0_num
+    grav_y = -1.0_num
+    
+    rho = 1.0_num
+    
+    do iy = -1,ny+1
+    do ix = -1,nx+1
+      x = xc(ix)-0.5_num
+      y = yc(iy)-0.75_num
+      r = sqrt(x**2 + y**2)
+      if (r <= 0.15_num) rho(ix,iy) = 1000.0_num
+    enddo    
+    enddo    
+    
+    print *, 'rho on grid',sum(rho(1:nx,1:ny)*dx*dy)
+    
+  end subroutine circular_drop_ic
+
+
 end module initial_conditions
 

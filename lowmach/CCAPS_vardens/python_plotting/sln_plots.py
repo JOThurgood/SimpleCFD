@@ -126,3 +126,18 @@ try:
 except:
   pass
 
+## bitmap of rho
+
+try:
+  rho = np.fromfile('rho.dat', dtype = np.float64)
+  rho = rho.reshape(yc.size, xc.size)
+  plt.clf()
+  plt.imshow(rho, origin='lower', cmap=plt.cm.jet)
+  plt.xlabel('x')
+  plt.ylabel('y') 
+  plt.title('rho at t = {:.3f}'.format(float(time)))
+  plt.colorbar()
+  plt.savefig(getfilenameindex("output/bm_rho_"))
+except:
+  pass
+

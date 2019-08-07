@@ -2,7 +2,7 @@
 
 Solves 2D Navier-Stokes equations in one of the following regimes:
 * incompressible, uniform density inviscid flow
-* incompressible, uniform density flow with viscousity 
+* incompressible, uniform density flow with viscosity 
 * incompressible, variable density inviscid flow with gravity
 
 using a cell-centred approximate projection approach, with optional gradient limiting etc.
